@@ -1,0 +1,147 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vtx
+//   Authors: Valve
+//   Version: 7
+//   Purpose: Valve Mesh Strip File
+//  Category: Model
+// File Mask: *.vtx
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+// this structure is in <mod folder>/src/public/optimize.h
+
+
+//====
+// vtx
+
+
+struct FileHeader_t
+{
+	// file version as defined by OPTIMIZED_MODEL_FILE_VERSION (currently 7)
+	int version;
+
+	// hardware params that affect how the model is to be optimized.
+	int vertCacheSize;
+	uint16 maxBonesPerStrip;
+	uint16 maxBonesPerTri;
+	int maxBonesPerVert;
+
+	// must match checkSum in the .mdl
+	uint32 checkSum;
+
+	int numLODs; // Also specified in ModelHeader_t's and should match
+
+	// Offset to materialReplacementList Array. one of these for each LOD, 8 in total
+	uint32 materialReplacementListOffset;
+
+    // Defines the size and location of the body part array
+	int numBodyParts;
+	uint32 bodyPartOffset;
+};
+
+struct BodyPartHeader_t
+{
+	// Model array
+	int numModels;
+	uint32 modelOffset;
+};
+
+struct ModelHeader_t
+{
+	//LOD mesh array
+	int numLODs;   //This is also specified in FileHeader_t
+	uint32 lodOffset;
+};
+
+struct ModelLODHeader_t
+{
+    //Mesh array
+	int numMeshes;
+	uint32 meshOffset;
+
+	float switchPoint;
+};
+
+struct MeshHeader_t
+{
+	int numStripGroups;
+	uint32 stripGroupHeaderOffset;
+
+	ubyte flags;
+};
+
+struct StripGroupHeader_t
+{
+	// These are the arrays of all verts and indices for this mesh.  strips index into this.
+	int numVerts;
+	uint32 vertOffset;
+
+	int numIndices;
+	uint32 indexOffset;
+
+	int numStrips;
+	uint32 stripOffset;
+
+	ubyte flags;
+
+	// The following fields are only present if MDL version is >=49
+	// Points to an array of unsigned shorts (16 bits each)
+	int numTopologyIndices;
+	uint32 topologyOffset;
+};
+
+// A strip is a piece of a stripgroup which is divided by bones 
+struct StripHeader_t
+{
+	int numIndices;
+	uint32 indexOffset;
+
+	int numVerts;    
+	uint32 vertOffset;
+
+	short numBones;
+
+	uint flags;
+
+	int numBoneStateChanges;
+	uint32 boneStateChangeOffset;
+
+	// MDL Version 49 and up only
+	int numTopologyIndices;
+	uint32 topologyOffset;
+};
+
+struct Vertex_t
+{
+	// these index into the mesh's vert[origMeshVertID]'s bones
+	uint boneWeightIndex[3];
+	uint numBones;
+
+	uint16 origMeshVertID;
+
+	// for sw skinned verts, these are indices into the global list of bones
+	// for hw skinned verts, these are hardware bone indices
+	char boneID[3];
+};
+
+struct MaterialReplacementHeader_t
+{
+	short materialID;
+	uint32 replacementMaterialNameOffset;
+};
+
+struct MaterialReplacementListHeader_t
+{
+	int numReplacements;
+	uint32 replacementOffset;
+};
+
+struct BoneStateChangeHeader_t
+{
+	int hardwareID;
+	int newBoneID;
+};

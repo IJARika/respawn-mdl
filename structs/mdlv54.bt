@@ -1,0 +1,203 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl
+//   Authors: Rika
+//   Version: 53
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "./source_math.bt"
+#include "./mdl_structs.bt"
+
+
+// headers
+studiohdrv54_t mdlHeader <bgcolor=cLtBlue>;
+
+// this is a check for non shipped models.
+if (mdlHeader.bone_offset > mdlHeader.maya_index)
+{
+    char mayabakery[mdlHeader.bone_offset - mdlHeader.maya_index] <fgcolor=cRed>;
+}
+
+
+// bones
+FSeek(mdlHeader.bone_offset);
+mstudiobonev54_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>; // get names working
+
+local int jigglebonecount = 0;
+local int i = 0;
+
+local char s_jigglebonename;
+
+/*for (i = 0; i < mdlHeader.bone_count; ++i)
+{
+    if (bones[i].flags == 5) {
+        jigglebonecount++;
+        
+        s_jigglebonename = bones[i].sznameindex;
+    }
+}
+
+mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;*/
+//mstudioattachment_t attachments[mdlHeader.attachment_count]  <bgcolor=0xcff5ca>;
+
+FSeek(mdlHeader.bonetablename_index);
+mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
+
+
+// hitbox
+FSeek(mdlHeader.hitbox_offset);
+mstudiohitboxset_t hboxset[mdlHeader.hitbox_count]  <bgcolor=0xf2e46a>;
+
+// have to do this because some things actually do have more than one.
+local int bboxCount = 0;
+
+for (i = 0; i < mdlHeader.hitbox_count; ++i)
+{
+   bboxCount += hboxset[i].numhitboxes;
+}
+
+mstudiobboxv53_t bboxes[bboxCount]  <bgcolor=0xa29418>;
+
+
+// animation
+FSeek(mdlHeader.localanim_offset);
+mstudioanimdescv53_t animdesc[mdlHeader.localanim_count] <bgcolor=0xdc7633>;
+
+//FSeek(mdlHeader.localseq_offset);
+
+//mstudioanimdesc_t animseq[1] <bgcolor=0xf0b27a>;
+
+
+// models
+FSeek(mdlHeader.bodypart_offset);
+mstudiobodyparts_t bodyparts[mdlHeader.bodypart_count] <bgcolor=cGray>;
+
+local int modelCount = 0;
+
+for (i = 0; i < mdlHeader.bodypart_count; ++i)
+{
+   modelCount += bodyparts[i].nummodels;
+}
+
+mstudiomodelv53_t models[modelCount]<bgcolor=cDkGray>;
+
+
+// ik
+/*FSeek(mdlHeader.ikchain_index);
+mstudioikchainv53_t ikchains[mdlHeader.ikchain_count] <bgcolor=0xe8daef>;
+
+local int linkCount = 0;
+
+for (i = 0; i < mdlHeader.ikchain_count; ++i)
+{
+   linkCount += ikchains[i].numlinks;
+}
+
+mstudioiklink_t iklinks[linkCount] <bgcolor=0x7d3c98>;
+
+FSeek(mdlHeader.iklock_index);
+mstudioiklock_t iklocks[mdlHeader.iklock_count] <bgcolor=0xe8daef>;*/
+
+//FSeek(mdlHeader.localposeparam_index);
+//mstudioposeparamdesc_t poseparm[mdlHeader.localposeparam_count] <bgcolor=cYellow>;
+
+
+// meshes
+// can't find an offset for this so it goes here.
+local int meshCount = 0;
+
+for (i = 0; i < modelCount; ++i)
+{
+   meshCount += models[i].nummeshes;
+}
+
+mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
+
+
+// rui
+if (mdlHeader.ruimesh_count > 0)
+{
+    FSeek(mdlHeader.ruimesh_index);
+    char ruidata[mdlHeader.texture_offset - mdlHeader.ruimesh_index] <fgcolor=cGreen>;
+}
+
+// various includes, materials, and groups
+FSeek(mdlHeader.includemodel_index);
+mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
+
+FSeek(mdlHeader.texture_offset);
+mstudiotexturev53_t textures[mdlHeader.texture_count] <bgcolor=cGreen>;
+
+FSeek(mdlHeader.texturedir_offset);
+mstudiotexturedir_t cdmaterials[mdlHeader.texturedir_count] <bgcolor=cDkGreen>;
+
+FSeek(mdlHeader.skinreference_index);
+mstudioskingroup_t skingroup[mdlHeader.skinrfamily_count] <bgcolor=cLtGreen>;
+
+FSeek(mdlHeader.keyvalue_index);
+char keyvalues_char[mdlHeader.keyvalue_size] <fgcolor=cLtBlue>;
+
+
+FSeek(mdlHeader.srcbonetransform_index);
+mstudiosrcbonetransform_t srcbonetransform[mdlHeader.srcbonetransform_count] <bgcolor=cDkGreen>;
+
+if (mdlHeader.linearbone_index > 0)
+{
+    FSeek(mdlHeader.linearbone_index);
+    mstudiolinearbone_t linearbone <bgcolor=cGreen>;
+    
+    struct mstudiolinearbonedata_t
+    {
+        if(linearbone.flagsindex > 0)
+            uint32 bone_flags[linearbone.numbones];
+        if(linearbone.parentindex > 0)
+            uint32 bone_parents[linearbone.numbones];
+        
+        if(linearbone.posindex > 0)
+            Vector3 bone_pos[linearbone.numbones];
+        if(linearbone.quatindex > 0)
+	        Quaternion bone_quat[linearbone.numbones];
+        if(linearbone.rotindex > 0)
+	        RadianEuler bone_rot[linearbone.numbones];
+        
+        if(linearbone.posetoboneindex > 0)
+            matrix3x4_t bone_poseToBone[linearbone.numbones];
+
+        if(linearbone.posscaleindex > 0)
+            Vector3 bone_posscale[linearbone.numbones];
+        if(linearbone.rotscaleindex > 0)
+	        Vector3 bone_rotscale[linearbone.numbones];
+	
+        if(linearbone.qalignmentindex > 0)
+	        Quaternion bone_qAlignment[linearbone.numbones];
+    };
+
+    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
+
+};
+
+
+// always 60 bytes, probably reserved space for something.
+FSeek(mdlHeader.unk_index);
+char unk_bytes[60] <fgcolor=cRed>;
+
+// unk_index1 always follows this, and always seems to be one byte in front of the string table.
+
+// string table
+FSeek(mdlHeader.sznameindex);
+
+local int64 stringtable_size;
+
+if(mdlHeader.vphy_index == 0)
+    stringtable_size = mdlHeader.vtx_index - mdlHeader.sznameindex;
+else
+    stringtable_size = mdlHeader.vphy_index - mdlHeader.sznameindex;
+
+char stringtable[stringtable_size] <fgcolor=cLtRed>;

@@ -1,0 +1,52 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vphy
+//   Authors: Rika & Others
+//   Version: 
+//   Purpose: Valve Physics Files
+//  Category: Model
+// File Mask: *.phy
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+// these are mostly ripped straight from sdk public source code and valvedevwiki.
+
+
+//=====
+// vphy
+
+
+struct phyheader_t
+{
+	int size; // Size of this header section (generally 16)
+	int id; // Often zero, unknown purpose.
+	int solidCount; // Number of solids in file
+	uint32 checkSum; // checksum of source .mdl file (4-bytes)
+};
+
+struct phydata_t
+{
+    uint32 unk[103];
+};
+
+struct compactsurfaceheader_t
+{
+	uint32	size; // Size of the content after this byte
+
+	uint32 vphysicsID; // Generally the ASCII for "VPHY" in newer files
+	uint16 version;
+
+	uint16 modelType;
+
+	uint32 surfaceSize;
+
+	Vector3 dragAxisAreas;
+
+	uint32 axisMapSize;
+    
+    // to do try to fix getting the size dynamically.
+    uint32 unk[(size - 28) / 4]; 
+};
