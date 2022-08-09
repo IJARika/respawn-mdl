@@ -14,7 +14,7 @@
 #define MAX_NUM_LODS 8
 
 // these are just all structs that I have mostly working/fitting, it does not mean they are correct.
-// a lot of these are from either valvedevwiki or the public source sdk 2013 code.
+// a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
 
 
 //========

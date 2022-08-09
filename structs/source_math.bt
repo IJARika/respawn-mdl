@@ -71,9 +71,4 @@ struct matrix3x4_t
         float c1r2; // z
         float c2r2; // z
         float c3r2; // z
-        
-		/*Vector3 Column0;
-		Vector3 Column1;
-		Vector3 Column2;
-		Vector3 Column3;*/
 };

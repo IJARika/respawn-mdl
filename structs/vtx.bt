@@ -13,6 +13,7 @@
 
 
 // this structure is in <mod folder>/src/public/optimize.h
+// a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
 
 
 //====
