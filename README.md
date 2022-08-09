@@ -1,2 +1,2 @@
 # respawn-mdl
-misc structs for respawn models (v52, v53, and v54)
+various structs for respawn models including ones unchanged from normal source (v48/v49)
