@@ -900,7 +900,8 @@ struct mstudiobonev53_t
 
     uint32 unk2;
 
-    uint32 unk3; // sometimes there is something here, 0xFFFF in many cases, probably for adding to an offset.
+    uint32 unk3; // sometimes there is something here, 0xFFFF in many cases.
+                 // probably for adding to an offset in a file.
 
 	uint32 unused[7]; //maybe? I really doubt it though.
 };
@@ -1138,7 +1139,7 @@ struct mstudiobboxv53_t
 	uint32 szhitboxnameindex; // offset to the name of the hitbox.
     
     uint32 unk;
-    uint32 unk_index; // always seems to be the same as 'szhitboxnameindex' ??
+    uint32 kvname_index; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 
 	uint32 unused[6]; // some of these might actually be used now like the two above.
 };
@@ -1295,6 +1296,76 @@ struct mstudioseqdesc_t
 	uint32 unused[7];
 };
 
+struct mstudioseqdescv53_t
+{
+	uint32 baseptr;
+
+	uint32	szlabelindex;
+
+	uint32 szactivitynameindex;
+
+	int flags; // looping/non-looping flags
+
+	int activity; // initialized at loadtime to game DLL values
+	int actweight;
+
+	int numevents;
+	uint32 eventindex;
+	
+	Vector3 bbmin; // per sequence bounding box
+	Vector3 bbmax;		
+
+	int numblends;
+
+	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
+	uint32 animindexindex;
+
+	uint32 movementindex; // [blend] float array for blended movement
+	int groupsize[2];
+	int paramindex[2]; // X, Y, Z, XR, YR, ZR
+	float paramstart[2]; // local (0..1) starting value
+	float paramend[2]; // local (0..1) ending value
+	int paramparent;
+
+	float fadeintime; // ideal cross fate in time (0.2 default)
+	float fadeouttime; // ideal cross fade out time (0.2 default)
+
+	int localentrynode; // transition node at entry
+	int localexitnode; // transition node at exit
+	int nodeflags; // transition rules
+
+	float entryphase; // used to match entry gait
+	float exitphase; // used to match exit gait
+	
+	float lastframe; // frame that should generation EndOfSequence
+
+	int nextseq; // auto advancing sequences
+	int pose; // index of delta animation between end and nextseq
+
+	int numikrules;
+
+	int numautolayers;
+	uint32 autolayerindex;
+
+	uint32 weightlistindex;
+
+	uint32 posekeyindex;
+
+	int numiklocks;
+	uint32 iklockindex;
+
+	// Key values
+	uint32	keyvalueindex;
+	int keyvaluesize;
+
+	uint32 cycleposeindex; // index of pose parameter to use as cycle index
+
+    uint32 unkindex;
+    uint32 unkcount;
+
+	uint32 unused[10];
+};
+
 // demand loaded sequence groups
 struct mstudiomodelgroup_t
 {
@@ -1315,24 +1386,6 @@ struct mstudiobodyparts_t
 	int base;
 	uint32 modelindex; // index into models array
 };
-
-/*struct mstudio_modelvertexdata_t
-{
-	DECLARE_BYTESWAP_DATADESC();
-	Vector3				*Position( int i ) const;
-	Vector3				*Normal( int i ) const;
-	Vector4			*TangentS( int i ) const;
-	Vector2			*Texcoord( int i ) const;
-	mstudioboneweight_t	*BoneWeights( int i ) const;
-	mstudiovertex_t		*Vertex( int i ) const;
-	bool				HasTangentData( void ) const;
-	int					GetGlobalVertexIndex( int i ) const;
-	int					GetGlobalTangentIndex( int i ) const;
-
-	// base of external vertex data stores
-	const void			*pVertexData;
-	const void			*pTangentData;
-};*/
 
 // studio models
 struct mstudiomodel_t
@@ -1473,4 +1526,15 @@ struct mstudiotexturev53_t
 struct mstudioskingroup_t
 {
     uint16 textureId[mdlHeader.skinreference_count];
+};
+
+
+//====
+// rui
+
+
+struct mstudiorruiheader_t
+{
+    uint32 ruimesh_guid; // unsure
+    uint32 ruimesh_offset;
 };
