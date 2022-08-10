@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: mdl
+//      File: rmdl
 //   Authors: Rika
 //   Version: 53
 //   Purpose: Respawn MDL Files
 //  Category: Model
-// File Mask: *.mdl
+// File Mask: *.rmdl
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -35,17 +35,19 @@ local int i = 0;
 
 local char s_jigglebonename;
 
-/*for (i = 0; i < mdlHeader.bone_count; ++i)
+for (i = 0; i < mdlHeader.bone_count; ++i)
 {
-    if (bones[i].flags == 5) {
+    if (bones[i].proctype == 5) {
         jigglebonecount++;
         
         s_jigglebonename = bones[i].sznameindex;
     }
 }
 
-mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;*/
-//mstudioattachment_t attachments[mdlHeader.attachment_count]  <bgcolor=0xcff5ca>;
+mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;
+
+FSeek(mdlHeader.attachment_offset);
+mstudioattachmentv54_t attachments[mdlHeader.attachment_count]  <bgcolor=0xcff5ca>;
 
 FSeek(mdlHeader.bonetablename_index);
 mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
@@ -63,7 +65,7 @@ for (i = 0; i < mdlHeader.hitbox_count; ++i)
    bboxCount += hboxset[i].numhitboxes;
 }
 
-mstudiobboxv53_t bboxes[bboxCount]  <bgcolor=0xa29418>;
+mstudiobboxv54_t bboxes[bboxCount]  <bgcolor=0xa29418>;
 
 
 // animation
@@ -86,7 +88,7 @@ for (i = 0; i < mdlHeader.bodypart_count; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodelv53_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodelv54_t models[modelCount]<bgcolor=cDkGray>;
 
 
 // ik
@@ -118,22 +120,28 @@ for (i = 0; i < modelCount; ++i)
    meshCount += models[i].nummeshes;
 }
 
-mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
+mstudiomeshv54_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui
 if (mdlHeader.ruimesh_count > 0)
 {
     FSeek(mdlHeader.ruimesh_index);
-    char ruidata[mdlHeader.texture_offset - mdlHeader.ruimesh_index] <fgcolor=cGreen>;
-}
+    mstudiorruiheader_t ruiheader[mdlHeader.ruimesh_count] <fgcolor=cLtGreen>;
+
+    // some padding here to make it even I think.
+    //char ruiheader_filler[12];
+    
+    FSeek(mdlHeader.ruimesh_index + ruiheader[0].ruimesh_offset);
+    char ruidata[mdlHeader.texture_offset - (mdlHeader.ruimesh_index + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
+};
 
 // various includes, materials, and groups
-FSeek(mdlHeader.includemodel_index);
-mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
+//FSeek(mdlHeader.includemodel_index);
+//mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
 
 FSeek(mdlHeader.texture_offset);
-mstudiotexturev53_t textures[mdlHeader.texture_count] <bgcolor=cGreen>;
+mstudiotexturev54_t textures[mdlHeader.texture_count] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.texturedir_offset);
 mstudiotexturedir_t cdmaterials[mdlHeader.texturedir_count] <bgcolor=cDkGreen>;
@@ -151,7 +159,7 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.srcbonetransform_count] <bg
 if (mdlHeader.linearbone_index > 0)
 {
     FSeek(mdlHeader.linearbone_index);
-    mstudiolinearbone_t linearbone <bgcolor=cGreen>;
+    mstudiolinearbonev54_t linearbone <bgcolor=cGreen>;
     
     struct mstudiolinearbonedata_t
     {
@@ -169,14 +177,6 @@ if (mdlHeader.linearbone_index > 0)
         
         if(linearbone.posetoboneindex > 0)
             matrix3x4_t bone_poseToBone[linearbone.numbones];
-
-        if(linearbone.posscaleindex > 0)
-            Vector3 bone_posscale[linearbone.numbones];
-        if(linearbone.rotscaleindex > 0)
-	        Vector3 bone_rotscale[linearbone.numbones];
-	
-        if(linearbone.qalignmentindex > 0)
-	        Quaternion bone_qAlignment[linearbone.numbones];
     };
 
     mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
@@ -185,19 +185,11 @@ if (mdlHeader.linearbone_index > 0)
 
 
 // always 60 bytes, probably reserved space for something.
-FSeek(mdlHeader.unk_index);
-char unk_bytes[60] <fgcolor=cRed>;
+//FSeek(mdlHeader.unk_index);
+//char unk_bytes[60] <fgcolor=cRed>;
 
 // unk_index1 always follows this, and always seems to be one byte in front of the string table.
 
 // string table
 FSeek(mdlHeader.sznameindex);
-
-local int64 stringtable_size;
-
-if(mdlHeader.vphy_index == 0)
-    stringtable_size = mdlHeader.vtx_index - mdlHeader.sznameindex;
-else
-    stringtable_size = mdlHeader.vphy_index - mdlHeader.sznameindex;
-
-char stringtable[stringtable_size] <fgcolor=cLtRed>;
+char stringtable[mdlHeader.dataLength - mdlHeader.sznameindex] <fgcolor=cLtRed>;

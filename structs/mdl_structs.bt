@@ -437,7 +437,6 @@ struct studiohdrv53_t
     uint32 ikchain_index;
 
     // this is rui meshes, todo refind mouth count.
-    // mstudiomouth_t
     uint32 ruimesh_count;
     uint32 ruimesh_index;
  
@@ -489,6 +488,7 @@ struct studiohdrv53_t
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
     uint32 maya_index; // doesn't actually need to be written pretty sure.
+                       // there will be a four byte chunk when not present.
     
     int srcbonetransform_count;
     uint32 srcbonetransform_index;
@@ -500,17 +500,18 @@ struct studiohdrv53_t
 	uint32 m_nBoneFlexDriverIndex;
     
     // v52 has an identical set of unks
-    // this section is seemingly always 60 bytes, reserved space? but for what?
+    // this section is seemingly always 60 bytes, unless the following unks are not 0.
     // of note this does not appear in v49, while it does appear in v52 and v53.
     uint32 unk_index; // goes to a section just after linear bone data, but just before string data.
 
     uint32 unk[3]; // used in envballs, looks like a count of sort.
 
     // maybe this is for the string table since it always has one byte padding it?
+    // this is probably for some section I haven't seen or a string that hasn't been filled out.
     uint32 unk_index1; // byte before string table start?
 
     // start of model combination stuff.
-    // anis are no longer used from what I can tell.
+    // anis are no longer used from what I can tell, v52s that had them don't in v53.
     uint32 vtx_index; // VTX
 	uint32 vvd_index; // VVD / IDSV
     uint32 vvc_index; // VVC / IDCV 
@@ -611,7 +612,7 @@ struct studiohdrv54_t
     uint32 flexdesc_count;
     uint32 flexdesc_index;
  
-    uint32 SubmeshLodsOffset;
+    uint32 unkv54;
 
     // mstudioflexcontroller_t
     uint32 flexcontroller_count;
@@ -626,7 +627,6 @@ struct studiohdrv54_t
     uint32 ikchain_index;
 
     // this is rui meshes, todo refind mouth count.
-    // mstudiomouth_t
     uint32 ruimesh_count;
     uint32 ruimesh_index;
  
@@ -649,7 +649,7 @@ struct studiohdrv54_t
     uint32 contents; // $contents, likely a flag, set as "solid" in most.
  
     // mstudiomodelgroup_t
-    uint32 includemodel_count;
+    uint32 includemodel_count; // broken
     uint32 includemodel_index;
     
     uint32 virtualModel;    // Placeholder for mutable-void*
@@ -676,7 +676,7 @@ struct studiohdrv54_t
     uint32 flexcontrollerui_index;
     
     uint32 vertex_base; // Placeholder for void*
-    uint32 offset_base; // Placeholder for void*
+    uint32 offset_base; // broken
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
     uint32 maya_index; // doesn't actually need to be written pretty sure.
@@ -690,7 +690,23 @@ struct studiohdrv54_t
 	int m_nBoneFlexDriverCount;
 	uint32 m_nBoneFlexDriverIndex;
     
-    uint32 unk2v54[31];
+    uint32 unk2v54[7];
+
+    // maybe this is for the string table since it always has one byte padding it?
+    // this is probably for some section I haven't seen or a string that hasn't been filled out.
+    uint32 unk_index1; // byte before string table start?
+
+    uint32 vtx_index; // VTX
+	uint32 vvd_index; // VVD / IDSV
+    uint32 vvc_index; // VVC / IDCV 
+    uint32 vphy_index; // VPHY / IVPS
+
+    uint32 vtx_size;
+    uint32 vvd_size;
+    uint32 vvc_size;
+    uint32 vphy_size;
+
+    uint32 unk3v54[15];
 
     uint32 OffsetToBoneRemapInfo;
 	uint32 BoneRemapCount;
@@ -751,7 +767,7 @@ struct studiohdr2v52_t
 // Bone Structs
 
 // bones
-struct mstudiobonev48_t
+struct mstudiobone_t
 {
 	uint32 sznameindex;
 
@@ -770,56 +786,18 @@ struct mstudiobonev48_t
 	Quaternion qAlignment;
 
     // procedural is in here somewhere
-    uint32 unk;
+    uint32 flags;
 
-	uint32 flags;
+	int proctype;
+    uint32 procindex;	// index into jigglebone
 
-    uint32 physicsbone;	// index into physically simulated bone
-
-	int unk1;
+	int physicsboneindex;
 
     int surfacepropidx;	// index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
 
 	uint32 unused[8]; // remove as appropriate
-};
-
-// this differs quite a bit from what is publicly available
-struct mstudiobonev49_t
-{
-	uint32 sznameindex;
-
-	int parent; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
-
-	// default values
-	Vector3 pos;
-	Quaternion quat;
-	RadianEuler rot;
-	// compression scale
-	Vector3 posscale;
-	Vector3	rotscale;
-
-	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
-
-    // procedural is in here somewhere
-    uint32 unk;
-
-	uint32 flags;
-
-    uint32 physicsbone;	// index into physically simulated bone
-
-	int unk1;
-
-    int surfacepropidx;	// index into string tablefor property name
-
-	uint32 unk2; // procedural rule
-
-	int contents; // See BSPFlags.h for the contents flags
-
-	uint32 unused[7]; // remove as appropriate
 };
 
 struct mstudiobonev52_t
@@ -842,19 +820,18 @@ struct mstudiobonev52_t
 	Quaternion qAlignment;
 
     // procedural is in here somewhere
-    uint32 unk;
+    uint32 flags;
 
-	uint32 flags;
-    
-    uint32 physicsbone;	// index into physically simulated bone
+	int proctype;
+    uint32 procindex;	// index into jigglebone
 
-	int unk1;
+	int physicsboneindex;
 	
 	int surfacepropidx;	// index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
 
-    uint32 unk2;
+    uint32 unk;
 
     Vector3 posscale; // this gets moved here from what I can tell.
 
@@ -885,22 +862,20 @@ struct mstudiobonev53_t
     matrix3x4_t			poseToBone;
 	Quaternion			qAlignment;
 
-    // procedural is in here somewhere
-    uint32 unk;
-
     uint32 flags;
-	
-	uint32 physicsbone;
-	
-	int unk1;
+
+	int proctype;
+    uint32 procindex;
+
+	int physicsboneindex;
 	
 	uint32 surfacepropidx;
 
     uint32 contents;
 
-    uint32 unk2;
+    uint32 unk;
 
-    uint32 unk3; // sometimes there is something here, 0xFFFF in many cases.
+    uint32 unk1; // sometimes there is something here, 0xFFFF in many cases.
                  // probably for adding to an offset in a file.
 
 	uint32 unused[7]; //maybe? I really doubt it though.
@@ -914,36 +889,26 @@ struct mstudiobonev54_t
     int bonecontroller[6];
 	
     Vector3				pos; // xyz
-	Quaternion			quat; // 
-	RadianEuler			rot; // check that these aren't ZXY instead of XYZ.
+	Quaternion			quat;
+	RadianEuler			rot;
+
+    Vector3 unkvector; // looks like unkvector from v53.
+
+    matrix3x4_t			poseToBone;
+	Quaternion			qAlignment;
+
+    uint32 flags;
+
+	int proctype;
+    uint32 procindex;
+
+	int physicsboneindex;
 	
-    //Vector3 unkvector;
+	uint32 surfacepropidx;
 
-	//Vector3 posscale;
-	//Vector3 rotscale;
-    
-    //Vector3 unkvector1;
+    uint32 contents;
 
-    // unverified
-    //matrix3x4_t			poseToBone;
-	//Quaternion			qAlignment;
-
-    // procedural is in here somewhere
-    uint32 unk[28];
-
-    //uint32 flags;
-	
-	//uint32 physicsbone;
-	
-	//int unk1;
-	
-	//uint32 surfacepropidx;
-
-    //uint32 contents;
-
-    //uint32 unk2;
-
-    //uint32 unk3; // sometimes there is something here, 0xFFFF in many cases, probably for adding to an offset.
+    uint32 unk2[3];
 };
 
 // jigglebone
@@ -954,6 +919,54 @@ struct mstudiojigglebone_t
 	// general params
 	float length; // how far from bone base, along bone, is tip
 	float tipMass;
+
+	// flexible params
+	float yawStiffness;
+	float yawDamping;	
+	float pitchStiffness;
+	float pitchDamping;	
+	float alongStiffness;
+	float alongDamping;	
+
+	// angle constraint
+	float angleLimit; // maximum deflection of tip in radians
+	
+	// yaw constraint
+	float minYaw; // in radians
+	float maxYaw; // in radians
+	float yawFriction;
+	float yawBounce;
+	
+	// pitch constraint
+	float			minPitch; // in radians
+	float			maxPitch; // in radians
+	float			pitchFriction;
+	float			pitchBounce;
+
+	// base spring
+	float baseMass;
+	float baseStiffness;
+	float baseDamping;	
+	float baseMinLeft;
+	float baseMaxLeft;
+	float baseLeftFriction;
+	float baseMinUp;
+	float baseMaxUp;
+	float baseUpFriction;
+	float baseMinForward;
+	float baseMaxForward;
+	float baseForwardFriction;
+};
+
+struct mstudiojigglebonev54_t
+{
+	uint32 flags; // these are different in v54
+
+	// general params
+	float length; // how far from bone base, along bone, is tip
+	float tipMass;
+
+    float unk;
 
 	// flexible params
 	float yawStiffness;
@@ -1004,6 +1017,16 @@ struct mstudioattachment_t
 	matrix3x4_t			localmatrix; // attachment point
 
 	uint32					unused[8];
+};
+
+struct mstudioattachmentv54_t
+{
+	uint32 sznameindex;
+	uint32		flags;
+
+	int					localbone; // parent bone
+
+	matrix3x4_t			localmatrix; // attachment point
 };
 
 // bone id in alphabetical order
@@ -1101,6 +1124,23 @@ struct mstudiolinearbone_t
 	int unused[6];
 };
 
+struct mstudiolinearbonev54_t	
+{
+	int numbones;
+
+	int flagsindex;
+
+	int	parentindex;
+	
+	int	posindex;
+	
+	int quatindex;
+	
+	int rotindex;
+	
+	int posetoboneindex;
+};
+
 
 //===============
 // Hitbox Structs
@@ -1142,6 +1182,20 @@ struct mstudiobboxv53_t
     uint32 kvname_index; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 
 	uint32 unused[6]; // some of these might actually be used now like the two above.
+};
+
+struct mstudiobboxv54_t
+{
+	int bone;
+	int group; // intersection group
+
+	Vector3 bbmin; // bounding box
+	Vector3 bbmax;	
+
+	uint32 szhitboxnameindex; // offset to the name of the hitbox.
+    
+    uint32 unk;
+    uint32 kvname_index; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 };
 
 
@@ -1450,6 +1504,39 @@ struct mstudiomodelv53_t
     uint32 unk1[4];
 };
 
+// broken
+struct mstudiomodelv54_t
+{
+	char name[64];
+
+	int type;
+
+    uint32 unkv54[2];
+
+	//float boundingradius;
+
+	int nummeshes;	
+	uint32 meshindex;
+
+	// cache purposes
+	int numvertices; // number of unique vertices/normals/texcoords
+	uint32 vertexindex; // vertex Vector
+	uint32 tangentsindex; // tangents Vector
+
+	int numattachments;
+	uint32 attachmentindex;
+
+	int numeyeballs;
+	uint32 eyeballindex;
+
+	//mstudio_modelvertexdata_t vertexdata;
+
+	uint32 unk[4];
+
+    uint32 unk_index;
+    uint32 unk1_index;
+};
+
 // meshes
 struct mstudio_meshvertexdata_t
 {
@@ -1488,6 +1575,35 @@ struct mstudiomesh_t
 	uint32 unused[8]; // remove as appropriate
 };
 
+struct mstudiomeshv54_t
+{
+	int material;
+
+	uint32 modelindex;
+
+	int numvertices; // number of unique vertices/normals/texcoords
+	uint32 vertexoffset; // vertex mstudiovertex_t
+
+	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
+	
+	int numflexes; // vertex animation
+	uint32 flexindex;
+
+
+	// special codes for material operations
+	int materialtype;
+	int materialparam;
+
+	// a unique ordinal for this mesh
+	int meshid;
+
+	Vector3 center;
+
+	mstudio_meshvertexdata_t vertexdata;
+    
+	uint32 unused[2];
+};
+
 
 //=================
 // Material Structs
@@ -1520,6 +1636,14 @@ struct mstudiotexturev53_t
     uint32 unused1;
 	
 	uint32 unused[7];
+};
+
+struct mstudiotexturev54_t
+{
+	uint32 sznameindex;
+
+	uint32 flags;
+	uint32 used;
 };
 
 // skin groups
