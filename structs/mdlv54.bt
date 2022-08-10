@@ -184,12 +184,14 @@ if (mdlHeader.linearbone_index > 0)
 };
 
 
-// always 60 bytes, probably reserved space for something.
-//FSeek(mdlHeader.unk_index);
-//char unk_bytes[60] <fgcolor=cRed>;
-
-// unk_index1 always follows this, and always seems to be one byte in front of the string table.
-
 // string table
 FSeek(mdlHeader.sznameindex);
-char stringtable[mdlHeader.dataLength - mdlHeader.sznameindex] <fgcolor=cLtRed>;
+
+local int64 stringtable_size;
+
+if(mdlHeader.unk3v54[13] == 0)
+    stringtable_size = mdlHeader.dataLength - mdlHeader.sznameindex;
+else
+    stringtable_size = mdlHeader.unk3v54[13] - mdlHeader.sznameindex;
+
+char stringtable[stringtable_size] <fgcolor=cLtRed>;
