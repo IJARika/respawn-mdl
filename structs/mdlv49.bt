@@ -23,7 +23,10 @@ studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
 
 // bones
 FSeek(mdlHeader.bone_offset);
-mstudiobone_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>; // get names working
+if (mdlHeader.version < 49)
+    mstudiobonev48_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>;
+else
+    mstudiobonev49_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>;
 
 local int jigglebonecount = 0;
 local int i = 0;

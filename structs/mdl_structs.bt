@@ -767,75 +767,104 @@ struct studiohdr2v52_t
 // Bone Structs
 
 // bones
-struct mstudiobonev49_t
+struct mstudiobonev48_t
 {
-	uint32 sznameindex;
+	uint32 m_pszNameIndex;
 
-	int parent; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
+	uint32 m_nParent; // parent bone
+	uint32 m_iBoneController[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
-	Quaternion quat;
-	RadianEuler rot;
+	Vector3 m_vPos; // xyz
+	Quaternion m_qQuat;
+	RadianEuler m_vRot;
 	// compression scale
-	Vector3 posscale;
-	Vector3	rotscale;
+	Vector3 m_vPosScale;
+	Vector3 m_vRotScale;
 
 	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+	Quaternion m_qAlignment;
 
-    // procedural is in here somewhere
-    uint32 flags;
+    uint32 m_fFlags;
 
-	int proctype;
-    uint32 procindex;	// index into jigglebone
+	uint32 m_fProcType;
+    uint32 m_iProcIndex;
 
-	int physicsboneindex;
+	uint32 m_iPhysicsBoneIndex;
+	
+	uint32 m_iSurfacepropIdx;
 
-    int surfacepropidx;	// index into string tablefor property name
+    uint32 m_fContents;
 
-	int contents; // See BSPFlags.h for the contents flags
+	uint32 unused[8]; // remove as appropriate
+};
 
-    uint32 surfacepropLookup;
+struct mstudiobonev49_t
+{
+	uint32 m_pszNameIndex;
+
+	uint32 m_nParent; // parent bone
+	uint32 m_iBoneController[6]; // bone controller index, -1 == none
+
+	// default values
+	Vector3 m_vPos; // xyz
+	Quaternion m_qQuat;
+	RadianEuler m_vRot;
+	// compression scale
+	Vector3 m_vPosScale;
+	Vector3 m_vRotScale;
+
+	matrix3x4_t poseToBone;
+	Quaternion m_qAlignment;
+
+    uint32 m_fFlags;
+
+	uint32 m_fProcType;
+    uint32 m_iProcIndex;
+
+	uint32 m_iPhysicsBoneIndex;
+	
+	uint32 m_iSurfacepropIdx;
+
+    uint32 m_fContents;
+
+    uint32 m_iSurfacepropLookup;
 
 	uint32 unused[7]; // remove as appropriate
 };
 
 struct mstudiobonev52_t
 {
-	uint32 sznameindex;
+	uint32 m_pszNameIndex;
+	uint32 m_nParent;
 
-	int parent; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
+    uint32 m_iBoneController[6];
 
-	// default values
-	Vector3 pos;
-	Quaternion quat;
-	RadianEuler rot;
+	Vector3 m_vPos;
+	Quaternion m_qQuat;
+	RadianEuler m_vRot;
 
     Vector3 unkVector;
 
-    Vector3	rotscale;
+	Vector3 m_vRotScale;
 
 	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+	Quaternion m_qAlignment;
 
-    // procedural is in here somewhere
-    uint32 flags;
+    uint32 m_fFlags;
 
-	int proctype;
-    uint32 procindex;	// index into jigglebone
+	uint32 m_fProcType;
+    uint32 m_iProcIndex;
 
-	int physicsboneindex;
+	uint32 m_iPhysicsBoneIndex;
 	
-	int surfacepropidx;	// index into string tablefor property name
+	uint32 m_iSurfacepropIdx;
 
-	int contents; // See BSPFlags.h for the contents flags
+    uint32 m_fContents;
 
-    uint32 surfacepropLookup;
+    uint32 m_iSurfacepropLookup;
 
-    Vector3 posscale; // this gets moved here from what I can tell.
+    Vector3 m_vPosScale; // this gets moved here from what I can tell.
 
 	Vector3 unkVector1;
 
@@ -849,31 +878,31 @@ struct mstudiobonev53_t
 
     uint32 m_iBoneController[6];
 	
-    Vector3 pos; // xyz
-	Quaternion quat;
-	RadianEuler rot;
+    Vector3 m_vPos; // xyz
+	Quaternion m_qQuat;
+	RadianEuler m_vRot;
 	
     Vector3 unkVector;
 
-	Vector3 m_fPosScale;
-	Vector3 m_fRotScale;
+	Vector3 m_vPosScale;
+	Vector3 m_vRotScale;
     
     Vector3 unkVector1;
 
     // unverified
     matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+	Quaternion m_qAlignment;
 
-    uint32 m_nFlags;
+    uint32 m_fFlags;
 
-	uint32 m_nProctype;
-    uint32 m_iProcindex;
+	uint32 m_fProcType;
+    uint32 m_iProcIndex;
 
 	uint32 m_iPhysicsBoneIndex;
 	
 	uint32 m_iSurfacepropIdx;
 
-    uint32 m_nContents;
+    uint32 m_fContents;
 
     uint32 m_iSurfacepropLookup;
 
@@ -890,25 +919,25 @@ struct mstudiobonev54_t
 
     uint32 m_iBoneController[6];
 	
-    Vector3 pos; // xyz
-	Quaternion quat;
-	RadianEuler rot;
+    Vector3 m_vPos; // xyz
+	Quaternion m_qQuat;
+	RadianEuler m_vRot;
 
     Vector3 unkVector; // looks like unkvector from v53.
 
     matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+	Quaternion m_qAlignment;
 
-    uint32 m_nFlags;
+    uint32 m_fFlags;
 
-	uint32 m_nProctype;
-    uint32 m_iProcindex;
+	uint32 m_fProcType;
+    uint32 m_iProcIndex;
 
 	uint32 m_iPhysicsBoneIndex;
 	
 	uint32 m_iSurfacepropIdx;
 
-    uint32 m_nContents;
+    uint32 m_fContents;
 
     uint32 m_iSurfacepropLookup;
 
