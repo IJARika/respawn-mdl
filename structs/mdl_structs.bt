@@ -767,7 +767,7 @@ struct studiohdr2v52_t
 // Bone Structs
 
 // bones
-struct mstudiobone_t
+struct mstudiobonev49_t
 {
 	uint32 sznameindex;
 
@@ -797,7 +797,9 @@ struct mstudiobone_t
 
 	int contents; // See BSPFlags.h for the contents flags
 
-	uint32 unused[8]; // remove as appropriate
+    uint32 surfacepropLookup;
+
+	uint32 unused[7]; // remove as appropriate
 };
 
 struct mstudiobonev52_t
@@ -812,7 +814,7 @@ struct mstudiobonev52_t
 	Quaternion quat;
 	RadianEuler rot;
 
-    Vector3 unkvector;
+    Vector3 unkVector;
 
     Vector3	rotscale;
 
@@ -831,84 +833,86 @@ struct mstudiobonev52_t
 
 	int contents; // See BSPFlags.h for the contents flags
 
-    uint32 unk;
+    uint32 surfacepropLookup;
 
     Vector3 posscale; // this gets moved here from what I can tell.
 
-	Vector3 unkvector1;
+	Vector3 unkVector1;
 
-    uint32 unused; // remove as appropriate
+    uint32 unused;
 };
 
 struct mstudiobonev53_t
 {	
-	uint32 sznameindex; //the amount of bytes from start of member
-	int parent;
+	uint32 m_pszNameIndex; //the amount of bytes from start of member
+	uint32 m_nParent;
 
-    int bonecontroller[6];
+    uint32 m_iBoneController[6];
 	
-    Vector3				pos; // xyz
-	Quaternion			quat; // 
-	RadianEuler			rot; // check that these aren't ZXY instead of XYZ.
+    Vector3 pos; // xyz
+	Quaternion quat;
+	RadianEuler rot;
 	
-    Vector3 unkvector;
+    Vector3 unkVector;
 
-	Vector3 posscale;
-	Vector3 rotscale;
+	Vector3 m_fPosScale;
+	Vector3 m_fRotScale;
     
-    Vector3 unkvector1;
+    Vector3 unkVector1;
 
     // unverified
-    matrix3x4_t			poseToBone;
-	Quaternion			qAlignment;
+    matrix3x4_t poseToBone;
+	Quaternion qAlignment;
 
-    uint32 flags;
+    uint32 m_nFlags;
 
-	int proctype;
-    uint32 procindex;
+	uint32 m_nProctype;
+    uint32 m_iProcindex;
 
-	int physicsboneindex;
+	uint32 m_iPhysicsBoneIndex;
 	
-	uint32 surfacepropidx;
+	uint32 m_iSurfacepropIdx;
 
-    uint32 contents;
+    uint32 m_nContents;
 
-    uint32 unk;
+    uint32 m_iSurfacepropLookup;
 
-    uint32 unk1; // sometimes there is something here, 0xFFFF in many cases.
-                 // probably for adding to an offset in a file.
+    uint32 unk; // sometimes there is something here, 0xFFFF in many cases.
+                // probably for adding to an offset in a file.
 
-	uint32 unused[7]; //maybe? I really doubt it though.
+	uint32 unused[7];
 };
 
 struct mstudiobonev54_t
 {	
-	uint32 sznameindex; //the amount of bytes from start of member
-	int parent;
+	uint32 m_pszNameIndex; //the amount of bytes from start of member
+	uint32 m_nParent;
 
-    int bonecontroller[6];
+    uint32 m_iBoneController[6];
 	
-    Vector3				pos; // xyz
-	Quaternion			quat;
-	RadianEuler			rot;
+    Vector3 pos; // xyz
+	Quaternion quat;
+	RadianEuler rot;
 
-    Vector3 unkvector; // looks like unkvector from v53.
+    Vector3 unkVector; // looks like unkvector from v53.
 
-    matrix3x4_t			poseToBone;
-	Quaternion			qAlignment;
+    matrix3x4_t poseToBone;
+	Quaternion qAlignment;
 
-    uint32 flags;
+    uint32 m_nFlags;
 
-	int proctype;
-    uint32 procindex;
+	uint32 m_nProctype;
+    uint32 m_iProcindex;
 
-	int physicsboneindex;
+	uint32 m_iPhysicsBoneIndex;
 	
-	uint32 surfacepropidx;
+	uint32 m_iSurfacepropIdx;
 
-    uint32 contents;
+    uint32 m_nContents;
 
-    uint32 unk2[3];
+    uint32 m_iSurfacepropLookup;
+
+    uint32 unk2[2];
 };
 
 // jigglebone
@@ -938,10 +942,10 @@ struct mstudiojigglebone_t
 	float yawBounce;
 	
 	// pitch constraint
-	float			minPitch; // in radians
-	float			maxPitch; // in radians
-	float			pitchFriction;
-	float			pitchBounce;
+	float minPitch; // in radians
+	float maxPitch; // in radians
+	float pitchFriction;
+	float pitchBounce;
 
 	// base spring
 	float baseMass;
@@ -966,7 +970,7 @@ struct mstudiojigglebonev54_t
 	float length; // how far from bone base, along bone, is tip
 	float tipMass;
 
-    float unk;
+    float unkFloat;
 
 	// flexible params
 	float yawStiffness;
@@ -986,10 +990,10 @@ struct mstudiojigglebonev54_t
 	float yawBounce;
 	
 	// pitch constraint
-	float			minPitch; // in radians
-	float			maxPitch; // in radians
-	float			pitchFriction;
-	float			pitchBounce;
+	float minPitch; // in radians
+	float maxPitch; // in radians
+	float pitchFriction;
+	float pitchBounce;
 
 	// base spring
 	float baseMass;

@@ -32,10 +32,10 @@ local char s_jigglebonename;
 
 for (i = 0; i < mdlHeader.bone_count; ++i)
 {
-    if (bones[i].flags == 5) {
+    if (bones[i].m_fProcType == 5) {
         jigglebonecount++;
         
-        s_jigglebonename = bones[i].sznameindex;
+        s_jigglebonename = bones[i].m_pszNameIndex;
     }
 }
 

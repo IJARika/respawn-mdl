@@ -18,6 +18,10 @@
 #include "./vtx.bt"
 
 
+local int i = 0;
+local uint64 startpos = 0;
+
+
 // headers
 studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
 
@@ -32,17 +36,30 @@ if (mdlHeader.bone_offset > mdlHeader.maya_index)
 FSeek(mdlHeader.bone_offset);
 mstudiobonev53_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>; // get names working
 
+for (i = 0; i < mdlHeader.bone_count; ++i)
+{
+    startpos = startof(bones[i]);
+
+    FSeek(startpos+bones[i].m_pszNameIndex);
+    
+    //mstudiobonev53_t bones[i] <bgcolor=cLtGreen> <name=ReadString(startpos+bones[i].m_pszNameIndex)>; // get names working
+
+    //ReadString(startpos+bones[i].m_pszNameIndex);
+
+    //bones[i] <read=szBoneName>;
+}
+
 local int jigglebonecount = 0;
-local int i = 0;
+
 
 local char s_jigglebonename;
 
 for (i = 0; i < mdlHeader.bone_count; ++i)
 {
-    if (bones[i].proctype == 5) {
+    if (bones[i].m_nProcType == 5) {
         jigglebonecount++;
         
-        s_jigglebonename = bones[i].sznameindex;
+        s_jigglebonename = bones[i].m_pszNameIndex;
     }
 }
 
