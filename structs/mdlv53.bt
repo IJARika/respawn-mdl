@@ -18,10 +18,6 @@
 #include "./vtx.bt"
 
 
-local int i = 0;
-local uint64 startpos = 0;
-
-
 // headers
 studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
 
@@ -36,27 +32,14 @@ if (mdlHeader.bone_offset > mdlHeader.maya_index)
 FSeek(mdlHeader.bone_offset);
 mstudiobonev53_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>; // get names working
 
-for (i = 0; i < mdlHeader.bone_count; ++i)
-{
-    startpos = startof(bones[i]);
-
-    FSeek(startpos+bones[i].m_pszNameIndex);
-    
-    //mstudiobonev53_t bones[i] <bgcolor=cLtGreen> <name=ReadString(startpos+bones[i].m_pszNameIndex)>; // get names working
-
-    //ReadString(startpos+bones[i].m_pszNameIndex);
-
-    //bones[i] <read=szBoneName>;
-}
-
 local int jigglebonecount = 0;
-
+local int i = 0;
 
 local char s_jigglebonename;
 
 for (i = 0; i < mdlHeader.bone_count; ++i)
 {
-    if (bones[i].m_nProcType == 5) {
+    if (bones[i].m_fProcType == 5) {
         jigglebonecount++;
         
         s_jigglebonename = bones[i].m_pszNameIndex;
@@ -67,9 +50,6 @@ mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jiggl
 
 FSeek(mdlHeader.attachment_offset);
 mstudioattachment_t attachments[mdlHeader.attachment_count]  <bgcolor=0xcff5ca>;
-
-FSeek(mdlHeader.bonetablename_index);
-mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
 // hitbox
@@ -87,12 +67,17 @@ for (i = 0; i < mdlHeader.hitbox_count; ++i)
 mstudiobboxv53_t bboxes[bboxCount]  <bgcolor=0xa29418>;
 
 
+// more bones
+FSeek(mdlHeader.bonetablename_index);
+mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
+
+
 // animation
 FSeek(mdlHeader.localanim_offset);
 mstudioanimdescv53_t animdesc[mdlHeader.localanim_count] <bgcolor=0xdc7633>;
 
 FSeek(mdlHeader.localseq_offset);
-mstudioseqdesc_t animseq[mdlHeader.localseq_count] <bgcolor=0xf0b27a>;
+mstudioseqdescv53_t animseq[mdlHeader.localseq_count] <bgcolor=0xf0b27a>;
 
 
 // models
