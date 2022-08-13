@@ -485,7 +485,7 @@ struct studiohdrv53_t
 
     // big block of floats I think
     // not present with no vphy??
-    int unkindex2; // section between vphy and vtx, converts do not have it. probably combined loose file, but what?
+    int unkindex2; // section between vphy and vtx. probably combined loose file, but what?
 
     int unk[2];
 
@@ -628,7 +628,7 @@ struct studiohdrv54_t
     
     // used by tools only that don't cache, but persist mdl's peer data
 	// engine uses virtualModel to back link to cache pointers
-	uint32 pVertexBase;
+	uint32 pVertexBase; // something else in v54 I think
 	uint32 pIndexBase;
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
@@ -662,7 +662,11 @@ struct studiohdrv54_t
     int vvcsize;
     int vphysize;
 
-    int unk3v54[15];
+    int unk3v54[13];
+
+    int unkindex2;
+
+    int unk4v54;
 
     uint32 OffsetToBoneRemapInfo;
 	uint32 BoneRemapCount;
@@ -989,6 +993,25 @@ struct mstudiojigglebonev54_t
 	float baseMinForward;
 	float baseMaxForward;
 	float baseForwardFriction;
+};
+
+struct mstudioboneflexdriver_t
+{
+	int m_nBoneIndex;			// Bone to drive flex controller
+	int m_nControlCount;		// Number of flex controllers being driven
+	int m_nControlIndex;		// Index into data where controllers are (relative to this)
+
+	int unused[3];
+};
+
+// not quite right
+struct mstudioboneflexdriverv54_t
+{
+	int m_nBoneIndex;			// Bone to drive flex controller
+	int m_nControlCount;		// Number of flex controllers being driven
+	int m_nControlIndex;		// Index into data where controllers are (relative to this)
+
+	//int unused[3];
 };
 
 // attachments
@@ -1756,4 +1779,20 @@ struct mstudiorruiheader_t
 {
     uint32 ruimesh_guid; // unsure
     uint32 ruimesh_offset;
+};
+
+
+//========
+// Unknown
+
+
+// struct near end of file.
+struct unkbytes1header
+{
+    uint32 unk;
+    uint32 unk1;
+    uint32 unk2;
+    uint32 unk3;
+
+    uint32 unkindex;
 };

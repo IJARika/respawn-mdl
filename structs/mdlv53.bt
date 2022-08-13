@@ -136,7 +136,7 @@ if (mdlHeader.numruimeshes > 0)
     //char ruiheader_filler[12];
     
     FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset);
-    char ruidata[mdlHeader.texture_offset - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
+    char ruidata[mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
 };
 
 // various includes, materials, and groups
@@ -239,6 +239,11 @@ if (mdlHeader.vphyindex > 0)
 {
     vphygroup_t vphy <fgcolor=cLtYellow>;
 };
+
+FSeek(mdlHeader.unkindex2);
+unkbytes1header unkbytes1[15];
+float unkbytesfloat1[(mdlHeader.vtxindex - (mdlHeader.unkindex2 + unkbytes1[0].unkindex)) / 4];
+//uint32 unkbytes1[(mdlHeader.vtxindex - mdlHeader.unkindex2) / 4];
 
 
 // vtx
