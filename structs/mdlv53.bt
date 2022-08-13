@@ -22,44 +22,44 @@
 studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
 
 // this is a check for non shipped models.
-if (mdlHeader.bone_offset > mdlHeader.maya_index)
+if (mdlHeader.boneindex > mdlHeader.mayaindex)
 {
-    char mayabakery[mdlHeader.bone_offset - mdlHeader.maya_index] <fgcolor=cRed>;
+    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 };
 
 
 // bones
-FSeek(mdlHeader.bone_offset);
-mstudiobonev53_t bones[mdlHeader.bone_count] <bgcolor=cLtGreen>; // get names working
+FSeek(mdlHeader.boneindex);
+mstudiobonev53_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
 
 local int jigglebonecount = 0;
 local int i = 0;
 
 local char s_jigglebonename;
 
-for (i = 0; i < mdlHeader.bone_count; ++i)
+for (i = 0; i < mdlHeader.numbones; ++i)
 {
-    if (bones[i].m_fProcType == 5) {
+    if (bones[i].proctype == 5) {
         jigglebonecount++;
         
-        s_jigglebonename = bones[i].m_pszNameIndex;
+        s_jigglebonename = bones[i].sznameindex;
     }
 }
 
 mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;
 
-FSeek(mdlHeader.attachment_offset);
-mstudioattachment_t attachments[mdlHeader.attachment_count]  <bgcolor=0xcff5ca>;
+FSeek(mdlHeader.localattachmentindex);
+mstudioattachment_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca>;
 
 
 // hitbox
-FSeek(mdlHeader.hitbox_offset);
-mstudiohitboxset_t hboxset[mdlHeader.hitbox_count]  <bgcolor=0xf2e46a>;
+FSeek(mdlHeader.hitboxsetindex);
+mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]  <bgcolor=0xf2e46a>;
 
 // have to do this because some things actually do have more than one.
 local int bboxCount = 0;
 
-for (i = 0; i < mdlHeader.hitbox_count; ++i)
+for (i = 0; i < mdlHeader.numhitboxsets; ++i)
 {
    bboxCount += hboxset[i].numhitboxes;
 };
@@ -68,25 +68,25 @@ mstudiobboxv53_t bboxes[bboxCount]  <bgcolor=0xa29418>;
 
 
 // more bones
-FSeek(mdlHeader.bonetablename_index);
+FSeek(mdlHeader.bonetablebynameindex);
 mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
 // animation
-FSeek(mdlHeader.localanim_offset);
-mstudioanimdescv53_t animdesc[mdlHeader.localanim_count] <bgcolor=0xdc7633>;
+FSeek(mdlHeader.localanimindex);
+mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
 
-FSeek(mdlHeader.localseq_offset);
-mstudioseqdescv53_t animseq[mdlHeader.localseq_count] <bgcolor=0xf0b27a>;
+FSeek(mdlHeader.localseqindex);
+mstudioseqdescv53_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
 
 
 // models
-FSeek(mdlHeader.bodypart_offset);
-mstudiobodyparts_t bodyparts[mdlHeader.bodypart_count] <bgcolor=cGray>;
+FSeek(mdlHeader.bodypartindex);
+mstudiobodyparts_t bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray>;
 
 local int modelCount = 0;
 
-for (i = 0; i < mdlHeader.bodypart_count; ++i)
+for (i = 0; i < mdlHeader.numbodyparts; ++i)
 {
    modelCount += bodyparts[i].nummodels;
 };
@@ -95,23 +95,23 @@ mstudiomodelv53_t models[modelCount]<bgcolor=cDkGray>;
 
 
 // ik
-FSeek(mdlHeader.ikchain_index);
-mstudioikchainv53_t ikchains[mdlHeader.ikchain_count] <bgcolor=0xe8daef>;
+FSeek(mdlHeader.ikchainindex);
+mstudioikchainv53_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef>;
 
 local int linkCount = 0;
 
-for (i = 0; i < mdlHeader.ikchain_count; ++i)
+for (i = 0; i < mdlHeader.numikchains; ++i)
 {
    linkCount += ikchains[i].numlinks;
 };
 
 mstudioiklink_t iklinks[linkCount] <bgcolor=0x7d3c98>;
 
-FSeek(mdlHeader.iklock_index);
-mstudioiklock_t iklocks[mdlHeader.iklock_count] <bgcolor=0xe8daef>;
+FSeek(mdlHeader.localikautoplaylockindex);
+mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
 
-FSeek(mdlHeader.localposeparam_index);
-mstudioposeparamdesc_t poseparm[mdlHeader.localposeparam_count] <bgcolor=cYellow>;
+FSeek(mdlHeader.localposeparamindex);
+mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow>;
 
 
 // meshes
@@ -127,41 +127,41 @@ mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui
-if (mdlHeader.ruimesh_count > 0)
+if (mdlHeader.numruimeshes > 0)
 {
-    FSeek(mdlHeader.ruimesh_index);
-    mstudiorruiheader_t ruiheader[mdlHeader.ruimesh_count] <fgcolor=cLtGreen>;
+    FSeek(mdlHeader.ruimeshindex);
+    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
 
     // some padding here to make it even I think.
     //char ruiheader_filler[12];
     
-    FSeek(mdlHeader.ruimesh_index + ruiheader[0].ruimesh_offset);
-    char ruidata[mdlHeader.texture_offset - (mdlHeader.ruimesh_index + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
+    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset);
+    char ruidata[mdlHeader.texture_offset - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
 };
 
 // various includes, materials, and groups
-FSeek(mdlHeader.includemodel_index);
-mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
+FSeek(mdlHeader.includemodelindex);
+mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue>;
 
-FSeek(mdlHeader.texture_offset);
-mstudiotexturev53_t textures[mdlHeader.texture_count] <bgcolor=cGreen>;
+FSeek(mdlHeader.textureindex);
+mstudiotexturev53_t textures[mdlHeader.numtextures] <bgcolor=cGreen>;
 
-FSeek(mdlHeader.texturedir_offset);
-mstudiotexturedir_t cdmaterials[mdlHeader.texturedir_count] <bgcolor=cDkGreen>;
+FSeek(mdlHeader.cdtextureindex);
+mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen>;
 
-FSeek(mdlHeader.skinreference_index);
-mstudioskingroup_t skingroup[mdlHeader.skinrfamily_count] <bgcolor=cLtGreen>;
+FSeek(mdlHeader.skinindex);
+mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
 
-FSeek(mdlHeader.keyvalue_index);
-char keyvalues_char[mdlHeader.keyvalue_size] <fgcolor=cLtBlue>;
+FSeek(mdlHeader.keyvalueindex);
+char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
 
-FSeek(mdlHeader.srcbonetransform_index);
-mstudiosrcbonetransform_t srcbonetransform[mdlHeader.srcbonetransform_count] <bgcolor=cDkGreen>;
+FSeek(mdlHeader.srcbonetransformindex);
+mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen>;
 
-if (mdlHeader.linearbone_index > 0)
+if (mdlHeader.linearboneindex > 0)
 {
-    FSeek(mdlHeader.linearbone_index);
+    FSeek(mdlHeader.linearboneindex);
     mstudiolinearbone_t linearbone <bgcolor=cGreen>;
     
     struct mstudiolinearbonedata_t
@@ -196,8 +196,8 @@ if (mdlHeader.linearbone_index > 0)
 
 
 // always 60 bytes when unused, only used when linear bone is not (afaik).
-FSeek(mdlHeader.unk_index);
-char unk_bytes[mdlHeader.unk_index1 - mdlHeader.unk_index] <fgcolor=cRed>;
+FSeek(mdlHeader.unkindex);
+char unk_bytes[mdlHeader.unkindex1 - mdlHeader.unkindex] <fgcolor=cRed>;
 
 // unk_index1 always follows this, and always seems to be one byte in front of the string table.
 
@@ -206,43 +206,43 @@ FSeek(mdlHeader.sznameindex);
 
 local int64 stringtable_size;
 
-if(mdlHeader.vphy_index == 0)
-    stringtable_size = mdlHeader.vtx_index - mdlHeader.sznameindex;
+if(mdlHeader.vphyindex == 0)
+    stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
 else
-    stringtable_size = mdlHeader.vphy_index - mdlHeader.sznameindex;
+    stringtable_size = mdlHeader.vphyindex - mdlHeader.sznameindex;
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
 
 // vphy
-FSeek(mdlHeader.vphy_index);
+FSeek(mdlHeader.vphyindex);
 
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    compactsurfaceheader_t vphy_section[vphy_header.solidCount] <bgcolor=cLtRed>;
+    compactsurfaceheader_t vphy_section[vphy_header.solidCount] <bgcolor=cLtRed, optimize=false>;
 
-    local int64 charSize = mdlHeader.vphy_size;
+    local int64 charSize = mdlHeader.vphysize;
 
     for (i = 0; i < vphy_header.solidCount; i++)
     {
         charSize -= vphy_section[i].size + 4;
     };
 
-    charSize -= 20;
+    charSize -= 16;
     
     // there is something extra after the normal phy :/
     char vphy_stringdata[charSize] <bgcolor=cDkRed>; 
 };
 
-if (mdlHeader.vphy_index > 0)
+if (mdlHeader.vphyindex > 0)
 {
     vphygroup_t vphy <fgcolor=cLtYellow>;
 };
 
 
 // vtx
-FSeek(mdlHeader.vtx_index);
+FSeek(mdlHeader.vtxindex);
 
 struct vtxgroup_t
 {

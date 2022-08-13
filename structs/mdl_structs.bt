@@ -156,7 +156,8 @@ struct studiohdr_t
 	int flexcontrolleruiindex;
 
     float flVertAnimFixedPointScale;
-    int surfacepropLookup;	// this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+                           // not in v48 but it isn't worth making another struct over.
     
 	int studiohdr2index;
 	
@@ -389,8 +390,8 @@ struct studiohdrv53_t
 	int ikchainindex;
 
     // this is rui meshes, todo refind mouth count.
-    uint32 ruimesh_count;
-    uint32 ruimesh_index;
+    int numruimeshes;
+    int ruimeshindex;
  
     int numlocalposeparameters;
 	int localposeparamindex;
@@ -490,179 +491,178 @@ struct studiohdrv53_t
 
     int unkindex3; // goes to the same spot as vtx normally.
 
-    int unused[60]; // god I hope
+    int unused1[60]; // god I hope
 
 };
 
 struct studiohdrv54_t
 {
-    uint32 id; // magic is IDST
-    uint32 version;
-    uint32 checksum; // checksum within most parts.
-    uint32 sznameindex;
-    char name[64]; // end of string padded.
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    uint32 length; // Data size of MDL file in bytes.
+ 
+    Vector3 eyeposition;	// ideal eye position
 
-    uint32 dataLength; // size of file in bytes.
+	Vector3 illumposition;	// illumination center
+	
+	Vector3 hull_min;		// ideal movement hull size
+	Vector3 hull_max;			
+
+	Vector3 view_bbmin;		// clipping bounding box
+	Vector3 view_bbmax;		
  
-    Vector3 eyeposition; // ideal eye position
-    Vector3 illumposition; // illumination center
-    Vector3 hull_min; // ideal movement hull size, corner of model hull box with the least xyz values
-    Vector3 hull_max; // opposite corner of model hull box
-    Vector3 view_bbmin; // clipping bounding box
-    Vector3 view_bbmax;
+    int flags;
+  
+    int numbones; // bones
+	int boneindex;
  
-    uint32 flags; 
+    int numbonecontrollers; // bone controllers
+	int bonecontrollerindex;
  
-    // mstudiobone_t
-    uint32 bone_count; // Number of data sections (of type mstudiobone_t)
-    uint32 bone_offset; // Offset of first data section
+    int numhitboxsets;
+	int hitboxsetindex;
  
-    // mstudiobonecontroller_t
-    uint32 bonecontroller_count;
-    uint32 bonecontroller_offset;
+    int numlocalanim; // animations/poses
+	int localanimindex; // animation descriptions
  
-    // mstudiohitboxset_t
-    uint32 hitbox_count;
-    uint32 hitbox_offset;
+    int numlocalseq; // sequences
+	int	localseqindex;
  
-    // mstudioanimdesc_t
-    uint32 localanim_count;
-    uint32 localanim_offset;
- 
-    // mstudioseqdesc_t
-    uint32 localseq_count;
-    uint32 localseq_offset;
- 
-    uint32 activitylistversion; // ??
-    uint32 eventsindexed;       // ??
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
  
     // mstudiotexture_t
     // short rpak path
-    uint32 texture_count; // the material limit exceeds 128.
-    uint32 texture_offset;
+	// raw textures
+	int numtextures; // the material limit exceeds 128, probably 256.
+	int textureindex;
  
     // this should always only be one, unless using vmts.
-    uint32 texturedir_count;
-    uint32 texturedir_offset;
+    // raw textures search paths
+	int numcdtextures;
+	int cdtextureindex;
  
-    // Each skin-family assigns a texture-id to a skin location
-    uint32 skinreference_count;
-    uint32 skinrfamily_count;
-    uint32 skinreference_index;
-
-    // mstudiobodyparts_t
-    uint32 bodypart_count;
-    uint32 bodypart_offset;
+    // replaceable textures tables
+	int numskinref;
+	int numskinfamilies;
+	int skinindex;
  
-    // local attachment points        
-    // mstudioattachment_t
-    uint32 attachment_count;
-    uint32 attachment_offset;
-
-    // Node values appear to be single bytes, while their names are null-terminated strings.
-    uint32 localnode_count;
-    uint32 localnode_index;
-    uint32 localnode_name_index;
+	int numbodyparts;		
+	int bodypartindex;
  
-    // mstudioflexdesc_t
-    uint32 flexdesc_count;
-    uint32 flexdesc_index;
+    int numlocalattachments;
+	int localattachmentindex;
+ 
+    int numlocalnodes;
+	int localnodeindex;
+	int localnodenameindex;
+ 
+    int numflexdesc;
+	int flexdescindex;
  
     uint32 unkv54;
 
-    // mstudioflexcontroller_t
-    uint32 flexcontroller_count;
-    uint32 flexcontroller_index;
+    int numflexcontrollers;
+	int flexcontrollerindex;
  
-    // mstudioflexrule_t
-    uint32 flexrules_count;
-    uint32 flexrules_index;
-
-    // mstudioikchain_t
-    uint32 ikchain_count;
-    uint32 ikchain_index;
+    int numflexrules;
+	int flexruleindex;
+ 
+    int numikchains;
+	int ikchainindex;
 
     // this is rui meshes, todo refind mouth count.
-    uint32 ruimesh_count;
-    uint32 ruimesh_index;
+	int numruimeshes;
+    int ruimeshindex;
  
-    // mstudioposeparamdesc_t
-    uint32 localposeparam_count;
-    uint32 localposeparam_index;
+    int numlocalposeparameters;
+	int localposeparamindex;
  
-    // Surface property value (single null-terminated string)
-    uint32 surfaceprop_index;
+    int surfacepropindex;
  
-    // string block of keyvalues.
-    uint32 keyvalue_index;
-    uint32 keyvalue_size; // the size of the text section.
+    int keyvalueindex;
+	int keyvaluesize;
  
-    // mstudioiklock_t
-    uint32 iklock_count;
-    uint32 iklock_index;
+    int numlocalikautoplaylocks;
+	int localikautoplaylockindex;
  
     float mass;
-    uint32 contents; // $contents, likely a flag, set as "solid" in most.
- 
-    // mstudiomodelgroup_t
-    uint32 includemodel_count; // broken
-    uint32 includemodel_index;
+	int contents;
+	
+    // external animations, models, etc.
+	int numincludemodels; // this works different in apex because rpak models
+	int includemodelindex;
     
-    uint32 virtualModel;    // Placeholder for mutable-void*
- 
-    // bone ids in alphabetical order.
-    uint32 bonetablename_index;
+    uint32 virtualModel;
+
+	int bonetablebynameindex;
     
-    // Used with $constantdirectionallight from the QC 
-    // Model should have flag #13 set if enabled
-    ubyte directionaldotproduct;
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	// this value is used to calculate directional components of lighting 
+	// on static props
+	byte constdirectionallightdot;
+
+	// set during load of mdl data to track *desired* lod configuration (not actual)
+	// the *actual* clamped root lod is found in studiohwdata
+	// this is stored here as a global store to ensure the staged loading matches the rendering
+	byte rootLOD;
+	
+	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+	// to be set as root LOD:
+	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+	byte numAllowedRootLODs;
+
+	byte unused[1];
+
+	float unkfloat;
+	
+	int unk1v54; // surfacepropLookup?
+
+	int numflexcontrollerui;
+	int flexcontrolleruiindex;
     
-    ubyte rootLod; // Preferred rather than clamped
-    
-    // 0 means any allowed, N means Lod 0 -> (N-1)
-    ubyte numAllowedRootLods;    
-    
-    ubyte unused0;
-    float unkfloat; // normally set to -1
-    
-    uint32 unk1v54;
-    
-    // unsure
-    int flexcontrollerui_count;
-    uint32 flexcontrollerui_index;
-    
-    uint32 vertex_base; // Placeholder for void*
-    uint32 offset_base; // broken
+    // used by tools only that don't cache, but persist mdl's peer data
+	// engine uses virtualModel to back link to cache pointers
+	uint32 pVertexBase;
+	uint32 pIndexBase;
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
-    uint32 maya_index; // doesn't actually need to be written pretty sure.
-    
-    int srcbonetransform_count;
-    uint32 srcbonetransform_index;
-    
-    uint32 illumpositionattachmentindex; // count for something, flMaxEyeDeflection
-    uint32 linearbone_index;
+	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
+
+    int numsrcbonetransform;
+	int srcbonetransformindex;
+
+	int	illumpositionattachmentindex;
+	
+	int linearboneindex;
 
 	int m_nBoneFlexDriverCount;
-	uint32 m_nBoneFlexDriverIndex;
+	int m_nBoneFlexDriverIndex;
     
-    uint32 unk2v54[7];
+    int unk2v54[7];
 
     // maybe this is for the string table since it always has one byte padding it?
     // this is probably for some section I haven't seen or a string that hasn't been filled out.
-    uint32 unkindex1; // byte before string table start?
+    int unkindex1; // byte before string table start?
 
-    uint32 vtxindex; // VTX
-	uint32 vvdindex; // VVD / IDSV
-    uint32 vvcindex; // VVC / IDCV 
-    uint32 vphyindex; // VPHY / IVPS
+    // this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
+	// the indexes are added to the offset in the rpak mdl_ header.
+    int vtxindex; // VTX
+	int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-    uint32 vtxsize;
-    uint32 vvdsize;
-    uint32 vvcsize;
-    uint32 vphysize;
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize;
 
-    uint32 unk3v54[15];
+    int unk3v54[15];
 
     uint32 OffsetToBoneRemapInfo;
 	uint32 BoneRemapCount;
@@ -1054,7 +1054,7 @@ struct mstudioiklink_t
 // iklock
 struct mstudioiklock_t
 {
-	uint32	chain;
+	uint32 chain;
 	float flPosWeight;
 	float flLocalQWeight;
 	uint32 flags;
@@ -1163,9 +1163,9 @@ struct mstudiobboxv53_t
 	uint32 szhitboxnameindex; // offset to the name of the hitbox.
     
     int unk;
-    int kvname_index; // used for KV names in string block, should be set to hitboxname if kv unneeded.
+    int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 
-	int unused[6]; // some of these might actually be used now like the two above.
+	int unused[6];
 };
 
 struct mstudiobboxv54_t
@@ -1188,11 +1188,11 @@ struct mstudiobboxv54_t
 
 
 // animdesc, what.
-struct mstudioanimdesc_t
+struct mstudioanimdescv48_t
 {
 	uint32 baseptr;
 
-	uint32 sznameindex;
+	int sznameindex;
 
 	float fps; // frames per second	
 	int	flags; // looping/non-looping flags
@@ -1201,26 +1201,66 @@ struct mstudioanimdesc_t
 
 	// piecewise movement
 	int	nummovements;
-	uint32 movementindex;
+	int movementindex;
 
 	int unused1[6]; // remove as appropriate (and zero if loading older versions)	
 
 	int animblock;
-	uint32 animindex; // non-zero when anim data isn't in sections
+	int animindex; // non-zero when anim data isn't in sections
 
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
-	uint32 animblockikruleindex; // non-zero when IK data is stored in animblock file
+	int animblockikruleindex; // non-zero when IK data is stored in animblock file
 
 	int numlocalhierarchy;
-	uint32 localhierarchyindex;;
+	int localhierarchyindex;;
 
-	uint32 sectionindex;
+	int sectionindex;
 	int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
 	short zeroframespan; // frames per span
 	short zeroframecount; // number of spans
-	uint32 zeroframeindex;
+	int zeroframeindex;
+
+	float zeroframestalltime; // saved during read stalls
+
+};
+
+struct mstudioanimdescv49_t
+{
+	uint32 baseptr;
+
+	int sznameindex;
+
+	float fps; // frames per second	
+	int	flags; // looping/non-looping flags
+
+	int numframes;
+
+	// piecewise movement
+	int	nummovements;
+	int movementindex;
+
+    int ikrulezeroframeindex;
+
+	int unused1[5]; // remove as appropriate (and zero if loading older versions)	
+
+	int animblock;
+	int animindex; // non-zero when anim data isn't in sections
+
+	int numikrules;
+	int ikruleindex; // non-zero when IK data is stored in the mdl
+	int animblockikruleindex; // non-zero when IK data is stored in animblock file
+
+	int numlocalhierarchy;
+	int localhierarchyindex;;
+
+	int sectionindex;
+	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+
+	short zeroframespan; // frames per span
+	short zeroframecount; // number of spans
+	int zeroframeindex;
 
 	float zeroframestalltime; // saved during read stalls
 
@@ -1263,11 +1303,12 @@ struct mstudioanimdescv53_t
 	int zeroframeindex;
     float zeroframestalltime; // saved during read stalls
 
-    int unk[4]; // these are obviously used for something seeing that they added them.
+    // ikrulezeroframeindex might be in here
+    int unused[4];
 };
 
 // sequence descriptions
-struct mstudioseqdesc_t
+struct mstudioseqdescv48_t
 {
 	uint32 baseptr;
 
@@ -1334,9 +1375,79 @@ struct mstudioseqdesc_t
 	int unused[7];
 };
 
+struct mstudioseqdescv49_t
+{
+	uint32 baseptr;
+
+	int	szlabelindex;
+
+	int szactivitynameindex;
+
+	int flags; // looping/non-looping flags
+
+	int activity; // initialized at loadtime to game DLL values
+	int actweight;
+
+	int numevents;
+	int eventindex;
+	
+	Vector3 bbmin; // per sequence bounding box
+	Vector3 bbmax;		
+
+	int numblends;
+
+	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
+	int animindexindex;
+
+	int movementindex; // [blend] float array for blended movement
+	int groupsize[2];
+	int paramindex[2]; // X, Y, Z, XR, YR, ZR
+	float paramstart[2]; // local (0..1) starting value
+	float paramend[2]; // local (0..1) ending value
+	int paramparent;
+
+	float fadeintime; // ideal cross fate in time (0.2 default)
+	float fadeouttime; // ideal cross fade out time (0.2 default)
+
+	int localentrynode; // transition node at entry
+	int localexitnode; // transition node at exit
+	int nodeflags; // transition rules
+
+	float entryphase; // used to match entry gait
+	float exitphase; // used to match exit gait
+	
+	float lastframe; // frame that should generation EndOfSequence
+
+	int nextseq; // auto advancing sequences
+	int pose; // index of delta animation between end and nextseq
+
+	int numikrules;
+
+	int numautolayers;
+	int autolayerindex;
+
+	int weightlistindex;
+
+	int posekeyindex;
+
+	int numiklocks;
+	int iklockindex;
+
+	// Key values
+	int	keyvalueindex;
+	int keyvaluesize;
+
+	int cycleposeindex; // index of pose parameter to use as cycle index
+
+    int activitymodifierindex;
+	int numactivitymodifiers;
+
+	int unused[5];
+};
+
 struct mstudioseqdescv53_t
 {
-	int baseptr;
+	uint32 baseptr;
 
 	int	szlabelindex;
 
@@ -1396,12 +1507,12 @@ struct mstudioseqdescv53_t
 	int keyvalueindex;
 	int keyvaluesize;
 
-	uint32 cycleposeindex; // index of pose parameter to use as cycle index
+	int cycleposeindex; // index of pose parameter to use as cycle index
 
-    uint32 unkindex;
-    uint32 unkcount;
+    int activitymodifierindex;
+	int numactivitymodifiers;
 
-	uint32 unused[10];
+	uint32 unused[8]; // some might be used or they might've just been reseting space like on bones.
 };
 
 // demand loaded sequence groups

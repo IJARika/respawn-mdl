@@ -23,20 +23,16 @@ if (preversion == 52)
 { 
     studiohdrv52_t mdlHeader <bgcolor=cLtBlue>;
     studiohdr2v52_t mdlSubHeader <bgcolor=cDkBlue>;
+
+    // this is a check for non shipped models.
+    // this isn't essential for models to function, however when not present it should be four bytes instead of just nothing.
+    if (mdlHeader.boneindex > mdlHeader.mayaindex)
+        char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 }
 else
 {
     studiohdr_t mdlHeader <bgcolor=cLtBlue>;
     studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
-}
-
-
-// this is a check for non shipped models.
-// this isn't essential for models to function, however when not present it should be four bytes instead of just nothing.
-if (mdlHeader.version >= 52)
-{
-    if (mdlHeader.boneindex > mdlHeader.mayaindex)
-        char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 }
 
 
@@ -91,11 +87,17 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 // animation
 FSeek(mdlHeader.localanimindex);
-mstudioanimdesc_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+if (mdlHeader.version < 49)
+    mstudioanimdescv48_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+else
+    mstudioanimdescv49_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
 
-//FSeek(mdlHeader.localseq_offset);
+FSeek(mdlHeader.localseqindex);
+if (mdlHeader.version < 49)
+    mstudioseqdescv48_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
+else
+    mstudioseqdescv49_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
 
-//mstudioanimdesc_t animseq[1] <bgcolor=0xf0b27a>;
 
 
 // models
