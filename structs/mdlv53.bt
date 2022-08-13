@@ -241,7 +241,7 @@ if (mdlHeader.vphyindex > 0)
 };
 
 FSeek(mdlHeader.unkindex2);
-unkbytes1header unkbytes1[15];
+unkbytes1header unkbytes1[vphy.vphy_header.solidCount];
 float unkbytesfloat1[(mdlHeader.vtxindex - (mdlHeader.unkindex2 + unkbytes1[0].unkindex)) / 4];
 //uint32 unkbytes1[(mdlHeader.vtxindex - mdlHeader.unkindex2) / 4];
 
