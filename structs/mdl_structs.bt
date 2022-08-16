@@ -13,6 +13,8 @@
 
 #define MAX_NUM_LODS 8
 
+//local int i = 0;
+
 // these are just all structs that I have mostly working/fitting, it does not mean they are correct.
 // a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
 
@@ -564,7 +566,7 @@ struct studiohdrv54_t
     int numflexdesc;
 	int flexdescindex;
  
-    uint32 unkv54;
+    uint32 unkv54; // SubmeshLodsOffset
 
     int numflexcontrollers;
 	int flexcontrollerindex;
@@ -624,11 +626,12 @@ struct studiohdrv54_t
 	int unk1v54; // surfacepropLookup?
 
 	int numflexcontrollerui;
-	int flexcontrolleruiindex;
+	int flexcontrolleruiindex; // OffsetToBoneRemapInfo
     
     // used by tools only that don't cache, but persist mdl's peer data
 	// engine uses virtualModel to back link to cache pointers
 	uint32 pVertexBase; // something else in v54 I think
+                        // BoneRemapCount
 	uint32 pIndexBase;
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
@@ -1772,13 +1775,130 @@ struct mstudioskingroup_t
 
 
 //====
-// rui
+// RUI
 
 
 struct mstudiorruiheader_t
 {
-    uint32 ruimesh_guid; // unsure
-    uint32 ruimesh_offset;
+    uint32 ruimeshguid; // unsure, it doesn't line up
+    uint32 ruimeshindex;
+};
+
+// vertex map for a quad
+struct mstudioruivertmap_t
+{
+    // order of vertices for triangles:
+    // 1st tri: 1-3-2
+    // 2nd tri: 4-2-3
+
+    // three vertex set for base triangle
+    // 1-3
+    int16 vertstartid;
+    int16 vertendid;
+
+    // fourth vert for second triangle
+    // 4
+    int16 vertfourthid;
+};
+
+struct mstudioruivertmapv54_t
+{
+    // not sure of the order on these
+    int16 vertid1;
+    int16 vertid2;
+    int16 vertid3;
+};
+
+struct mstudioruifourthvertv54_t
+{
+    // not sure of the order on these
+    int16 vertid4;
+};
+
+struct mstudioruivert_t
+{
+    int parent; // relative to global mesh parent, assumed
+
+    Vector3 vertexpos; // position of vertex relative to bone
+};
+
+struct mstudioruimesface_t
+{
+    // these values are for the two vertices that are not shared
+    // for the other do as such:
+    // vertex 2: take x from vextex 1 and y from vextex 4
+    // vertex 2: take x from vextex 4 and y from vextex 1
+
+    // normal smd uv, seems to calculate for other values
+    Vector2 faceuvmin; // vertex 1
+    Vector2 faceuvmax; // vertex 4
+
+    // these could likely be calculated by doing math with a height/width scale
+    // scale of the ui element
+    Vector2 facescalemin; // vertex 1
+    Vector2 facescalemax; // vertex 4
+};
+
+struct mstudioruimesh_t
+{
+    int enablerui; // boolean, 0 off, 1 on
+    
+    int numvertices; // number of verts
+    int numfaces; // number of faces (quads)
+
+    int parentindex; // this gets padding out front of it to even off the struct
+
+    int vertexindex; // offset into smd style vertex data
+    int vertmapindex; // offsets into a vertex map for each quad
+    int facedataindex; // offset into uv section
+
+    int unk; // zero sometimes, others not.
+
+    char szruimeshname[parentindex - 32]; // have to subtract header to get actual size (padding included)
+
+    int16 parent; // parent bone of mesh
+
+    mstudioruivertmap_t vertexmap[numfaces]; // vertex map for each face
+    
+    mstudioruivert_t vertex[numvertices];
+
+    mstudioruimesface_t facedata[numfaces];
+
+};
+
+struct mstudioruimeshv54_t
+{
+    int16 enablerui; // boolean, 0 off, 1 on, might be flags
+
+    //int unk;
+    
+    int16 numvertices; // number of verts
+    int16 numfaces; // number of faces (quads)
+
+    int16 unk;
+
+    int parentindex; // this gets padding out front of it to even off the struct
+
+    int vertexindex; // offset into smd style vertex data
+
+    int fourthvertmapindex; // they now fully map the vertices for each quad
+
+    int vertmapindex; // offsets into a vertex map for each quad
+
+    int facedataindex; // offset into uv section
+
+    char szruimeshname[parentindex - 28]; // have to subtract header to get actual size (padding included)
+
+    int16 parent; // parent bone of mesh
+
+    mstudioruivertmapv54_t vertexmap[numfaces]; // vertex map for each face
+
+    mstudioruifourthvertv54_t fourthvertmap[numfaces];
+    
+    mstudioruivert_t vertex[numvertices];
+
+    mstudioruimesface_t facedata[numfaces];
+
 };
 
 
@@ -1787,12 +1907,20 @@ struct mstudiorruiheader_t
 
 
 // struct near end of file.
-struct unkbytes1header
+struct unksectionhdr_t
 {
-    uint32 unk;
-    uint32 unk1;
-    uint32 unk2;
-    uint32 unk3;
+    uint32 unk; // parent/flags?
+    uint32 numunk1; // quaternion
+    uint32 numunk2; // unk member
+    uint32 numunk3; // vector
 
-    uint32 unkindex;
+    uint32 dataindex; // offset to related data chunk
+};
+
+struct unksectiondatatype_t
+{
+    Vector3 unkvector; // min/max?
+    Vector3 unkvector1; // min/max?
+    
+    ubyte unk[4]; // flags? four separate bytes?
 };

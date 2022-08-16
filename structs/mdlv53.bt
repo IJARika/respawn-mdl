@@ -22,7 +22,7 @@
 studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
 
 // this is a check for non shipped models.
-if (mdlHeader.boneindex > mdlHeader.mayaindex)
+if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
 {
     char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 };
@@ -135,9 +135,11 @@ if (mdlHeader.numruimeshes > 0)
     // some padding here to make it even I think.
     //char ruiheader_filler[12];
     
-    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset);
-    char ruidata[mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
+    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
+    mstudioruimesh_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
+    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
 };
+
 
 // various includes, materials, and groups
 FSeek(mdlHeader.includemodelindex);
@@ -206,10 +208,15 @@ FSeek(mdlHeader.sznameindex);
 
 local int64 stringtable_size;
 
-if(mdlHeader.vphyindex == 0)
+// todo get this checking if there isn't any vtx
+if(mdlHeader.vphysize == 0)
+{
     stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
+}
 else
+{
     stringtable_size = mdlHeader.vphyindex - mdlHeader.sznameindex;
+}
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
@@ -220,11 +227,11 @@ FSeek(mdlHeader.vphyindex);
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    compactsurfaceheader_t vphy_section[vphy_header.solidCount] <bgcolor=cLtRed, optimize=false>;
+    compactsurfaceheader_t vphy_section[vphy_header.numsolids] <bgcolor=cLtRed, optimize=false>;
 
     local int64 charSize = mdlHeader.vphysize;
 
-    for (i = 0; i < vphy_header.solidCount; i++)
+    for (i = 0; i < vphy_header.numsolids; i++)
     {
         charSize -= vphy_section[i].size + 4;
     };
@@ -240,11 +247,45 @@ if (mdlHeader.vphyindex > 0)
     vphygroup_t vphy <fgcolor=cLtYellow>;
 };
 
-FSeek(mdlHeader.unkindex2);
-unkbytes1header unkbytes1[vphy.vphy_header.solidCount];
-float unkbytesfloat1[(mdlHeader.vtxindex - (mdlHeader.unkindex2 + unkbytes1[0].unkindex)) / 4];
+// can't get it working outside here :/
+i = 0;
+
+struct unksectiondatachunk_t
+{
+    Quaternion unkquat[unksechdr[i].numunk1] <bgcolor=cLtBlue>;
+    
+    unksectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
+
+    Vector3 unkvector[unksechdr[i].numunk3] <bgcolor=cBlue>; // vertices
+
+    i++;
+};
+
+// strictly to make it easier on the eyes
+struct unksectiondata_t
+{
+    unksectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
+};
+
+if (mdlHeader.vphysize > 0)
+{
+    FSeek(mdlHeader.unkindex2);
+    unksectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
+    unksectiondata_t unksecdata; 
+};
+
+
+//Quaternion test1[unkbytes1[0].unk1]<bgcolor=cLtBlue>;
+//unkbytes1member1 test2[unkbytes1[0].unk2] <bgcolor=cDkBlue>;
+//Vector3 test3[unkbytes1[0].unk3] <bgcolor=cBlue>;
+
+//Vector3 test2[unkbytes1[0].unk];
+//float unkbytesfloat1[77];
 //uint32 unkbytes1[(mdlHeader.vtxindex - mdlHeader.unkindex2) / 4];
 
+
+//Quaternion test12[unkbytes1[1].unk1];
+//unkbytes1member1 test22[unkbytes1[1].unk3] <bgcolor=cLtBlue>;
 
 // vtx
 FSeek(mdlHeader.vtxindex);
@@ -294,7 +335,7 @@ struct vtxgroup_t
 
     StripGroupHeader_t vtx_stripgrphdr[vtxStripGrpCount] <bgcolor=cDkPurple>;
     
-    char piss[33];
+    //char piss[33];
 
     // gets the total amount of strips.
     /*local int vtxStripCount = 0;

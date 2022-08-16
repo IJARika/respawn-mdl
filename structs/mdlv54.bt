@@ -135,9 +135,11 @@ if (mdlHeader.numruimeshes > 0)
     // some padding here to make it even I think.
     //char ruiheader_filler[12];
     
-    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset);
-    char ruidata[mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)] <fgcolor=cGreen>;
+    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
+    mstudioruimeshv54_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
+    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
 };
+
 
 // various includes, materials, and groups
 //FSeek(mdlHeader.includemodel_index);
@@ -199,7 +201,7 @@ else
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
-FSeek(mdlHeader.unkindex2);
-unkbytes1header unkbytes1[3];
+//FSeek(mdlHeader.unkindex2);
+//unkbytes1header unkbytes1[3];
 //float unkbytesfloat1[(mdlHeader.length - (mdlHeader.unkindex2 + unkbytes1[0].unkindex)) / 4];
 //uint32 unkbytes1[(mdlHeader.vtxindex - mdlHeader.unkindex2) / 4];

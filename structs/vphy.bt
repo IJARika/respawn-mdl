@@ -23,8 +23,8 @@ struct phyheader_t
 {
 	int size; // Size of this header section (generally 16)
 	int id; // Often zero, unknown purpose.
-	int solidCount; // Number of solids in file
-	uint32 checkSum; // checksum of source .mdl file (4-bytes)
+	int numsolids; // Number of solids in file
+	uint32 checksum; // checksum of source .mdl file (4-bytes)
 };
 
 struct phydata_t
@@ -47,6 +47,7 @@ struct compactsurfaceheader_t
 
 	uint32 axisMapSize;
     
+    int dummy[12];
     // to do try to fix getting the size dynamically.
-    uint32 unk[(size - 28) / 4]; 
+    uint32 unk[(size - 76) / 4]; 
 };

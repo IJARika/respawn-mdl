@@ -26,20 +26,12 @@ struct Vector3
     float z;
 };
 
-struct Vector4
+struct Quaternion
 {
     float x;
     float y;
     float z;
     float w;
-};
-
-struct Quaternion
-{
-    float one;
-    float i;
-    float j;
-    float k;
 };
 
 struct RadianEuler
@@ -52,23 +44,23 @@ struct RadianEuler
 
 struct matrix3x4_t
 {
-        // unsure if that's how it actually works
+    // unsure if that's how it actually works
 
-        // row 1, x
-        float c0r0; // x
-        float c1r0; // x
-        float c2r0; // x
-        float c3r0; // x
+    // row 1, x
+    float c0r0; // x
+    float c1r0; // x
+    float c2r0; // x
+    float c3r0; // x
 
-        // row 2, y
-        float c0r1; // y
-        float c1r1; // y
-        float c2r1; // y
-        float c3r1; // y
+    // row 2, y
+    float c0r1; // y
+    float c1r1; // y
+    float c2r1; // y
+    float c3r1; // y
         
-        // row 3, z
-        float c0r2; // z
-        float c1r2; // z
-        float c2r2; // z
-        float c3r2; // z
+    // row 3, z
+    float c0r2; // z
+    float c1r2; // z
+    float c2r2; // z
+    float c3r2; // z
 };
