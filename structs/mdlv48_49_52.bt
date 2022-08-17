@@ -200,11 +200,22 @@ if (mdlSubHeader.linearboneindex > 0)
     mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
 };
 
+
+struct unksectiondata
+{
+    unksectionmember1 unk[mdlSubHeader.numunk[0]];
+    unksectionmember2 unk1[mdlSubHeader.numunk[1]];
+    unksectionmember3 unk2[mdlSubHeader.numunk[2]];
+
+};
+
 if (mdlHeader.version == 52)
 {
-    // always 60 bytes when unused.
+    // header completely nulled out if unused.
     FSeek(mdlSubHeader.unkindex + 408);
-    char unk_bytes[mdlSubHeader.unkindex1 - mdlSubHeader.unkindex] <fgcolor=cRed>;
+    //int unk_bytes[(mdlSubHeader.unkindex1 - mdlSubHeader.unkindex) / 4] <fgcolor=cRed>;
+    unksectionheader unk_bytes_hdr <fgcolor=cDkRed>;
+    unksectiondata unk_bytes <fgcolor=cRed>;
 }
 
 // unk_index1 always follows this, and always seems to be one byte in front of the string table.

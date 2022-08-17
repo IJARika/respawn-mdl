@@ -31,7 +31,7 @@ struct studiohdr_t
     int checksum; // This has to be the same in the phy and vtx files to load!
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
-    uint32 length; // Data size of MDL file in bytes.
+    int length; // Data size of MDL file in bytes.
  
     Vector3 eyeposition;	// ideal eye position
 
@@ -150,7 +150,7 @@ struct studiohdr_t
 	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
 	byte numAllowedRootLODs;
 
-	byte unused[1];
+	byte unused;
 
 	int unused4; // zero out if version < 47
 
@@ -159,14 +159,14 @@ struct studiohdr_t
 
     float flVertAnimFixedPointScale;
     int surfacepropLookup; // this index must be cached by the loader, not saved in the file
-                           // not in v48 but it isn't worth making another struct over.
+                           // unused in v48 but it isn't worth making another struct over that.
     
 	int studiohdr2index;
 	
     // NOTE: No room to add stuff? Up the .mdl file format version 
 	// [and move all fields in studiohdr2_t into studiohdr_t and kill studiohdr2_t],
 	// or add your stuff to studiohdr2_t. See NumSrcBoneTransforms/SrcBoneTransform for the pattern to use.
-	int unused2[1];
+	int unused2;
 };
 
 struct studiohdrv52_t
@@ -176,7 +176,7 @@ struct studiohdrv52_t
     int checksum; // This has to be the same in the phy and vtx files to load!
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
-    uint32 length; // Data size of MDL file in bytes.
+    int length; // Data size of MDL file in bytes.
  
     Vector3 eyeposition;	// ideal eye position
 
@@ -295,9 +295,9 @@ struct studiohdrv52_t
 	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
 	byte numAllowedRootLODs;
 
-	byte unused[1];
+	byte unused;
 
-	float unkfloat;
+	float fadedistance;
 
 	int numflexcontrollerui;
 	int flexcontrolleruiindex;
@@ -321,7 +321,7 @@ struct studiohdrv53_t
 	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
-    uint32 length; // Data size of MDL file in bytes.
+    int length; // Data size of MDL file in bytes.
  
     Vector3 eyeposition;	// ideal eye position
 
@@ -415,6 +415,8 @@ struct studiohdrv53_t
     
     uint32 virtualModel;
 
+    // animblock is either completely cut, this is because they no longer use .ani files.
+
 	int bonetablebynameindex;
     
     // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
@@ -433,18 +435,21 @@ struct studiohdrv53_t
 	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
 	byte numAllowedRootLODs;
 
-	byte unused[1];
+	byte unused;
 
-	float unkfloat;
+	float fadedistance; // set to -1 to never fade. set above 0 if you want it to fade out, distance is in feet.
+                        // player/titan models seem to inherit this value from the first model loaded in menus.
+                        // works oddly on entities, probably only meant for static props
 
 	int numflexcontrollerui;
 	int flexcontrolleruiindex;
     
     // used by tools only that don't cache, but persist mdl's peer data
 	// engine uses virtualModel to back link to cache pointers
-	uint32 pVertexBase;
-	uint32 pIndexBase;
-    
+    // might not be correct
+	uint32 pVertexBase; // float flVertAnimFixedPointScale;
+	uint32 pIndexBase; // int surfacepropLookup;
+
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
 
@@ -485,9 +490,8 @@ struct studiohdrv53_t
     // one of these is probably the ANI/IDAG index
     // vertAnimFixedPointScale might be in here but I doubt it.
 
-    // big block of floats I think
-    // not present with no vphy??
-    int unkindex2; // section between vphy and vtx. probably combined loose file, but what?
+    // this data block is related to the vphy, if it's not present the data will not be written
+    int unkindex2; // section between vphy and vtx.?
 
     int unk[2];
 
@@ -505,7 +509,7 @@ struct studiohdrv54_t
 	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
-    uint32 length; // Data size of MDL file in bytes.
+    int length; // Data size of MDL file in bytes.
  
     Vector3 eyeposition;	// ideal eye position
 
@@ -596,6 +600,7 @@ struct studiohdrv54_t
 	int contents;
 	
     // external animations, models, etc.
+    // not the same due to streaming, probably mostly unused.
 	int numincludemodels; // this works different in apex because rpak models
 	int includemodelindex;
     
@@ -619,11 +624,11 @@ struct studiohdrv54_t
 	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
 	byte numAllowedRootLODs;
 
-	byte unused[1];
+	byte unused;
 
-	float unkfloat;
+	float fadedistance;
 	
-	int unk1v54; // surfacepropLookup?
+	float gathersize; // what. from r5r struct
 
 	int numflexcontrollerui;
 	int flexcontrolleruiindex; // OffsetToBoneRemapInfo
@@ -1212,11 +1217,38 @@ struct mstudiobboxv54_t
 //==================
 // Animation Structs
 
+struct RAnimBoneHeader
+{
+	float TranslationScale;
+
+	byte BoneIndex;
+
+//	RAnimTitanfallBoneFlag BoneFlags;
+	byte boneFlags;
+
+	byte Flags2;
+	byte Flags3;
+	
+	short OffsetX;
+	short OffsetY;
+	short OffsetZ;
+	short OffsetL;
+
+	short TranslationX;
+	short TranslationY;
+	short TranslationZ;
+
+	short ScaleX;
+	short ScaleY;
+	short ScaleZ;
+
+	uint32 DataSize;
+};
 
 // animdesc, what.
 struct mstudioanimdescv48_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int sznameindex;
 
@@ -1254,7 +1286,7 @@ struct mstudioanimdescv48_t
 
 struct mstudioanimdescv49_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int sznameindex;
 
@@ -1294,7 +1326,7 @@ struct mstudioanimdescv49_t
 
 struct mstudioanimdescv53_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int sznameindex;
 
@@ -1336,7 +1368,7 @@ struct mstudioanimdescv53_t
 // sequence descriptions
 struct mstudioseqdescv48_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int	szlabelindex;
 
@@ -1403,7 +1435,7 @@ struct mstudioseqdescv48_t
 
 struct mstudioseqdescv49_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int	szlabelindex;
 
@@ -1473,7 +1505,7 @@ struct mstudioseqdescv49_t
 
 struct mstudioseqdescv53_t
 {
-	uint32 baseptr;
+	int baseptr;
 
 	int	szlabelindex;
 
@@ -1905,19 +1937,41 @@ struct mstudioruimeshv54_t
 //========
 // Unknown
 
-
-// struct near end of file.
-struct unksectionhdr_t
+struct unksectionheader
 {
-    uint32 unk; // parent/flags?
-    uint32 numunk1; // quaternion
-    uint32 numunk2; // unk member
-    uint32 numunk3; // vector
-
-    uint32 dataindex; // offset to related data chunk
+    int unk[15];
 };
 
-struct unksectiondatatype_t
+// struct when linear bone data isn't present
+struct unksectionmember1
+{
+    int unk[5];
+};
+
+struct unksectionmember2
+{
+    int unk[28];
+};
+
+struct unksectionmember3
+{
+    int16 unk;
+    int16 unk1;
+    int16 unk2;
+};
+
+// struct near end of file.
+struct unkphysectionhdr_t
+{
+    int unk; // parent/flags?
+    int numunk1; // quaternion, edges?
+    int numunk2; // unk member, faces?
+    int numvertices; // vector
+
+    int dataindex; // offset to related data chunk
+};
+
+struct unkphysectiondatatype_t
 {
     Vector3 unkvector; // min/max?
     Vector3 unkvector1; // min/max?

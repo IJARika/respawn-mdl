@@ -17,6 +17,9 @@
 #include "./vphy.bt"
 #include "./vtx.bt"
 
+local int i = 0;
+local int j = 0;
+
 
 // headers
 studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
@@ -33,7 +36,6 @@ FSeek(mdlHeader.boneindex);
 mstudiobonev53_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
 
 local int jigglebonecount = 0;
-local int i = 0;
 
 local char s_jigglebonename;
 
@@ -76,8 +78,22 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 FSeek(mdlHeader.localanimindex);
 mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
 
-FSeek(mdlHeader.localseqindex);
-mstudioseqdescv53_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
+local int animBoneHeaderCount = 0;
+for (i = 0; i < mdlHeader.numlocalanim; ++i)
+{
+	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
+	for (j = 0; j < mdlHeader.numbones; ++j)
+	{
+		RAnimBoneHeader animBoneHeaders <bgcolor=cBlue>;
+		animBoneHeaderCount += 1;
+		if (animBoneHeaders[animBoneHeaderCount - 1].DataSize == 0) 
+		{
+			break;
+		}
+	};
+};
+// Read in unused empty data structure at the end of the list.
+RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
 
 
 // models
@@ -197,11 +213,22 @@ if (mdlHeader.linearboneindex > 0)
 };
 
 
-// always 60 bytes when unused, only used when linear bone is not (afaik).
+struct unksectiondata
+{
+    unksectionmember1 unk[mdlHeader.numunk[0]];
+    unksectionmember2 unk1[mdlHeader.numunk[1]];
+    unksectionmember3 unk2[mdlHeader.numunk[2]];
+
+};
+
+// only used when linear bone is not (afaik).
 FSeek(mdlHeader.unkindex);
-char unk_bytes[mdlHeader.unkindex1 - mdlHeader.unkindex] <fgcolor=cRed>;
+unksectionheader unk_bytes_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
+unksectiondata unk_bytes <fgcolor=cRed>;
+
 
 // unk_index1 always follows this, and always seems to be one byte in front of the string table.
+
 
 // string table
 FSeek(mdlHeader.sznameindex);
@@ -227,7 +254,7 @@ FSeek(mdlHeader.vphyindex);
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    compactsurfaceheader_t vphy_section[vphy_header.numsolids] <bgcolor=cLtRed, optimize=false>;
+    compactsurfaceheader_t vphy_section[vphy.vphy_header.numsolids] <bgcolor=cLtRed, optimize=false>;
 
     local int64 charSize = mdlHeader.vphysize;
 
@@ -238,8 +265,7 @@ struct vphygroup_t
 
     charSize -= 16;
     
-    // there is something extra after the normal phy :/
-    char vphy_stringdata[charSize] <bgcolor=cDkRed>; 
+    char vphy_stringdata[charSize] <bgcolor=cDkRed>;
 };
 
 if (mdlHeader.vphyindex > 0)
@@ -250,42 +276,29 @@ if (mdlHeader.vphyindex > 0)
 // can't get it working outside here :/
 i = 0;
 
-struct unksectiondatachunk_t
+struct unkphysectiondatachunk_t
 {
     Quaternion unkquat[unksechdr[i].numunk1] <bgcolor=cLtBlue>;
     
-    unksectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
+    unkphysectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
 
-    Vector3 unkvector[unksechdr[i].numunk3] <bgcolor=cBlue>; // vertices
+    Vector3 vertex[unksechdr[i].numvertices] <bgcolor=cBlue>; // vertices
 
     i++;
 };
 
 // strictly to make it easier on the eyes
-struct unksectiondata_t
+struct unkphysectiondata_t
 {
-    unksectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
+    unkphysectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
 };
 
 if (mdlHeader.vphysize > 0)
 {
     FSeek(mdlHeader.unkindex2);
-    unksectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
-    unksectiondata_t unksecdata; 
+    unkphysectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
+    unkphysectiondata_t unksecdata; 
 };
-
-
-//Quaternion test1[unkbytes1[0].unk1]<bgcolor=cLtBlue>;
-//unkbytes1member1 test2[unkbytes1[0].unk2] <bgcolor=cDkBlue>;
-//Vector3 test3[unkbytes1[0].unk3] <bgcolor=cBlue>;
-
-//Vector3 test2[unkbytes1[0].unk];
-//float unkbytesfloat1[77];
-//uint32 unkbytes1[(mdlHeader.vtxindex - mdlHeader.unkindex2) / 4];
-
-
-//Quaternion test12[unkbytes1[1].unk1];
-//unkbytes1member1 test22[unkbytes1[1].unk3] <bgcolor=cLtBlue>;
 
 // vtx
 FSeek(mdlHeader.vtxindex);
@@ -349,4 +362,4 @@ struct vtxgroup_t
 
 };
 
-vtxgroup_t vtx <fgcolor=0xe8daef>; 
+vtxgroup_t vtx <fgcolor=0xe8daef>;

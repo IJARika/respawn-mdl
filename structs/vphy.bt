@@ -24,30 +24,66 @@ struct phyheader_t
 	int size; // Size of this header section (generally 16)
 	int id; // Often zero, unknown purpose.
 	int numsolids; // Number of solids in file
-	uint32 checksum; // checksum of source .mdl file (4-bytes)
+	int checksum; // checksum of source .mdl file (4-bytes)
 };
 
-struct phydata_t
+/*struct phydata_t
 {
     uint32 unk[103];
-};
+};*/
 
 struct compactsurfaceheader_t
 {
-	uint32	size; // Size of the content after this byte
+	int size; // size of the content after this byte
+	int id;
+	int16 version;
 
-	uint32 vphysicsID; // Generally the ASCII for "VPHY" in newer files
-	uint16 version;
+	int16 modeltype;
 
-	uint16 modelType;
+	int surfacesize;
 
-	uint32 surfaceSize;
+	Vector3 dragaxisareas;
 
-	Vector3 dragAxisAreas;
-
-	uint32 axisMapSize;
+	int axismaparea;
     
+    //int unk;
+    
+    //Vector3 mass_center;
+	//Vector3 rotation_inertia;
+
+    //int unk1[4];
+
+    //int id2;
+
     int dummy[12];
     // to do try to fix getting the size dynamically.
     uint32 unk[(size - 76) / 4]; 
+};
+
+struct legacysurfaceheader_t
+{
+	//int size;
+
+	Vector3 mass_center;
+	Vector3 rotation_inertia;
+
+	float upper_limit_radius;
+
+	int	max_deviation;
+	int	byte_size;
+	int	offset_ledgetree_root;
+
+    int unk;
+
+    int id;
+
+	int	unk1;
+};
+
+struct phydatablock_t
+{
+    compactsurfaceheader_t header;
+    //legacysurfaceheader_t subheader;
+    
+
 };
