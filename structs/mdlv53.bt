@@ -84,7 +84,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
 	for (j = 0; j < mdlHeader.numbones; ++j)
 	{
-		RAnimBoneHeader animBoneHeaders <bgcolor=cBlue>;
+		RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
 		animBoneHeaderCount += 1;
 		if (animBoneHeaders[animBoneHeaderCount - 1].DataSize == 0) 
 		{
@@ -93,7 +93,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 	};
 };
 // Read in unused empty data structure at the end of the list.
-RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
+//RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
 
 
 // models
@@ -215,16 +215,20 @@ if (mdlHeader.linearboneindex > 0)
 
 struct unksectiondata
 {
-    unksectionmember1 unk[mdlHeader.numunk[0]];
-    unksectionmember2 unk1[mdlHeader.numunk[1]];
-    unksectionmember3 unk2[mdlHeader.numunk[2]];
+    
 
 };
 
 // only used when linear bone is not (afaik).
-FSeek(mdlHeader.unkindex);
+FSeek(mdlHeader.unkmemberindex);
 unksectionheader unk_bytes_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
-unksectiondata unk_bytes <fgcolor=cRed>;
+
+if (mdlHeader.unkmembercount != 0 || mdlHeader.unkmembercount1 != 0 || mdlHeader.unkmembercount2 != 0)
+{
+    unksectionmember1 unk_bytes1[mdlHeader.unkmembercount] <fgcolor=cRed>;
+    unksectionmember2 unk_bytes2[mdlHeader.unkmembercount1] <fgcolor=cRed>;
+    unksectionmember3 unk_bytes3[mdlHeader.unkmembercount2] <fgcolor=cRed>;
+};
 
 
 // unk_index1 always follows this, and always seems to be one byte in front of the string table.
@@ -235,15 +239,14 @@ FSeek(mdlHeader.sznameindex);
 
 local int64 stringtable_size;
 
-// todo get this checking if there isn't any vtx
-if(mdlHeader.vphysize == 0)
-{
-    stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
-}
-else
-{
+if(mdlHeader.vphysize != 0)
     stringtable_size = mdlHeader.vphyindex - mdlHeader.sznameindex;
-}
+
+if(mdlHeader.vtxsize != 0 && mdlHeader.vphysize == 0)
+    stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
+
+else
+    stringtable_size = mdlHeader.unkindex3 - mdlHeader.sznameindex;
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
@@ -295,7 +298,7 @@ struct unkphysectiondata_t
 
 if (mdlHeader.vphysize > 0)
 {
-    FSeek(mdlHeader.unkindex2);
+    FSeek(mdlHeader.unkmemberindex1);
     unkphysectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
     unkphysectiondata_t unksecdata; 
 };
@@ -362,4 +365,5 @@ struct vtxgroup_t
 
 };
 
-vtxgroup_t vtx <fgcolor=0xe8daef>;
+if (mdlHeader.vtxsize > 0)
+    vtxgroup_t vtx <fgcolor=0xe8daef>;

@@ -451,7 +451,9 @@ struct studiohdrv53_t
 	uint32 pIndexBase; // int surfacepropLookup;
 
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
-	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
+    // doesn't actually need to be written pretty sure, only four bytes when not present.
+    // this is not completely true as some models simply have nothing, such as animation models.
+	int mayaindex;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -463,16 +465,16 @@ struct studiohdrv53_t
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
     
-    // v52 has an identical set of unks
-    // this section is seemingly always 60 bytes, unless the following unks are not 0.
-    // of note this does not appear in v49, while it does appear in v52 and v53.
-    int unkindex; // goes to a section just after linear bone data, but just before string data.
-
-    int numunk[3]; // used in envballs, looks like a count of sort.
+    // header is still written even if there is no extra data
+    // extra data has only been observed when no linear bone data is present.
+    int unkmemberindex;
+    int unkmembercount;
+    int unkmembercount1;
+    int unkmembercount2;
 
     // maybe this is for the string table since it always has one byte padding it?
     // this is probably for some section I haven't seen or a string that hasn't been filled out.
-    int unkindex1; // byte before string table start?
+    int unkindex1; // byte before string table start? as of yet unseen member.
 
     // start of model combination stuff.
     // anis are no longer used from what I can tell, v52s that had them don't in v53.
@@ -491,7 +493,7 @@ struct studiohdrv53_t
     // vertAnimFixedPointScale might be in here but I doubt it.
 
     // this data block is related to the vphy, if it's not present the data will not be written
-    int unkindex2; // section between vphy and vtx.?
+    int unkmemberindex1; // section between vphy and vtx.?
 
     int unk[2];
 
@@ -630,14 +632,12 @@ struct studiohdrv54_t
 	
 	float gathersize; // what. from r5r struct
 
-	int numflexcontrollerui;
-	int flexcontrolleruiindex; // OffsetToBoneRemapInfo
-    
-    // used by tools only that don't cache, but persist mdl's peer data
-	// engine uses virtualModel to back link to cache pointers
-	uint32 pVertexBase; // something else in v54 I think
-                        // BoneRemapCount
-	uint32 pIndexBase;
+	int unk5v54;
+
+	int boneremapindex;
+	int numboneremaps;
+
+	int unk6v54;
     
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -660,6 +660,7 @@ struct studiohdrv54_t
 
     // this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
     int vtxindex; // VTX
 	int vvdindex; // VVD / IDSV
     int vvcindex; // VVC / IDCV 
@@ -670,14 +671,12 @@ struct studiohdrv54_t
     int vvcsize;
     int vphysize;
 
+    // unk3v54[3] is the chunk after following unkindex2's chunk
     int unk3v54[13];
 
-    int unkindex2;
+    int unkindex2; // index to chunk after string block
 
-    int unk4v54;
-
-    uint32 OffsetToBoneRemapInfo;
-	uint32 BoneRemapCount;
+    int unk4v54[3];
 
 };
 
@@ -720,10 +719,12 @@ struct studiohdr2v52_t
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
     
-    // similar section in v53 header.
-    int unkindex; // goes to empty data before string block.
-
-    int numunk[3];  // used in envballs, looks like a count of sort.
+    // header is still written even if there is no extra data
+    // extra data has only been observed when no linear bone data is present.
+    int unkmemberindex;
+    int unkmembercount;
+    int unkmembercount1;
+    int unkmembercount2;
 
     int unkindex1; // byte before string table start?
 
@@ -1141,6 +1142,7 @@ struct mstudiolinearbone_t
 
 struct mstudiolinearbonev54_t	
 {
+    // they cut pos and rot scale, understandable since posscale was never used it tf|2
 	int numbones;
 
 	int flagsindex;
@@ -1210,7 +1212,7 @@ struct mstudiobboxv54_t
 	int szhitboxnameindex; // offset to the name of the hitbox.
     
     int unk;
-    int kvname_index; // used for KV names in string block, should be set to hitboxname if kv unneeded.
+    int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 };
 
 
@@ -1243,6 +1245,11 @@ struct RAnimBoneHeader
 	short ScaleZ;
 
 	uint32 DataSize;
+
+    if (DataSize != 0)
+    {
+        ubyte unkdata[DataSize - 32];
+    };
 };
 
 // animdesc, what.
@@ -1588,10 +1595,10 @@ struct mstudiomodelgroup_t
 // body part index
 struct mstudiobodyparts_t
 {
-	uint32 sznameindex;
+	int sznameindex;
 	int nummodels;
 	int base;
-	uint32 modelindex; // index into models array
+	int modelindex; // index into models array
 };
 
 // studio models
@@ -1608,21 +1615,21 @@ struct mstudiomodel_t
 
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
-	uint32 vertexindex; // vertex Vector
-	uint32 tangentsindex; // tangents Vector
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 
 	int numattachments;
-	uint32 attachmentindex;
+	int attachmentindex;
 
 	int	numeyeballs;
-	uint32 eyeballindex;
+	int eyeballindex;
 
 	//mstudio_modelvertexdata_t vertexdata;
     
     // sections of this are removed as needed.
-	uint32 unused[10]; // remove as appropriate
+	int unused[10]; // remove as appropriate
 };
 
 struct mstudiomodelv53_t
@@ -1634,60 +1641,66 @@ struct mstudiomodelv53_t
 	float boundingradius;
 
 	int nummeshes;	
-	uint32 meshindex;
+	int meshindex;
 
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
-	uint32 vertexindex; // vertex Vector
-	uint32 tangentsindex; // tangents Vector
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
 
 	int numattachments;
-	uint32 attachmentindex;
+	int attachmentindex;
 
+    // might be cut
 	int numeyeballs;
-	uint32 eyeballindex;
+	int eyeballindex;
 
 	//mstudio_modelvertexdata_t vertexdata;
 
-	uint32 unk[4];
+	int unk[4];
 
-    uint32 unkindex;
-    uint32 unkindex1;
+    int unkindex;
+    int unkindex1;
 
-    uint32 unk1[4];
+    int unused[4];
 };
 
-// broken
 struct mstudiomodelv54_t
 {
 	char name[64];
 
-	int type;
+	int unkindex; // byte before string block
 
-    uint32 unkv54[2];
-
+    // these are probably still used but get written over the name if nothing is set.
+    //int type;
 	//float boundingradius;
 
+    char name2[8]; // it looks like they write the entire name
+                   // then write over it with other values where needed
+                   // why.
+
 	int nummeshes;	
-	uint32 meshindex;
+	int meshindex;
 
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
-	uint32 vertexindex; // vertex Vector
+	int vertexindex; // vertex Vector
 	uint32 tangentsindex; // tangents Vector
 
 	int numattachments;
-	uint32 attachmentindex;
+	int attachmentindex;
 
+    // might be cut
 	int numeyeballs;
-	uint32 eyeballindex;
+	int eyeballindex;
 
 	//mstudio_modelvertexdata_t vertexdata;
 
-	uint32 unk[4];
+    // same as v53, except trimming the fat
+	int unk[4];
 
-    uint32 unk_index;
-    uint32 unk1_index;
+    int unkindex;
+    int unkindex1;
 };
 
 // meshes
@@ -1703,16 +1716,15 @@ struct mstudiomesh_t
 {
 	int material;
 
-	uint32 modelindex;
+	int modelindex;
 
 	int numvertices; // number of unique vertices/normals/texcoords
-	uint32 vertexoffset; // vertex mstudiovertex_t
+	int vertexoffset; // vertex mstudiovertex_t
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 	
 	int numflexes; // vertex animation
-	uint32 flexindex;
-
+	int flexindex;
 
 	// special codes for material operations
 	int materialtype;
@@ -1725,22 +1737,22 @@ struct mstudiomesh_t
 
 	mstudio_meshvertexdata_t vertexdata;
     
-	uint32 unused[8]; // remove as appropriate
+	int unused[8]; // remove as appropriate
 };
 
 struct mstudiomeshv54_t
 {
 	int material;
 
-	uint32 modelindex;
+	int modelindex;
 
 	int numvertices; // number of unique vertices/normals/texcoords
-	uint32 vertexoffset; // vertex mstudiovertex_t
+	int vertexoffset; // vertex mstudiovertex_t
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 	
 	int numflexes; // vertex animation
-	uint32 flexindex;
+	int flexindex;
 
 
 	// special codes for material operations
@@ -1754,7 +1766,7 @@ struct mstudiomeshv54_t
 
 	mstudio_meshvertexdata_t vertexdata;
     
-	uint32 unused[2];
+	int unused[2];
 };
 
 
@@ -1773,36 +1785,36 @@ struct mstudiotexture_t
 {
 	int						sznameindex;
 
-	uint32						flags;
-	uint32						used;
-    uint32						unused1;
+	int						flags;
+	int						used;
+    int						unused1;
 	
-    uint32						unused[12];
+    int						unused[12];
 };
 
 struct mstudiotexturev53_t
 {
-	uint32 sznameindex;
+	int sznameindex;
 
-	uint32 flags;
-	uint32 used;
-    uint32 unused1;
+	int flags;
+	int used;
+    int unused1;
 	
-	uint32 unused[7];
+	int unused[7];
 };
 
 struct mstudiotexturev54_t
 {
-	uint32 sznameindex;
+	int sznameindex;
 
-	uint32 flags;
-	uint32 used;
+	int flags;
+	int used;
 };
 
 // skin groups
 struct mstudioskingroup_t
 {
-    uint16 textureId[mdlHeader.numskinref];
+    int16 textureId[mdlHeader.numskinref];
 };
 
 
