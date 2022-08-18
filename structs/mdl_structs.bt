@@ -958,7 +958,7 @@ struct mstudiojigglebone_t
 
 struct mstudiojigglebonev54_t
 {
-	uint32 flags; // these are different in v54
+	uint32 unk; // these are different in v54
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
@@ -1219,38 +1219,6 @@ struct mstudiobboxv54_t
 //==================
 // Animation Structs
 
-struct RAnimBoneHeader
-{
-	float TranslationScale;
-
-	byte BoneIndex;
-
-//	RAnimTitanfallBoneFlag BoneFlags;
-	byte boneFlags;
-
-	byte Flags2;
-	byte Flags3;
-	
-	short OffsetX;
-	short OffsetY;
-	short OffsetZ;
-	short OffsetL;
-
-	short TranslationX;
-	short TranslationY;
-	short TranslationZ;
-
-	short ScaleX;
-	short ScaleY;
-	short ScaleZ;
-
-	uint32 DataSize;
-
-    if (DataSize != 0)
-    {
-        ubyte unkdata[DataSize - 32];
-    };
-};
 
 // animdesc, what.
 struct mstudioanimdescv48_t
@@ -1331,6 +1299,7 @@ struct mstudioanimdescv49_t
 
 };
 
+typedef int offset <read=Str("%d  =>  %d", this, this - parentof(this).baseptr)>;
 struct mstudioanimdescv53_t
 {
 	int baseptr;
@@ -1370,6 +1339,142 @@ struct mstudioanimdescv53_t
 
     // ikrulezeroframeindex might be in here
     int unused[4];
+};
+
+struct RAnimTitanfallBoneFlag
+{
+	byte Unused : 1;
+	byte bStaticTranslation : 1;		// If zero, one per data set
+	byte bStaticRotation : 1;		// If zero, one per data set
+	byte bStaticScale : 1;			// If zero, one per data set
+	byte Unused2 : 1;
+	byte Unused3 : 1;
+	byte Unused4 : 1;
+};
+
+struct RAnimBoneHeader
+{
+	float TranslationScale;
+
+	byte BoneIndex;
+
+	RAnimTitanfallBoneFlag BoneFlags;
+	//byte boneFlags;
+
+	byte Flags2;
+	byte Flags3;
+	
+	/*union Test
+	{
+		struct Test2
+		{
+			int16 OffsetX;
+			int16 OffsetY;
+			int16 OffsetZ;
+			int16 OffsetL;
+		};
+
+		int64 PackedRotation;
+	} RotationInfo;*/
+
+    /*int16 OffsetX;
+	int16 OffsetY;
+	int16 OffsetZ;
+    int16 OffsetL;*/
+
+    Quat64 PackedRotation;
+
+	int16 TranslationX;
+	int16 TranslationY;
+	int16 TranslationZ;
+
+	hfloat ScaleX;
+	hfloat ScaleY;
+	hfloat ScaleZ;
+
+	uint32 DataSize;
+
+    if(DataSize != 0)
+        hfloat unk[(DataSize - 32) / 2];
+
+};
+
+struct mstudioikrule_t
+{
+	int			index;
+	int			type;
+	int			chain;
+	int			bone;
+
+	int			slot;	// iktarget slot.  Usually same as chain.
+	float		height;
+	float		radius;
+	float		floor;
+	Vector3		pos;
+	Quaternion	q;
+
+	int			compressedikerrorindex;
+	int			unused2;
+
+	int			iStart;
+	int			ikerrorindex;
+
+	float		start;	// beginning of influence
+	float		peak;	// start of full influence
+	float		tail;	// end of full influence
+	float		end;	// end of all influence
+
+	float		unused3;	// 
+	float		contact;	// frame footstep makes ground concact
+	float		drop;		// how far down the foot should drop when reaching for IK
+	float		top;		// top of the foot box
+
+	int			unused6;
+	int			unused7;
+	int			unused8;
+
+	int			szattachmentindex;		// name of world attachment
+
+	int			unused[5];
+};
+
+struct mstudioikrulev53_t
+{
+	int			index;
+	int			type;
+	int			chain;
+	int			bone;
+
+	int			slot;	// iktarget slot.  Usually same as chain.
+	float		height;
+	float		radius;
+	float		floor;
+	Vector3		pos;
+	Quaternion	q;
+
+	int			compressedikerrorindex;
+	int			unused2;
+
+	int			iStart;
+	int			ikerrorindex;
+
+	float		start;	// beginning of influence
+	float		peak;	// start of full influence
+	float		tail;	// end of full influence
+	float		end;	// end of all influence
+
+	float		unused3;	// 
+	float		contact;	// frame footstep makes ground concact
+	float		drop;		// how far down the foot should drop when reaching for IK
+	float		top;		// top of the foot box
+
+	int			unused6;
+	int			unused7;
+	int			unused8;
+
+	int			szattachmentindex;		// name of world attachment
+
+	int			unused[4];
 };
 
 // sequence descriptions

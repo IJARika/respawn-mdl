@@ -34,6 +34,15 @@ struct Quaternion
     float w;
 };
 
+// compressed quaternion
+struct Quat64
+{
+    int64 X : 21;
+    int64 Y : 21;
+    int64 Z : 21;
+    int64 WNeg : 1;
+};
+
 struct RadianEuler
 {
     // for when you want radians in float.

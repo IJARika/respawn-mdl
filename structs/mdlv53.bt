@@ -76,24 +76,44 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 // animation
 FSeek(mdlHeader.localanimindex);
-mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+// mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+//NOTE: Using this loop instead of above array so that the "offset" variables are calculated correctly.
+for (i = 0; i < mdlHeader.numlocalanim; ++i)
+{
+	mstudioanimdescv53_t animdesc <bgcolor=0xdc7633>;
+}
 
+// Animation Data
 local int animBoneHeaderCount = 0;
+local int animIkruleCount = 0;
 for (i = 0; i < mdlHeader.numlocalanim; ++i)
 {
 	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
 	for (j = 0; j < mdlHeader.numbones; ++j)
 	{
-		RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
+		RAnimBoneHeader animBoneHeaders <bgcolor=(this.DataSize == 0 ? cDkBlue : cBlue )>;
 		animBoneHeaderCount += 1;
 		if (animBoneHeaders[animBoneHeaderCount - 1].DataSize == 0) 
 		{
+			// Read in unused empty data structure at the end of the list.
+			//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
 			break;
 		}
 	};
+	// Read in unused empty data structure at the end of the list.
+	//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+
+	// Animation IK Rules
+	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
+	for (j = 0; j < animdesc[i].numikrules; ++j)
+	{
+		mstudioikrulev53_t animIkrules <bgcolor=cGreen>;
+		animIkruleCount += 1;
+	};
 };
-// Read in unused empty data structure at the end of the list.
-//RAnimBoneHeader animBoneHeaders <bgcolor=cBlue, optimize=false>;
+
+FSeek(mdlHeader.localseqindex);
+mstudioseqdescv53_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
 
 
 // models
@@ -239,14 +259,21 @@ FSeek(mdlHeader.sznameindex);
 
 local int64 stringtable_size;
 
-if(mdlHeader.vphysize != 0)
-    stringtable_size = mdlHeader.vphyindex - mdlHeader.sznameindex;
-
-if(mdlHeader.vtxsize != 0 && mdlHeader.vphysize == 0)
-    stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
-
+if(mdlHeader.vphysize >= 0 || mdlHeader.vtxsize >= 0)
+{
+    if(mdlHeader.vtxsize >= 0 && mdlHeader.vphysize == 0)
+    {
+        stringtable_size = mdlHeader.vtxindex - mdlHeader.sznameindex;
+    }
+    else
+    {
+        stringtable_size = mdlHeader.vphyindex - mdlHeader.sznameindex;
+    }
+}
 else
+{
     stringtable_size = mdlHeader.unkindex3 - mdlHeader.sznameindex;
+}
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
@@ -290,17 +317,11 @@ struct unkphysectiondatachunk_t
     i++;
 };
 
-// strictly to make it easier on the eyes
-struct unkphysectiondata_t
-{
-    unkphysectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
-};
-
 if (mdlHeader.vphysize > 0)
 {
     FSeek(mdlHeader.unkmemberindex1);
     unkphysectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
-    unkphysectiondata_t unksecdata; 
+    unkphysectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
 };
 
 // vtx
