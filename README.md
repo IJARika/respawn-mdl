@@ -10,10 +10,15 @@ Valve:
 
 Respawn:
   -V52
+  
   -V53
+  
   -V54 subversions: 8/9/10/11/12
+  
   -V54 subversion: 13
+  
   -V54 subversion: 14
+  
 
 
 Versions V52 & V53 have the best support.
