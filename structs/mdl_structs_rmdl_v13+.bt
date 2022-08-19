@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: rmdl
+//      File: rmdl, rrig
 //   Authors: Valve, Rika, & Others
 //   Version: 54
 //   Purpose: Respawn MDL Structs
 //  Category: Struct
-// File Mask: *.rmdl
+// File Mask: *.rmdl, *.rrig
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -90,23 +90,19 @@ struct studiohdrv54_v121_t
 	int localnodeindex;
 	int localnodenameindex;
  
-	int numflexdesc; // may not be correct anymore
-	int flexdescindex;
- 
 	// these are unknown since I don't know what they cut
-    // these two are removed in v12.2 but readded in v13
-	//int numunk;
-	//int unkindex;
+	int numunk;
+	int unkindex;
 
-	int numunk1;
-	int unkindex1; // meshindex
+	int numikchains;
+	int ikchainindex;
  
 	// this is rui meshes
 	int numruimeshes;
 	int ruimeshindex;
  
-	int numunk2;
-	int unkindex2;
+	int numlocalposeparameters;
+	int localposeparamindex;
  
 	int surfacepropindex;
  
@@ -134,7 +130,7 @@ struct studiohdrv54_v121_t
 	
 	float gathersize; // what. from r5r struct
 	
-	int unk1_v54_v121[2]; // one less than v13
+	int unk_v54[2]; // one less than v13
 
     // this is in all shipped models, probably part of their asset bakery.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -158,7 +154,7 @@ struct studiohdrv54_v121_t
 
     int unkindex4; // chunk before unkindex2 sometimes
 
-    int unk3_v54_v121[3]; // three less than v13
+    int unk4_v54[3];
 };
 
 struct studiohdrv54_v13_t
@@ -231,15 +227,15 @@ struct studiohdrv54_v13_t
 	int numunk;
 	int unkindex;
 
-	int numunk1;
-	int unkindex1; // meshindex
+	int numikchains;
+	int ikchainindex;
  
 	// this is rui meshes
 	int numruimeshes;
 	int ruimeshindex;
  
-	int numunk2;
-	int unkindex2;
+	int numlocalposeparameters;
+	int localposeparamindex;
  
 	int surfacepropindex;
  
@@ -267,7 +263,7 @@ struct studiohdrv54_v13_t
 	
 	float gathersize; // what. from r5r struct
 	
-	int unk1_v54_v121[2];
+	int unk_v54[2];
 
     int unk_v54_v13;
 
@@ -293,7 +289,7 @@ struct studiohdrv54_v13_t
 
     int unkindex4; // chunk before unkindex2 sometimes
 
-    int unk3_v54_v121[3];
+    int unk4_v54[3];
 
     int unk1_v54_v13[3];
 
@@ -371,15 +367,15 @@ struct studiohdrv54_v14_t
 	int numunk;
 	int unkindex;
 
-	int numunk1;
-	int unkindex1; // meshindex
+	int numikchains;
+	int ikchainindex;
  
 	// this is rui meshes
 	int numruimeshes;
 	int ruimeshindex;
  
-	int numunk2;
-	int unkindex2;
+	int numlocalposeparameters;
+	int localposeparamindex;
 
 	int surfacepropindex;
  
@@ -407,7 +403,7 @@ struct studiohdrv54_v14_t
 	
 	float gathersize; // what. from r5r struct
 	
-	int unk1_v54_v121[2];
+	int unk_v54[2];
 
     int unk_v54_v13;
 
@@ -433,7 +429,7 @@ struct studiohdrv54_v14_t
 
     int unkindex4; // chunk before unkindex2 sometimes
 
-    int unk3_v54_v121[3];
+    int unk4_v54[3];
 
     int unk1_v54_v13[3];
 };

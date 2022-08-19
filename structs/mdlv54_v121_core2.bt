@@ -1,0 +1,84 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl, rrig
+//   Authors: Rika
+//   Version: V54
+// Increment: 12.1/13/14
+//   Purpose: Template
+//  Category: Model
+// File Mask: *.rmdl, *.rrig
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+// setup meshes
+local int meshCount = 0;
+
+for (i = 0; i < modelCount; ++i)
+{
+   meshCount += models[i].nummeshes;
+}
+
+// todo: refind mesh index
+//FSeek(mdlHeader.meshindex);
+mstudiomeshv54_v121_t meshes[meshCount] <bgcolor=cLtGray>;
+
+
+// setup rui panels
+if (mdlHeader.numruimeshes > 0)
+{
+    FSeek(mdlHeader.ruimeshindex);
+    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
+    
+    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
+    mstudioruimeshv54_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
+};
+
+
+// setup lots of texture stuff
+FSeek(mdlHeader.textureindex);
+mstudiotexturev54_t textures[mdlHeader.numtextures] <bgcolor=cGreen>;
+
+FSeek(mdlHeader.cdtextureindex);
+mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen>;
+
+FSeek(mdlHeader.skinindex);
+mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cLtGreen>;
+
+
+// show keyvalues
+FSeek(mdlHeader.keyvalueindex);
+char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
+
+
+// setup bone transforms (rarely used in v54)
+FSeek(mdlHeader.srcbonetransformindex);
+mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen>;
+
+if (mdlHeader.linearboneindex > 0)
+{
+    FSeek(mdlHeader.linearboneindex);
+    mstudiolinearbonev54_t linearbone <bgcolor=cGreen>;
+    
+    struct mstudiolinearbonedata_t
+    {
+        if(linearbone.flagsindex > 0)
+            uint32 bone_flags[linearbone.numbones];
+        if(linearbone.parentindex > 0)
+            uint32 bone_parents[linearbone.numbones];
+        
+        if(linearbone.posindex > 0)
+            Vector3 bone_pos[linearbone.numbones];
+        if(linearbone.quatindex > 0)
+	        Quaternion bone_quat[linearbone.numbones];
+        if(linearbone.rotindex > 0)
+	        RadianEuler bone_rot[linearbone.numbones];
+        
+        if(linearbone.posetoboneindex > 0)
+            matrix3x4_t bone_poseToBone[linearbone.numbones];
+    };
+
+    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
+};

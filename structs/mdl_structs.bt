@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: mdl/rmdl
+//      File: mdl, rmdl, rrig
 //   Authors: Valve, Rika, & Others
 //   Version: 48/49/52/53/54
 //   Purpose: Valve/Respawn MDL Structs
 //  Category: Struct
-// File Mask: *.mdl, *.rmdl
+// File Mask: *.mdl, *.rmdl, *.rrig
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -632,7 +632,10 @@ struct studiohdrv54_t
 	
 	float gathersize; // what. from r5r struct
 
-	int unk_v54[4];
+    int numunk_v54_early;
+    int unkindex_v54_early;
+
+	int unk_v54[2];
 
 	// this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -667,16 +670,22 @@ struct studiohdrv54_t
 	int vphysize;
 
 	// unk2_v54[3] is the chunk after following unkindex2's chunk
-	int unk2_v54[4]; // the same four unks in v53 I think, the first index being unused now probably
+	int unk2_v54[3]; // the same four unks in v53 I think, the first index being unused now probably
+
+    int unkindex3; // index to chunk after string block
 
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
     int unk3_v54[3];
 
-	int unkindex2; // index to chunk after string block
+	int unkindex4; // chunk before unkindex3 sometimes
 
-	int unk4_v54[3];
+	int unk4_v54[3]; // same as unk3_v54_v121
+
+    //int vgindex; // 0tVG
+    //int unksize; // might be offset
+    //int unksize1; // might be offset
 
 };
 
@@ -1081,12 +1090,29 @@ struct mstudioikchainv53_t
     int unk;
 };
 
+struct mstudioikchainv54_t
+{
+	int sznameindex;
+
+	int linktype;
+	int numlinks;
+	int linkindex;
+    
+    float	kneeDir;
+};
+
 // ikinfo
 struct mstudioiklink_t
 {
 	uint32 bone;
 	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 	Vector3	unused0; // unused in v49
+};
+
+struct mstudioiklinkv54_t
+{
+	uint32 bone;
+	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 };
 
 // iklock
@@ -2088,4 +2114,19 @@ struct unkphysectiondatatype_t
     Vector3 unkvector1; // min/max?
     
     ubyte unk[4]; // flags? four separate bytes?
+};
+
+
+//=====
+// Misc
+
+
+// unverified if this is just for v54
+struct mstudionode_t
+{
+    int sznameindex[mdlHeader.numlocalnodes];
+
+    int nodeindex[mdlHeader.numlocalnodes]; // from file start
+
+    int node[mdlHeader.numlocalnodes];
 };
