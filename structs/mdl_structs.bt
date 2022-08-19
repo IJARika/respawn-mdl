@@ -505,15 +505,15 @@ struct studiohdrv53_t
 
 struct studiohdrv54_t
 {
-    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-    int checksum; // This has to be the same in the phy and vtx files to load!
+	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+	int checksum; // This has to be the same in the phy and vtx files to load!
 	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
-    char name[64]; // The internal name of the model, padding with null bytes.
-                    // Typically "my_model.mdl" will have an internal name of "my_model"
-    int length; // Data size of MDL file in bytes.
+	char name[64]; // The internal name of the model, padding with null bytes.
+	                // Typically "my_model.mdl" will have an internal name of "my_model"
+	int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+	Vector3 eyeposition;	// ideal eye position
 
 	Vector3 illumposition;	// illumination center
 	
@@ -523,38 +523,38 @@ struct studiohdrv54_t
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-    int flags;
+	int flags;
   
-    int numbones; // bones
+	int numbones; // bones
 	int boneindex;
  
-    int numbonecontrollers; // bone controllers
+	int numbonecontrollers; // bone controllers
 	int bonecontrollerindex;
  
-    int numhitboxsets;
+	int numhitboxsets;
 	int hitboxsetindex;
  
-    int numlocalanim; // animations/poses
+	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
-    int numlocalseq; // sequences
+	int numlocalseq; // sequences
 	int	localseqindex;
  
 	int activitylistversion; // initialization flag - have the sequences been indexed?
 	int eventsindexed;
  
-    // mstudiotexture_t
-    // short rpak path
+	// mstudiotexture_t
+	// short rpak path
 	// raw textures
 	int numtextures; // the material limit exceeds 128, probably 256.
 	int textureindex;
  
-    // this should always only be one, unless using vmts.
-    // raw textures search paths
+	// this should always only be one, unless using vmts.
+	// raw textures search paths
 	int numcdtextures;
 	int cdtextureindex;
  
-    // replaceable textures tables
+	// replaceable textures tables
 	int numskinref;
 	int numskinfamilies;
 	int skinindex;
@@ -562,55 +562,55 @@ struct studiohdrv54_t
 	int numbodyparts;		
 	int bodypartindex;
  
-    int numlocalattachments;
+	int numlocalattachments;
 	int localattachmentindex;
  
-    int numlocalnodes;
+	int numlocalnodes;
 	int localnodeindex;
 	int localnodenameindex;
  
-    int numflexdesc;
+	int numflexdesc;
 	int flexdescindex;
  
-    uint32 unkv54; // SubmeshLodsOffset
+	int meshindex; // SubmeshLodsOffset, might just be a mess offset
 
-    int numflexcontrollers;
+	int numflexcontrollers;
 	int flexcontrollerindex;
  
-    int numflexrules;
+	int numflexrules;
 	int flexruleindex;
  
-    int numikchains;
+	int numikchains;
 	int ikchainindex;
 
-    // this is rui meshes, todo refind mouth count.
+	// this is rui meshes
 	int numruimeshes;
-    int ruimeshindex;
+	int ruimeshindex;
  
-    int numlocalposeparameters;
+	int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+	int surfacepropindex;
  
-    int keyvalueindex;
+	int keyvalueindex;
 	int keyvaluesize;
  
-    int numlocalikautoplaylocks;
+	int numlocalikautoplaylocks;
 	int localikautoplaylockindex;
  
-    float mass;
+	float mass;
 	int contents;
 	
-    // external animations, models, etc.
-    // not the same due to streaming, probably mostly unused.
+	// external animations, models, etc.
+	// not the same due to streaming, probably mostly unused.
 	int numincludemodels; // this works different in apex because rpak models
 	int includemodelindex;
-    
-    uint32 virtualModel;
+	
+	uint32 virtualModel;
 
 	int bonetablebynameindex;
-    
-    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	
+	// if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
 	// this value is used to calculate directional components of lighting 
 	// on static props
 	byte constdirectionallightdot;
@@ -632,51 +632,51 @@ struct studiohdrv54_t
 	
 	float gathersize; // what. from r5r struct
 
-	int unk5v54;
+	int unk_v54[4];
 
-	int boneremapindex;
-	int numboneremaps;
-
-	int unk6v54;
-    
-    // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
+	// this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
 
-    int numsrcbonetransform;
+	int numsrcbonetransform;
 	int srcbonetransformindex;
 
 	int	illumpositionattachmentindex;
 	
 	int linearboneindex;
 
-	int m_nBoneFlexDriverCount;
+	int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
 	int m_nBoneFlexDriverIndex;
-    
-    int unk2v54[7];
+	
+	int unk1_v54[7];
 
-    // maybe this is for the string table since it always has one byte padding it?
-    // this is probably for some section I haven't seen or a string that hasn't been filled out.
-    int unkindex1; // byte before string table start?
+	// maybe this is for the string table since it always has one byte padding it?
+	// this is probably for some section I haven't seen or a string that hasn't been filled out.
+	int unkindex1; // byte before string table start?
 
-    // this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
+	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.
-    // vphy isn't vphy, looks like a heavily modified vphy.
-    int vtxindex; // VTX
+	// vphy isn't vphy, looks like a heavily modified vphy.
+	int vtxindex; // VTX
 	int vvdindex; // VVD / IDSV
-    int vvcindex; // VVC / IDCV 
-    int vphyindex; // VPHY / IVPS
+	int vvcindex; // VVC / IDCV 
+	int vphyindex; // VPHY / IVPS
 
-    int vtxsize;
-    int vvdsize;
-    int vvcsize;
-    int vphysize;
+	int vtxsize;
+	int vvdsize;
+	int vvcsize;
+	int vphysize;
 
-    // unk3v54[3] is the chunk after following unkindex2's chunk
-    int unk3v54[13];
+	// unk2_v54[3] is the chunk after following unkindex2's chunk
+	int unk2_v54[4]; // the same four unks in v53 I think, the first index being unused now probably
 
-    int unkindex2; // index to chunk after string block
+    Vector3 mins; // min/max for Something
+    Vector3 maxs; // seem to be the same as hull size
 
-    int unk4v54[3];
+    int unk3_v54[3];
+
+	int unkindex2; // index to chunk after string block
+
+	int unk4_v54[3];
 
 };
 
@@ -958,7 +958,13 @@ struct mstudiojigglebone_t
 
 struct mstudiojigglebonev54_t
 {
-	uint32 unk; // these are different in v54
+	//uint32 unk; // these are different in v54
+
+    byte flags; // looks to be.
+
+    byte unk;
+    byte unk1;
+    byte unk2;
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
@@ -1774,7 +1780,7 @@ struct mstudiomodelv54_t
 {
 	char name[64];
 
-	int unkindex; // byte before string block
+	int unkindex2; // byte before string block
 
     // these are probably still used but get written over the name if nothing is set.
     //int type;
@@ -1790,7 +1796,7 @@ struct mstudiomodelv54_t
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
 	int vertexindex; // vertex Vector
-	uint32 tangentsindex; // tangents Vector
+	int tangentsindex; // tangents Vector
 
 	int numattachments;
 	int attachmentindex;
@@ -1990,8 +1996,7 @@ struct mstudioruimesface_t
 
 struct mstudioruimesh_t
 {
-    int enablerui; // boolean, 0 off, 1 on
-    
+    int numparents; // apparently you can have meshes parented to more than one bone(?)    
     int numvertices; // number of verts
     int numfaces; // number of faces (quads)
 
@@ -2005,22 +2010,17 @@ struct mstudioruimesh_t
 
     char szruimeshname[parentindex - 32]; // have to subtract header to get actual size (padding included)
 
-    int16 parent; // parent bone of mesh
+    int16 parent[numparents]; // parent(s) bone of mesh
 
-    mstudioruivertmap_t vertexmap[numfaces]; // vertex map for each face
-    
+    mstudioruivertmap_t vertexmap[numfaces]; // vertex map for each face  
     mstudioruivert_t vertex[numvertices];
 
     mstudioruimesface_t facedata[numfaces];
-
 };
 
 struct mstudioruimeshv54_t
 {
-    int16 enablerui; // boolean, 0 off, 1 on, might be flags
-
-    //int unk;
-    
+    int16 numparents; // apparently you can have meshes parented to more than one bone(?)
     int16 numvertices; // number of verts
     int16 numfaces; // number of faces (quads)
 
@@ -2029,25 +2029,19 @@ struct mstudioruimeshv54_t
     int parentindex; // this gets padding out front of it to even off the struct
 
     int vertexindex; // offset into smd style vertex data
-
     int fourthvertmapindex; // they now fully map the vertices for each quad
-
     int vertmapindex; // offsets into a vertex map for each quad
-
     int facedataindex; // offset into uv section
 
     char szruimeshname[parentindex - 28]; // have to subtract header to get actual size (padding included)
 
-    int16 parent; // parent bone of mesh
+    int16 parent[numparents]; // parent(s) bone of mesh
 
     mstudioruivertmapv54_t vertexmap[numfaces]; // vertex map for each face
-
     mstudioruifourthvertv54_t fourthvertmap[numfaces];
-    
     mstudioruivert_t vertex[numvertices];
 
     mstudioruimesface_t facedata[numfaces];
-
 };
 
 
