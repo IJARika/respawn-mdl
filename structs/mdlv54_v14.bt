@@ -19,7 +19,7 @@
 
 
 // headers
-studiohdrv54v14_t mdlHeader <bgcolor=cLtBlue>;
+studiohdrv54_v14_t mdlHeader <bgcolor=cLtBlue>;
 
 // this is a check for non shipped models.
 if (mdlHeader.boneindex > mdlHeader.mayaindex)
@@ -31,7 +31,7 @@ if (mdlHeader.boneindex > mdlHeader.mayaindex)
 
 // bones
 FSeek(mdlHeader.boneindex);
-mstudiobonev54v13_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
+mstudiobonev54_v121_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
 
 local int jigglebonecount = 0;
 local int i = 0;
@@ -95,7 +95,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodelv54v14_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodelv54_v14_t models[modelCount]<bgcolor=cDkGray>;
 
 
 // ik
@@ -128,7 +128,7 @@ for (i = 0; i < modelCount; ++i)
 }
 
 //FSeek(mdlHeader.meshindex);
-mstudiomeshv54v13_t meshes[meshCount] <bgcolor=cLtGray>;
+mstudiomeshv54_v121_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui
@@ -200,15 +200,15 @@ FSeek(mdlHeader.surfacepropindex);
 
 local int64 stringtable_size;
 
-if(mdlHeader.unkindex2 > 0 || mdlHeader.unkindex3 > 0)
+if(mdlHeader.unkindex3 > 0 || mdlHeader.unkindex4 > 0)
 {
-    if(mdlHeader.unkindex3 > 0)
+    if(mdlHeader.unkindex4 > 0)
     {
-        stringtable_size = mdlHeader.unkindex3 - mdlHeader.surfacepropindex;
+        stringtable_size = mdlHeader.unkindex4 - mdlHeader.surfacepropindex;
     }
     else
     {
-        stringtable_size = mdlHeader.unkindex2 - mdlHeader.surfacepropindex;
+        stringtable_size = mdlHeader.unkindex3 - mdlHeader.surfacepropindex;
     }
 }
 else

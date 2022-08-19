@@ -4,7 +4,7 @@
 //      File: rmdl
 //   Authors: Rika
 //   Version: 54
-// Increment: 13
+// Increment: 12.1
 //   Purpose: Respawn MDL Files
 //  Category: Model
 // File Mask: *.rmdl
@@ -17,14 +17,12 @@
 #include "./mdl_structs.bt"
 #include "./mdl_structs_rmdl_v13+.bt"
 
-
 // headers
-studiohdrv54_v13_t mdlHeader <bgcolor=cLtBlue>;
+studiohdrv54_v121_t mdlHeader <bgcolor=cLtBlue>;
 
 // this is a check for non shipped models.
 if (mdlHeader.boneindex > mdlHeader.mayaindex)
 {
-    FSeek(mdlHeader.mayaindex);
     char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 }
 
@@ -95,7 +93,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodelv54_v13_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodelv54_v121_t models[modelCount]<bgcolor=cDkGray>;
 
 
 // ik
@@ -136,19 +134,11 @@ if (mdlHeader.numruimeshes > 0)
 {
     FSeek(mdlHeader.ruimeshindex);
     mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
-
-    // some padding here to make it even I think.
-    //char ruiheader_filler[12];
     
     FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
     mstudioruimeshv54_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
-    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
 };
 
-
-// various includes, materials, and groups
-//FSeek(mdlHeader.includemodel_index);
-//mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
 
 FSeek(mdlHeader.textureindex);
 mstudiotexturev54_t textures[mdlHeader.numtextures] <bgcolor=cGreen>;

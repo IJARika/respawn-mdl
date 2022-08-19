@@ -24,7 +24,7 @@
 
 
 // main headers
-struct studiohdrv54v13_t
+struct studiohdrv54_v121_t
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -90,18 +90,23 @@ struct studiohdrv54v13_t
 	int localnodeindex;
 	int localnodenameindex;
  
-	int numflexdesc;
+	int numflexdesc; // may not be correct anymore
 	int flexdescindex;
+ 
+	// these are unknown since I don't know what they cut
+    // these two are removed in v12.2 but readded in v13
+	//int numunk;
+	//int unkindex;
 
-	int numflexcontrollers;
-	int flexcontrollerindex; // meshindex
+	int numunk1;
+	int unkindex1; // meshindex
  
 	// this is rui meshes
 	int numruimeshes;
 	int ruimeshindex;
  
-	int numikchains;
-	int ikchainindex;
+	int numunk2;
+	int unkindex2;
  
 	int surfacepropindex;
  
@@ -123,13 +128,13 @@ struct studiohdrv54v13_t
 
 	int bonetablebynameindex; // OffsetToBoneRemapInfo, sus
 
-	int unk_v54_v13[12];
+	int unk_v54_v121[12];
 
     float fadedistance;
 	
 	float gathersize; // what. from r5r struct
 	
-	int unk1_v54_v13[3];
+	int unk1_v54_v121[2]; // one less than v13
 
     // this is in all shipped models, probably part of their asset bakery.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -144,20 +149,157 @@ struct studiohdrv54v13_t
     int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
 	int m_nBoneFlexDriverIndex;
 
-	int unk2_v54_v13[11]; // the first index in here is the as the one in v12 and lower
+	int unk2_v54_v121[11]; // the first index in here is the as the one in v12 and lower
 
-     int unkindex2; // index to chunk after string block
+    int unkindex3; // index to chunk after string block
 
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex3; // chunk before unkindex2 sometimes
+    int unkindex4; // chunk before unkindex2 sometimes
 
-    int unk3_v54_v13[6];
+    int unk3_v54_v121[3]; // three less than v13
+};
+
+struct studiohdrv54_v13_t
+{
+	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+	int checksum; // This has to be the same in the phy and vtx files to load!
+	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	char name[64]; // The internal name of the model, padding with null bytes.
+	                // Typically "my_model.mdl" will have an internal name of "my_model"
+	int length; // Data size of MDL file in bytes.
+ 
+	Vector3 eyeposition;	// ideal eye position
+
+	Vector3 illumposition;	// illumination center
+	
+	Vector3 hull_min;		// ideal movement hull size
+	Vector3 hull_max;			
+
+	Vector3 view_bbmin;		// clipping bounding box
+	Vector3 view_bbmax;		
+ 
+	int flags;
+  
+	int numbones; // bones
+	int boneindex;
+ 
+	int numbonecontrollers; // bone controllers
+	int bonecontrollerindex;
+ 
+	int numhitboxsets;
+	int hitboxsetindex;
+ 
+	int numlocalanim; // animations/poses
+	int localanimindex; // animation descriptions
+ 
+	int numlocalseq; // sequences
+	int	localseqindex;
+ 
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
+ 
+	// mstudiotexture_t
+	// short rpak path
+	// raw textures
+	int numtextures; // the material limit exceeds 128, probably 256.
+	int textureindex;
+ 
+	// this should always only be one, unless using vmts.
+	// raw textures search paths
+	int numcdtextures;
+	int cdtextureindex;
+ 
+	// replaceable textures tables
+	int numskinref;
+	int numskinfamilies;
+	int skinindex;
+ 
+	int numbodyparts;		
+	int bodypartindex;
+ 
+	int numlocalattachments;
+	int localattachmentindex;
+ 
+	int numlocalnodes;
+	int localnodeindex;
+	int localnodenameindex;
+ 
+	// these are unknown since I don't know what they cut
+	int numunk;
+	int unkindex;
+
+	int numunk1;
+	int unkindex1; // meshindex
+ 
+	// this is rui meshes
+	int numruimeshes;
+	int ruimeshindex;
+ 
+	int numunk2;
+	int unkindex2;
+ 
+	int surfacepropindex;
+ 
+	int keyvalueindex;
+	int keyvaluesize;
+ 
+	int numlocalikautoplaylocks;
+	int localikautoplaylockindex;
+ 
+	float mass;
+	int contents;
+	
+	// external animations, models, etc.
+	// not the same due to streaming, probably mostly unused.
+	int numincludemodels; // this works different in apex because rpak models
+	int includemodelindex;
+	
+	uint32 virtualModel;
+
+	int bonetablebynameindex; // OffsetToBoneRemapInfo, sus
+
+	int unk_v54_v121[12];
+
+    float fadedistance;
+	
+	float gathersize; // what. from r5r struct
+	
+	int unk1_v54_v121[2];
+
+    int unk_v54_v13;
+
+    // this is in all shipped models, probably part of their asset bakery.
+	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
+
+    int numsrcbonetransform;
+	int srcbonetransformindex;
+
+	int	illumpositionattachmentindex;
+
+	int linearboneindex;
+
+    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	int m_nBoneFlexDriverIndex;
+
+	int unk2_v54_v121[11]; // the first index in here is the as the one in v12 and lower
+
+    int unkindex3; // index to chunk after string block
+
+    Vector3 mins; // min/max for Something
+    Vector3 maxs; // seem to be the same as hull size
+
+    int unkindex4; // chunk before unkindex2 sometimes
+
+    int unk3_v54_v121[3];
+
+    int unk1_v54_v13[3];
 
 };
 
-struct studiohdrv54v14_t
+struct studiohdrv54_v14_t
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -225,18 +367,19 @@ struct studiohdrv54v14_t
 	int localnodeindex;
 	int localnodenameindex;
  
-	int numflexdesc;
-	int flexdescindex;
+    // these are unknown since I don't know what they cut
+	int numunk;
+	int unkindex;
 
-	int numflexcontrollers;
-	int flexcontrollerindex; // meshindex
+	int numunk1;
+	int unkindex1; // meshindex
  
 	// this is rui meshes
 	int numruimeshes;
 	int ruimeshindex;
  
-	int numikchains;
-	int ikchainindex;
+	int numunk2;
+	int unkindex2;
 
 	int surfacepropindex;
  
@@ -258,13 +401,15 @@ struct studiohdrv54v14_t
 
 	int bonetablebynameindex; // OffsetToBoneRemapInfo, su
 
-	int unk_v54_v13[12];
+	int unk_v54_v121[12];
 
     float fadedistance;
 	
 	float gathersize; // what. from r5r struct
 	
-	int unk1_v54_v13[3];
+	int unk1_v54_v121[2];
+
+    int unk_v54_v13;
 
     // this is in all shipped models, probably part of their asset bakery.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -279,17 +424,18 @@ struct studiohdrv54v14_t
     int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
 	int m_nBoneFlexDriverIndex;
 
-	int unk2_v54_v13[11]; // most of these are nulled compared to a v13
+	int unk2_v54_v121[11]; // most of these are nulled compared to a v13
 
-    int unkindex2; // index to chunk after string block
+    int unkindex3; // index to chunk after string block
 
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex3; // chunk before unkindex2 sometimes
+    int unkindex4; // chunk before unkindex2 sometimes
 
-    int unk3_v54_v13[6];
+    int unk3_v54_v121[3];
 
+    int unk1_v54_v13[3];
 };
 
 
@@ -297,7 +443,7 @@ struct studiohdrv54v14_t
 // Bone Structs
 
 // bones
-struct mstudiobonev54v13_t
+struct mstudiobonev54_v121_t
 {
 	int sznameindex;
 
@@ -334,7 +480,45 @@ struct mstudiobonev54v13_t
 
 
 // studio models
-struct mstudiomodelv54v13_t
+struct mstudiomodelv54_v121_t
+{
+	char name[64];
+
+	int unkindex2; // byte before string block
+
+    // these are probably still used but get written over the name if nothing is set.
+    //int type;
+	//float boundingradius;
+
+    char name2[8]; // it looks like they write the entire name
+                   // then write over it with other values where needed
+                   // why.
+
+	int nummeshes;	
+	int meshindex;
+
+	// cache purposes
+	int numvertices; // number of unique vertices/normals/texcoords
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
+
+	int numattachments;
+	int attachmentindex;
+
+    // might be cut
+	int numeyeballs;
+	int eyeballindex;
+
+	//mstudio_modelvertexdata_t vertexdata;
+
+    // same as v53, except trimming the fat
+	//int unk;
+
+    //int unkindex;
+    //int unkindex1;
+};
+
+struct mstudiomodelv54_v13_t
 {
 	char name[64];
 
@@ -372,7 +556,7 @@ struct mstudiomodelv54v13_t
     //int unkindex1;
 };
 
-struct mstudiomodelv54v14_t
+struct mstudiomodelv54_v14_t
 {
 	char name[64];
 
@@ -411,7 +595,7 @@ struct mstudiomodelv54v14_t
 };
 
 // meshes
-struct mstudiomeshv54v13_t
+struct mstudiomeshv54_v121_t
 {
 	int material;
 
