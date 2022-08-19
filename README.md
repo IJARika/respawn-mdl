@@ -5,10 +5,13 @@ Various structs for Respawn's models including ones unchanged from normal Source
 Currently these templates work for:
 
 Valve:
+
   -V48
+  
   -V49
 
 Respawn:
+
   -V52
   
   -V53
