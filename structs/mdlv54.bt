@@ -94,8 +94,8 @@ mstudioiklinkv54_t iklinks[linkCount] <bgcolor=0x7d3c98>;
 //FSeek(mdlHeader.localanimindex);
 //mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
 
-//FSeek(mdlHeader.localseqindex);
-//mstudioanimdescv53_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
+FSeek(mdlHeader.localseqindex);
+mstudioseqdescv54_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
 
 
 // models

@@ -69,8 +69,16 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
 //setup nodes, not fully understood
-FSeek(mdlHeader.localnodenameindex);
-mstudionode_t node <bgcolor=cDkYellow>;
+if(mdlHeader.numlocalnodes > 0)
+{
+    FSeek(mdlHeader.localnodenameindex);
+    mstudionode_t node <bgcolor=cDkYellow>;
+}
+
+
+// setup animseqs
+FSeek(mdlHeader.localseqindex);
+mstudioseqdescv54_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
 
 
 // setup poseparms
