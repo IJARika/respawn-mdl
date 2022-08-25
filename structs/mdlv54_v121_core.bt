@@ -68,33 +68,6 @@ FSeek(mdlHeader.bonetablebynameindex);
 mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
-//setup nodes, not fully understood
-if(mdlHeader.numlocalnodes > 0)
-{
-    FSeek(mdlHeader.localnodenameindex);
-    mstudionode_t node <bgcolor=cDkYellow>;
-}
-
-
 // setup animseqs
 FSeek(mdlHeader.localseqindex);
 mstudioseqdescv54_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
-
-
-// setup poseparms
-FSeek(mdlHeader.localposeparamindex);
-mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow>;
-
-
-// setup various ik bits
-FSeek(mdlHeader.ikchainindex);
-mstudioikchainv54_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef>;
-
-local int linkCount = 0;
-
-for (i = 0; i < mdlHeader.numikchains; ++i)
-{
-   linkCount += ikchains[i].numlinks;
-}
-
-mstudioiklinkv54_t iklinks[linkCount] <bgcolor=0x7d3c98>;

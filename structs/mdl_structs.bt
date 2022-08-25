@@ -494,8 +494,9 @@ struct studiohdrv53_t
 
     // this data block is related to the vphy, if it's not present the data will not be written
     int unkmemberindex1; // section between vphy and vtx.?
+    int numunkmember1; // only seems to be used when phy has one solid
 
-    int unk[2];
+    int unk;
 
     int unkindex3; // goes to the same spot as vtx normally.
 
@@ -667,7 +668,7 @@ struct studiohdrv54_t
 	int vtxsize;
 	int vvdsize;
 	int vvcsize;
-	int vphysize;
+	int vphysize; // still used in models using vg
 
 	// unk2_v54[3] is the chunk after following unkindex2's chunk
 	int unk2_v54[3]; // the same four unks in v53 I think, the first index being unused now probably
@@ -912,10 +913,12 @@ struct mstudiobonev54_t
     int surfacepropidx; // index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
+
+    int unk;
 	
-	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+	int surfacepropLookup; // unsure, the normal spot has data though
 	
-	int unk[2];
+	int unk1;
 };
 
 // jigglebone
@@ -1427,7 +1430,7 @@ struct RAnimBoneHeader
 	uint32 DataSize;
 
     if(DataSize != 0)
-        hfloat unk[(DataSize - 32) / 2];
+        hfloat unk[(DataSize - 32) / 2] <fgcolor=cDkYellow>;
 
 };
 
@@ -2143,7 +2146,13 @@ struct mstudioruimeshv54_t
 
 struct unksectionheader
 {
-    int unk[15];
+    int unk; // flags
+    
+    // same as hulls
+    Vector3 unkvectormin;
+    Vector3 unkvectormax;
+
+    int unused[8]; // hopefully, checks out with other mdl structs 
 };
 
 // struct when linear bone data isn't present

@@ -14,7 +14,7 @@
 
 #include "./source_math.bt"
 #include "./mdl_structs.bt"
-#include "./vphy.bt"
+#include "./vphy_internal.bt"
 #include "./vtx.bt"
 
 local int i = 0;
@@ -283,7 +283,7 @@ FSeek(mdlHeader.vphyindex);
 
 struct vphygroup_t
 {   
-    phyheader_t vphy_header <bgcolor=cLtRed>;
+    /*phyheader_t vphy_header <bgcolor=cLtRed>;
     compactsurfaceheader_t vphy_section[vphy.vphy_header.numsolids] <bgcolor=cLtRed, optimize=false>;
 
     local int64 charSize = mdlHeader.vphysize;
@@ -295,12 +295,26 @@ struct vphygroup_t
 
     charSize -= 16;
     
-    char vphy_stringdata[charSize] <bgcolor=cDkRed>;
+    char vphy_stringdata[charSize] <bgcolor=cDkRed>;*/
+
+    phyheader_t vphy_header <bgcolor=cLtRed>;
+    physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
+    
+    local int64 charSize = mdlHeader.vphysize;
+    
+    for (i = 0; i < vphy_header.numsolids; i++)
+    {
+        charSize -= vphy_section[i].surfaceheader.size + 4;
+    };
+    
+    charSize -= 16;
+    
+    char vphy_stringdata[charSize] <fgcolor=cRed>;
 };
 
 if (mdlHeader.vphyindex > 0)
 {
-    vphygroup_t vphy <fgcolor=cLtYellow>;
+    vphygroup_t vphy;
 };
 
 // can't get it working outside here :/
@@ -319,9 +333,20 @@ struct unkphysectiondatachunk_t
 
 if (mdlHeader.vphysize > 0)
 {
+    local int numunk1 = 0;
+
+    if(mdlHeader.numunkmember1 > 0)
+    {
+        numunk1 = mdlHeader.numunkmember1;
+    }
+    else
+    {
+        numunk1 = vphy.vphy_header.numsolids;
+    }
+
     FSeek(mdlHeader.unkmemberindex1);
-    unkphysectionhdr_t unksechdr[vphy.vphy_header.numsolids] <bgcolor=cBlue>;
-    unkphysectiondatachunk_t unksecdatachunk[vphy.vphy_header.numsolids] <fgcolor=cLtYellow, optimize=false>;
+    unkphysectionhdr_t unksechdr[numunk1] <bgcolor=cBlue>;
+    unkphysectiondatachunk_t unksecdatachunk[numunk1] <fgcolor=cLtYellow, optimize=false>;
 };
 
 // vtx

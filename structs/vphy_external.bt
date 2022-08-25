@@ -1,0 +1,143 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vphy
+//   Authors: Rika & Others
+//   Version: 256
+//   Purpose: Valve Physics Files
+//  Category: Model
+// File Mask: *.phy
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "./source_math.bt"
+
+local int i = 0;
+
+
+// a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
+
+
+//=====
+// vphy
+
+
+struct phyheader_t
+{
+	int size; // Size of this header section (generally 16)
+	int id; // Often zero, unknown purpose.
+	int numsolids; // Number of solids in file
+	int checksum; // checksum of source .mdl file (4-bytes)
+};
+
+struct compactsurfaceheader_t
+{
+	int size; // size of the content after this byte
+	int id;
+	int16 version;
+
+	int16 modeltype;
+
+	int surfacesize;
+
+	Vector3 dragaxisareas;
+
+	int axismaparea;
+};
+
+struct legacysurfaceheader_t
+{
+	Vector3 mass_center;
+	Vector3 rotation_inertia;
+
+	float upper_limit_radius;
+
+    // big if true
+	int	max_deviation : 24;
+	int	byte_size : 8;
+	int	nodeindex;
+
+    int pad[2];
+
+    int id;
+};
+
+struct trianglefaceheader_t
+{
+    int vertexindex; // from this member to verts
+    int parent; // parent bone
+    int flags;
+    int numfaces;
+};
+
+struct trianglevertmap_t
+{
+    byte faceindex;
+    byte unkdata[3];
+
+    int16 vertex1;
+    byte unkdata1[2];
+
+    int16 vertex2;
+    byte unkdata2[2];
+
+    int16 vertex3;
+    byte unkdata3[2];
+};
+
+struct phyvertex_t
+{
+    Vector3 pos; // relative to bone
+    int unk;
+};
+
+struct phynode_t
+{
+    int rightnodeindex;
+    int convexindex;
+
+    Vector3 center;
+    float radius;
+
+    int bboxsize; // volume?
+};
+
+
+struct physection_t
+{
+    compactsurfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow, optimize=false>;
+    legacysurfaceheader_t surfaceheader2 <bgcolor=cLtRed, fgcolor=cYellow, optimize=false>;
+    trianglefaceheader_t trihdr <bgcolor=cDkRed, fgcolor=cDkYellow, optimize=false>;
+    trianglevertmap_t vertmap[trihdr.numfaces] <bgcolor=cDkRed, fgcolor=cLtYellow, optimize=false>;
+    
+    local int numvertices = 0;
+    
+    for(i = 0; i < trihdr.numfaces; i++)
+    {
+        numvertices = vertmap[i].vertex1 > numvertices ? vertmap[i].vertex1 : numvertices;
+        numvertices = vertmap[i].vertex2 > numvertices ? vertmap[i].vertex2 : numvertices;
+        numvertices = vertmap[i].vertex3 > numvertices ? vertmap[i].vertex3 : numvertices;
+    
+    };
+    
+    numvertices++;
+    
+    phyvertex_t vertices[numvertices] <bgcolor=cDkRed, fgcolor=cYellow, optimize=false>;
+    phynode_t node<bgcolor=cRed, optimize=false>;
+};
+
+phyheader_t vphy_header <bgcolor=cLtRed>;
+physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
+
+local int64 charSize = FileSize();
+
+for (i = 0; i < vphy_header.numsolids; i++)
+{
+    charSize -= vphy_section[i].surfaceheader.size + 4;
+};
+
+charSize -= 16;
+
+char vphy_stringdata[charSize] <fgcolor=cRed>;

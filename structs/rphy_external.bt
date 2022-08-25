@@ -1,0 +1,142 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rphy
+//   Authors: Rika & Others
+//   Version: 256
+//   Purpose: Respawn Physics Files
+//  Category: Model
+// File Mask: *.phy
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "./source_math.bt"
+
+local int i = 0;
+
+
+// a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
+
+
+//=====
+// vphy
+
+
+struct phyheader_t
+{
+	int size; // Size of this header section (generally 16)
+	int id; // version?
+	int numsolids; // Number of solids in file
+	int checksum; // checksum of source .mdl file (4-bytes)
+
+    int keyvalueindex; // string block or size of data after this member
+};
+
+struct phyheader2_t
+{
+	int size; // Size of this header section (generally 16)
+	int id; // Often zero, unknown purpose.
+	int numsolids; // Number of solids in file
+
+	int unk[3]; // vector maybe?
+
+    int keyvalueindex; // string block or size of data after this member
+    
+    int unk1;
+};
+
+struct compactsurfaceheader_t
+{
+	int size; // size of the content after this byte
+	int id;
+	int16 version;
+
+	int16 modeltype;
+
+	int surfacesize;
+
+	Vector3 dragaxisareas;
+
+	int axismaparea;
+};
+
+struct legacysurfaceheader_t
+{
+	Vector3 mass_center;
+	Vector3 rotation_inertia;
+
+	float upper_limit_radius;
+
+    // big if true
+	int	max_deviation : 24;
+	int	byte_size : 8;
+	int	nodeindex;
+
+    int pad[2];
+
+    int id;
+};
+
+struct trianglefaceheader_t
+{
+    int vertexindex; // from this member to verts
+    int parent; // parent bone
+    int flags;
+    int numfaces;
+};
+
+struct trianglevertmap_t
+{
+    byte faceindex;
+    byte unkdata[3];
+
+    int16 vertex1;
+    byte unkdata1[2];
+
+    int16 vertex2;
+    byte unkdata2[2];
+
+    int16 vertex3;
+    byte unkdata3[2];
+};
+
+struct phyvertex_t
+{
+    Vector3 pos; // relative to bone
+    int unk;
+};
+
+struct phynode_t
+{
+    int rightnodeindex;
+    int convexindex;
+
+    Vector3 center;
+    float radius;
+
+    int bboxsize; // volume?
+};
+
+
+struct physection_t
+{
+    compactsurfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow, optimize=false>;
+    legacysurfaceheader_t surfaceheader2 <bgcolor=cLtRed, fgcolor=cYellow, optimize=false>;
+};
+
+phyheader_t vphy_header <bgcolor=cLtRed>;
+phyheader2_t vphy_subheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
+//compactsurfaceheader_t phy_section[vphy_header.numsolids];
+//legacysurfaceheader_t phy_section2[vphy_header.numsolids];
+physection_t vphy_section[2] <optimize=false>;
+//nt unk[7];
+//int unk1[36];
+
+
+FSeek(vphy_header.keyvalueindex);
+
+local int64 charSize = FileSize() - vphy_header.keyvalueindex;
+
+char vphy_stringdata[charSize] <fgcolor=cRed>;
