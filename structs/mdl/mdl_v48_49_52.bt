@@ -12,14 +12,19 @@
 //------------------------------------------------
 
 
-#include "./source_math.bt"
-#include "./mdl_structs.bt"
+#include "../source_math.bt"
+#include "../mdl/mdl_structs.bt"
+
+local int i = 0;
+local int j = 0;
+
 
 // version before the header is created.
-local int preversion = ReadInt(4);
+local int pre_version = ReadInt(4);
+
 
 // headers
-if (preversion == 52)
+if (pre_version == 52)
 { 
     studiohdrv52_t mdlHeader <bgcolor=cLtBlue>;
     studiohdr2v52_t mdlSubHeader <bgcolor=cDkBlue>;
@@ -46,7 +51,6 @@ else
     mstudiobonev48_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>;
 
 local int jigglebonecount = 0;
-local int i = 0;
 
 local char s_jigglebonename;
 
@@ -91,6 +95,40 @@ if (mdlHeader.version < 49)
     mstudioanimdescv48_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
 else
     mstudioanimdescv49_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+
+
+// Animation Data
+local int numanimboneheader = 0;
+local int numikrule = 0;
+for (i = 0; i < mdlHeader.numlocalanim; ++i)
+{
+	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
+	for (j = 0; j < mdlHeader.numbones; ++j)
+	{
+        
+		mstudioanim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+		numanimboneheader += 1;
+        FSkip(animheader[numanimboneheader - 1].nextoffset - 4);
+        
+		if (animheader[numanimboneheader - 1].nextoffset <= 0) 
+		{
+			// Read in unused empty data structure at the end of the list.
+			//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+			break;
+		}
+	};
+	// Read in unused empty data structure at the end of the list.
+	//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+
+	// Animation IK Rules
+	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
+	for (j = 0; j < animdesc[i].numikrules; ++j)
+	{
+		mstudioikrule_t animikrule <bgcolor=cGreen>;
+		numikrule += 1;
+	};
+};
+
 
 FSeek(mdlHeader.localseqindex);
 if (mdlHeader.version < 49)

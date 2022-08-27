@@ -4,7 +4,7 @@
 //      File: rmdl, rrig
 //   Authors: Rika
 //   Version: 54
-// Increment: 13
+// Increment: 14
 //   Purpose: Respawn MDL Files
 //  Category: Model
 // File Mask: *.rmdl, *.rrig
@@ -13,17 +13,17 @@
 //------------------------------------------------
 
 
-#include "./source_math.bt"
-#include "./mdl_structs.bt"
-#include "./mdl_structs_rmdl_v13+.bt"
+#include "../source_math.bt"
+#include "../mdl/mdl_structs.bt"
+#include "../rmdl/rmdl_structs.bt"
 
 
 // header
-studiohdrv54_v13_t mdlHeader <bgcolor=cLtBlue>;
+studiohdrv54_v14_t mdlHeader <bgcolor=cLtBlue>;
 
 
 // first set of core parts
-#include "./mdlv54_v121_core.bt"
+#include "../rmdl/rmdl_v54_v121_core.bt"
 
 
 // models
@@ -38,15 +38,16 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodelv54_v13_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodelv54_v14_t models[modelCount]<bgcolor=cDkGray>;
 
 
 // second set of core parts, done like this for spacing.
-#include "./mdlv54_v121_core2.bt"
+#include "../rmdl/rmdl_v54_v121_core2.bt"
 
 
 // string table
-FSeek(mdlHeader.sznameindex);
+// they no longer store the name in the string table as of v14
+FSeek(mdlHeader.surfacepropindex);
 
 local int64 stringtable_size;
 
@@ -67,3 +68,11 @@ else
 }
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
+
+
+// third set of core parts, done like this for spacing.
+#include "../rmdl/rmdl_v54_v121_core3.bt"
+
+
+FSeek(mdlHeader.boneremapindex + 356);
+mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;

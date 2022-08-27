@@ -1,12 +1,12 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: mdl, rmdl, rrig
+//      File: mdl
 //   Authors: Valve, Rika, & Others
-//   Version: 48/49/52/53/54
+//   Version: 48/49/52/53
 //   Purpose: Valve/Respawn MDL Structs
 //  Category: Struct
-// File Mask: *.mdl, *.rmdl, *.rrig
+// File Mask: *.mdl
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -504,192 +504,6 @@ struct studiohdrv53_t
 
 };
 
-struct studiohdrv54_t
-{
-	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
- 
-	Vector3 eyeposition;	// ideal eye position
-
-	Vector3 illumposition;	// illumination center
-	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
-
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
- 
-	int flags;
-  
-	int numbones; // bones
-	int boneindex;
- 
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
- 
-	int numhitboxsets;
-	int hitboxsetindex;
- 
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
- 
-	int numlocalseq; // sequences
-	int	localseqindex;
- 
-	int activitylistversion; // initialization flag - have the sequences been indexed?
-	int eventsindexed;
- 
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
- 
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
- 
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
- 
-	int numbodyparts;		
-	int bodypartindex;
- 
-	int numlocalattachments;
-	int localattachmentindex;
- 
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
- 
-	int numflexdesc;
-	int flexdescindex;
- 
-	int meshindex; // SubmeshLodsOffset, might just be a mess offset
-
-	int numflexcontrollers;
-	int flexcontrollerindex;
- 
-	int numflexrules;
-	int flexruleindex;
- 
-	int numikchains;
-	int ikchainindex;
-
-	// this is rui meshes
-	int numruimeshes;
-	int ruimeshindex;
- 
-	int numlocalposeparameters;
-	int localposeparamindex;
- 
-	int surfacepropindex;
- 
-	int keyvalueindex;
-	int keyvaluesize;
- 
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
- 
-	float mass;
-	int contents;
-	
-	// external animations, models, etc.
-	// not the same due to streaming, probably mostly unused.
-	int numincludemodels; // this works different in apex because rpak models
-	int includemodelindex;
-	
-	uint32 virtualModel;
-
-	int bonetablebynameindex;
-	
-	// if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
-	// this value is used to calculate directional components of lighting 
-	// on static props
-	byte constdirectionallightdot;
-
-	// set during load of mdl data to track *desired* lod configuration (not actual)
-	// the *actual* clamped root lod is found in studiohwdata
-	// this is stored here as a global store to ensure the staged loading matches the rendering
-	byte rootLOD;
-	
-	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
-	// to be set as root LOD:
-	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
-	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
-	byte numAllowedRootLODs;
-
-	byte unused;
-
-	float fadedistance;
-	
-	float gathersize; // what. from r5r struct
-
-    int numunk_v54_early;
-    int unkindex_v54_early;
-
-	int unk_v54[2];
-
-	// this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
-	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
-
-	int numsrcbonetransform;
-	int srcbonetransformindex;
-
-	int	illumpositionattachmentindex;
-	
-	int linearboneindex;
-
-	int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-	int unk1_v54[7];
-
-	// maybe this is for the string table since it always has one byte padding it?
-	// this is probably for some section I haven't seen or a string that hasn't been filled out.
-	int unkindex1; // byte before string table start?
-
-	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
-
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize; // still used in models using vg
-
-	// unk2_v54[3] is the chunk after following unkindex2's chunk
-	int unk2_v54[3]; // the same four unks in v53 I think, the first index being unused now probably
-
-    int unkindex3; // index to chunk after string block
-
-    Vector3 mins; // min/max for Something
-    Vector3 maxs; // seem to be the same as hull size
-
-    int unk3_v54[3];
-
-	int unkindex4; // chunk before unkindex3 sometimes
-
-	int unk4_v54[3]; // same as unk3_v54_v121
-
-    //int vgindex; // 0tVG
-    //int unksize; // might be offset
-    //int unksize1; // might be offset
-
-};
-
 // sub header
 struct studiohdr2_t
 {
@@ -887,40 +701,6 @@ struct mstudiobonev53_t
 	int unused[7]; // remove as appropriate
 };
 
-// v54 is a heavily gutted v53 bone
-struct mstudiobonev54_t
-{
-	int sznameindex;
-
-	int parent; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
-
-	// default values
-	Vector3 pos;
-	Quaternion quat;
-	RadianEuler rot;
-	
-	Vector3 unkvector; // the same as whatever v53 is
-
-	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
-
-    int flags;
-	int proctype;
-    int procindex; // procedural rule
-	int physicsbone; // index into physically simulated bone
-	
-    int surfacepropidx; // index into string tablefor property name
-
-	int contents; // See BSPFlags.h for the contents flags
-
-    int unk;
-	
-	int surfacepropLookup; // unsure, the normal spot has data though
-	
-	int unk1;
-};
-
 // jigglebone
 struct mstudiojigglebone_t
 {
@@ -968,60 +748,7 @@ struct mstudiojigglebone_t
 	float baseForwardFriction;
 };
 
-struct mstudiojigglebonev54_t
-{
-	//uint32 unk; // these are different in v54
-
-    byte flags; // looks to be.
-
-    byte unk;
-    byte unk1;
-    byte unk2;
-
-	// general params
-	float length; // how far from bone base, along bone, is tip
-	float tipMass;
-
-    float unkfloat; // v54 adds an extra value here but otherwise the same
-
-	// flexible params
-	float yawStiffness;
-	float yawDamping;	
-	float pitchStiffness;
-	float pitchDamping;	
-	float alongStiffness;
-	float alongDamping;	
-
-	// angle constraint
-	float angleLimit; // maximum deflection of tip in radians
-	
-	// yaw constraint
-	float minYaw; // in radians
-	float maxYaw; // in radians
-	float yawFriction;
-	float yawBounce;
-	
-	// pitch constraint
-	float minPitch; // in radians
-	float maxPitch; // in radians
-	float pitchFriction;
-	float pitchBounce;
-
-	// base spring
-	float baseMass;
-	float baseStiffness;
-	float baseDamping;	
-	float baseMinLeft;
-	float baseMaxLeft;
-	float baseLeftFriction;
-	float baseMinUp;
-	float baseMaxUp;
-	float baseUpFriction;
-	float baseMinForward;
-	float baseMaxForward;
-	float baseForwardFriction;
-};
-
+// flexdriver
 struct mstudioboneflexdriver_t
 {
 	int m_nBoneIndex;			// Bone to drive flex controller
@@ -1029,16 +756,6 @@ struct mstudioboneflexdriver_t
 	int m_nControlIndex;		// Index into data where controllers are (relative to this)
 
 	int unused[3];
-};
-
-// not quite right
-struct mstudioboneflexdriverv54_t
-{
-	int m_nBoneIndex;			// Bone to drive flex controller
-	int m_nControlCount;		// Number of flex controllers being driven
-	int m_nControlIndex;		// Index into data where controllers are (relative to this)
-
-	//int unused[3];
 };
 
 // attachments
@@ -1052,16 +769,6 @@ struct mstudioattachment_t
 	matrix3x4_t			localmatrix; // attachment point
 
 	int					unused[8];
-};
-
-struct mstudioattachmentv54_t
-{
-	int sznameindex;
-	int		flags;
-
-	int					localbone; // parent bone
-
-	matrix3x4_t			localmatrix; // attachment point
 };
 
 // bone id in alphabetical order
@@ -1093,29 +800,12 @@ struct mstudioikchainv53_t
     int unk;
 };
 
-struct mstudioikchainv54_t
-{
-	int sznameindex;
-
-	int linktype;
-	int numlinks;
-	int linkindex;
-    
-    float	kneeDir;
-};
-
 // ikinfo
 struct mstudioiklink_t
 {
 	uint32 bone;
 	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 	Vector3	unused0; // unused in v49
-};
-
-struct mstudioiklinkv54_t
-{
-	uint32 bone;
-	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 };
 
 // iklock
@@ -1175,24 +865,6 @@ struct mstudiolinearbone_t
 	int unused[6];
 };
 
-struct mstudiolinearbonev54_t	
-{
-    // they cut pos and rot scale, understandable since posscale was never used it tf|2
-	int numbones;
-
-	int flagsindex;
-
-	int	parentindex;
-	
-	int	posindex;
-	
-	int quatindex;
-	
-	int rotindex;
-	
-	int posetoboneindex;
-};
-
 
 //===============
 // Hitbox Structs
@@ -1217,6 +889,7 @@ struct mstudiobbox_t
 	Vector3 bbmax;	
 
 	int szhitboxnameindex; // offset to the name of the hitbox.
+	
 	int unused[8];
 };
 
@@ -1228,26 +901,12 @@ struct mstudiobboxv53_t
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
-	uint32 szhitboxnameindex; // offset to the name of the hitbox.
+	int szhitboxnameindex; // offset to the name of the hitbox.
     
     int unk;
     int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 
 	int unused[6];
-};
-
-struct mstudiobboxv54_t
-{
-	int bone;
-	int group; // intersection group
-
-	Vector3 bbmin; // bounding box
-	Vector3 bbmax;	
-
-	int szhitboxnameindex; // offset to the name of the hitbox.
-    
-    int unk;
-    int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 };
 
 
@@ -1376,69 +1035,51 @@ struct mstudioanimdescv53_t
     int unused[4];
 };
 
-struct RAnimTitanfallBoneFlag
+struct animflags_t
 {
-	byte Unused : 1;
-	byte bStaticTranslation : 1;		// If zero, one per data set
-	byte bStaticRotation : 1;		// If zero, one per data set
-	byte bStaticScale : 1;			// If zero, one per data set
-	byte Unused2 : 1;
-	byte Unused3 : 1;
-	byte Unused4 : 1;
+	byte unused : 1;
+	byte statictranslation : 1;		// If zero, one per data set
+	byte staticrotation : 1;		// If zero, one per data set
+	byte staticscale : 1;			// If zero, one per data set
+	byte unused2 : 1;
+	byte unused3 : 1;
+	byte unused4 : 1;
 };
 
-struct RAnimBoneHeader
+struct mstudioanim_t
 {
-	float TranslationScale;
+	byte bone;
+	animflags_t flags;		// weighing options
 
-	byte BoneIndex;
+	short nextoffset;
+};
 
-	RAnimTitanfallBoneFlag BoneFlags;
-	//byte boneFlags;
 
-	byte Flags2;
-	byte Flags3;
+struct mstudioanimv53_t
+{
+	float translationscale;
+
+	byte bone;
+	animflags_t flags;
+
+	int16 unk;
 	
-	/*union Test
-	{
-		struct Test2
-		{
-			int16 OffsetX;
-			int16 OffsetY;
-			int16 OffsetZ;
-			int16 OffsetL;
-		};
+    Quat64 roation;
 
-		int64 PackedRotation;
-	} RotationInfo;*/
+	Vector48 translation;
 
-    /*int16 OffsetX;
-	int16 OffsetY;
-	int16 OffsetZ;
-    int16 OffsetL;*/
+	Vector48 scale;
 
-    Quat64 PackedRotation;
-
-	int16 TranslationX;
-	int16 TranslationY;
-	int16 TranslationZ;
-
-	hfloat ScaleX;
-	hfloat ScaleY;
-	hfloat ScaleZ;
-
-	uint32 DataSize;
-
-    if(DataSize != 0)
-        hfloat unk[(DataSize - 32) / 2] <fgcolor=cDkYellow>;
-
+	int nextoffset;
 };
 
 struct mstudioikrule_t
 {
 	int			index;
+
 	int			type;
 	int			chain;
+
 	int			bone;
 
 	int			slot;	// iktarget slot.  Usually same as chain.
@@ -1449,7 +1090,8 @@ struct mstudioikrule_t
 	Quaternion	q;
 
 	int			compressedikerrorindex;
-	int			unused2;
+	
+    int			unused2;
 
 	int			iStart;
 	int			ikerrorindex;
@@ -1470,8 +1112,9 @@ struct mstudioikrule_t
 
 	int			szattachmentindex;		// name of world attachment
 
-	int			unused[5];
+	int			unused[7];
 };
+
 
 struct mstudioikrulev53_t
 {
@@ -1717,77 +1360,7 @@ struct mstudioseqdescv53_t
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-	int unused[8]; // some might be used or they might've just been reseting space like on bones.
-};
-
-struct mstudioseqdescv54_t
-{
-	int baseptr;
-
-	int	szlabelindex;
-
-	int szactivitynameindex;
-
-	int flags; // looping/non-looping flags
-
-	int activity; // initialized at loadtime to game DLL values
-	int actweight;
-
-	int numevents;
-	int eventindex;
-	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
-
-	int numblends;
-
-	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
-	int animindexindex;
-
-	int movementindex; // [blend] float array for blended movement
-	int groupsize[2];
-	int paramindex[2]; // X, Y, Z, XR, YR, ZR
-	float paramstart[2]; // local (0..1) starting value
-	float paramend[2]; // local (0..1) ending value
-	int paramparent;
-
-	float fadeintime; // ideal cross fate in time (0.2 default)
-	float fadeouttime; // ideal cross fade out time (0.2 default)
-
-	int localentrynode; // transition node at entry
-	int localexitnode; // transition node at exit
-	int nodeflags; // transition rules
-
-	float entryphase; // used to match entry gait
-	float exitphase; // used to match exit gait
-	
-	float lastframe; // frame that should generation EndOfSequence
-
-	int nextseq; // auto advancing sequences
-	int pose; // index of delta animation between end and nextseq
-
-	int numikrules;
-
-	int numautolayers;
-	int autolayerindex;
-
-	int weightlistindex;
-
-	int posekeyindex;
-
-	int numiklocks;
-	int iklockindex;
-
-	// Key values
-	int keyvalueindex;
-	int keyvaluesize;
-
-	int cycleposeindex; // index of pose parameter to use as cycle index
-
-    int activitymodifierindex;
-	int numactivitymodifiers;
-
-	int unk[4];
+	int unused[10]; // some might be used or they might've just been reseting space like on bones.
 };
 
 // demand loaded sequence groups
@@ -1875,44 +1448,6 @@ struct mstudiomodelv53_t
     int unused[4];
 };
 
-struct mstudiomodelv54_t
-{
-	char name[64];
-
-	int unkindex2; // byte before string block
-
-    // these are probably still used but get written over the name if nothing is set.
-    //int type;
-	//float boundingradius;
-
-    char name2[8]; // it looks like they write the entire name
-                   // then write over it with other values where needed
-                   // why.
-
-	int nummeshes;	
-	int meshindex;
-
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
-
-	int numattachments;
-	int attachmentindex;
-
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
-
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
-	int unk[4];
-
-    int unkindex;
-    int unkindex1;
-};
-
 // meshes
 struct mstudio_meshvertexdata_t
 {
@@ -1950,35 +1485,6 @@ struct mstudiomesh_t
 	int unused[8]; // remove as appropriate
 };
 
-struct mstudiomeshv54_t
-{
-	int material;
-
-	int modelindex;
-
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexoffset; // vertex mstudiovertex_t
-
-	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
-	
-	int numflexes; // vertex animation
-	int flexindex;
-
-
-	// special codes for material operations
-	int materialtype;
-	int materialparam;
-
-	// a unique ordinal for this mesh
-	int meshid;
-
-	Vector3 center;
-
-	mstudio_meshvertexdata_t vertexdata;
-    
-	int unused[2];
-};
-
 
 //=================
 // Material Structs
@@ -1987,7 +1493,7 @@ struct mstudiomeshv54_t
 // cdmaterials
 struct mstudiotexturedir_t
 {
-	uint32 sznameindex; // file name
+	int sznameindex; // file name
 };
 
 // skin info
@@ -2013,13 +1519,6 @@ struct mstudiotexturev53_t
 	int unused[7];
 };
 
-struct mstudiotexturev54_t
-{
-	int sznameindex;
-
-	int64 guid;
-};
-
 // skin groups
 struct mstudioskingroup_t
 {
@@ -2029,6 +1528,8 @@ struct mstudioskingroup_t
 
 //====
 // RUI
+
+
 struct mstudiorruiheader_t
 {
     byte ruiunk[4]; // unsure, it doesn't line up
@@ -2050,20 +1551,6 @@ struct mstudioruivertmap_t
     // fourth vert for second triangle
     // 4
     int16 vertfourthid;
-};
-
-struct mstudioruivertmapv54_t
-{
-    // not sure of the order on these
-    int16 vertid1;
-    int16 vertid2;
-    int16 vertid3;
-};
-
-struct mstudioruifourthvertv54_t
-{
-    // not sure of the order on these
-    int16 vertid4;
 };
 
 struct mstudioruivert_t
@@ -2114,35 +1601,10 @@ struct mstudioruimesh_t
     mstudioruimesface_t facedata[numfaces];
 };
 
-struct mstudioruimeshv54_t
-{
-    int16 numparents; // apparently you can have meshes parented to more than one bone(?)
-    int16 numvertices; // number of verts
-    int16 numfaces; // number of faces (quads)
-
-    int16 unk;
-
-    int parentindex; // this gets padding out front of it to even off the struct
-
-    int vertexindex; // offset into smd style vertex data
-    int fourthvertmapindex; // they now fully map the vertices for each quad
-    int vertmapindex; // offsets into a vertex map for each quad
-    int facedataindex; // offset into uv section
-
-    char szruimeshname[parentindex - 28]; // have to subtract header to get actual size (padding included)
-
-    int16 parent[numparents]; // parent(s) bone of mesh
-
-    mstudioruivertmapv54_t vertexmap[numfaces]; // vertex map for each face
-    mstudioruifourthvertv54_t fourthvertmap[numfaces];
-    mstudioruivert_t vertex[numvertices];
-
-    mstudioruimesface_t facedata[numfaces];
-};
-
 
 //========
 // Unknown
+
 
 struct unksectionheader
 {

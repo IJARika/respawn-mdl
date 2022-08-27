@@ -26,6 +26,13 @@ struct Vector3
     float z;
 };
 
+struct Vector48
+{
+    hfloat x;
+    hfloat y;
+    hfloat z;
+};
+
 struct Quaternion
 {
     float x;
@@ -37,10 +44,10 @@ struct Quaternion
 // compressed quaternion
 struct Quat64
 {
-    int64 X : 21;
-    int64 Y : 21;
-    int64 Z : 21;
-    int64 WNeg : 1;
+    int64 x : 21;
+    int64 y : 21;
+    int64 z : 21;
+    int64 wneg : 1;
 };
 
 struct RadianEuler

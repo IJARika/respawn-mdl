@@ -13,8 +13,9 @@
 //------------------------------------------------
 
 
-#include "./source_math.bt"
-#include "./mdl_structs.bt"
+#include "../source_math.bt"
+#include "../mdl/mdl_structs.bt"
+#include "../rmdl/rmdl_structs.bt"
 
 
 // headers
@@ -157,6 +158,9 @@ if (mdlHeader.numruimeshes > 0)
 FSeek(mdlHeader.textureindex);
 mstudiotexturev54_t textures[mdlHeader.numtextures] <bgcolor=cGreen>;
 
+FSeek(mdlHeader.materialtypesindex);
+MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
+
 FSeek(mdlHeader.cdtextureindex);
 mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen>;
 
@@ -211,57 +215,13 @@ else
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
 
-struct unkheader
+if(mdlHeader.unkindex4 > 0)
 {
-    int dataindex1;
-    int dataindex2;
-    int dataindex3;
-
-    int numsection;
-};
-
-struct unksection
-{
-    int unk;
-
-    int dataindex1;
-    int dataindex2;
-    int dataindex3;
-
-    float unkfloat[3]; // unsure if this is a vector
-
-    int unk1;
-};
-
-struct unkheaderdata
-{
-    int unk[2];
-    int unk1;
-    int unk2;
-};
-
-// v12
-struct unksectionnew
-{
-    int unk;
-
-    int dataindex1;
-    int dataindex2;
-    int dataindex3;
-
-    int dataindex4; // new
-
-    int unknew;
-
-    float unkfloat[3]; // unsure if this is a vector
-
-    int unk1;
-};
-
-unkheader unkhdr <bgcolor=cDkBlue>;
-unksection unksect[unkhdr.numsection] <bgcolor=cBlue>;
-unkheaderdata unkhdrdata <bgcolor=cDkBlue>;
-
+    FSeek(mdlHeader.unkindex4);
+    unkheaderv54 unkhdr <bgcolor=cDkBlue>;
+    unksectionheaderv54 unksecthdr[unkhdr.numsection] <bgcolor=cBlue>;
+    unkheaderdatav54 unkhdrdata <bgcolor=cDkBlue>;
+}
 
 // related data chunks here
 
