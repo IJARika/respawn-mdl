@@ -465,12 +465,12 @@ struct studiohdrv53_t
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
     
-    // header is still written even if there is no extra data
-    // extra data has only been observed when no linear bone data is present.
-    int unkmemberindex;
-    int unkmembercount;
-    int unkmembercount1;
-    int unkmembercount2;
+    // for static props (and maybe others)
+    // Per Triangle AABB
+    int aabbindex;
+    int numaabb;
+    int numaabb1;
+    int numaabb2;
 
     // maybe this is for the string table since it always has one byte padding it?
     // this is probably for some section I haven't seen or a string that hasn't been filled out.
@@ -543,12 +543,12 @@ struct studiohdr2v52_t
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
     
-    // header is still written even if there is no extra data
-    // extra data has only been observed when no linear bone data is present.
-    int unkmemberindex;
-    int unkmembercount;
-    int unkmembercount1;
-    int unkmembercount2;
+    // for static props (and maybe others)
+    // Per Triangle AABB
+    int aabbindex;
+    int numaabb;
+    int numaabb1;
+    int numaabb2;
 
     int unkindex1; // byte before string table start?
 
@@ -695,8 +695,9 @@ struct mstudiobonev53_t
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-	int unkindex; // sometimes there is something here, 0xFFFF in many cases.
-				  // probably for adding to an offset in a file.
+    // these two are related, value gets set to '1' when id is not -1
+	int16 unkid;
+    int16 unkvalue;
 	
 	int unused[7]; // remove as appropriate
 };
@@ -1602,38 +1603,43 @@ struct mstudioruimesh_t
 };
 
 
-//========
-// Unknown
+//=============
+// Per Triangle AABB
 
 
-struct unksectionheader
+struct aabbheader_t
 {
-    int unk; // flags
+    int version; // unsure if this is an actual version or type
+                 // set to '2' for static prop.
     
     // same as hulls
-    Vector3 unkvectormin;
-    Vector3 unkvectormax;
+    Vector3 bbmin;
+	Vector3 bbmax;		
 
     int unused[8]; // hopefully, checks out with other mdl structs 
 };
 
-// struct when linear bone data isn't present
-struct unksectionmember1
+struct aabbsection1
 {
     int unk[5];
 };
 
-struct unksectionmember2
+struct aabbsection2
 {
-    int unk[28];
+    float unk[28];
 };
 
-struct unksectionmember3
+struct aabbsection3
 {
     int16 unk;
     int16 unk1;
     int16 unk2;
 };
+
+
+//========
+// Unknown
+
 
 // struct near end of file.
 struct unkphysectionhdr_t

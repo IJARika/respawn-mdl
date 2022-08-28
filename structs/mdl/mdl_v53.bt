@@ -242,15 +242,15 @@ struct unksectiondata
 
 };
 
-// only used when linear bone is not (afaik).
-FSeek(mdlHeader.unkmemberindex);
-unksectionheader unk_bytes_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
+// per tri aabb data
+FSeek(mdlHeader.aabbindex);
+aabbheader_t aabb_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
 
-if (mdlHeader.unkmembercount != 0 || mdlHeader.unkmembercount1 != 0 || mdlHeader.unkmembercount2 != 0)
+if (mdlHeader.numaabb != 0 || mdlHeader.numaabb1 != 0 || mdlHeader.numaabb2 != 0)
 {
-    unksectionmember1 unk_bytes1[mdlHeader.unkmembercount] <fgcolor=cRed>;
-    unksectionmember2 unk_bytes2[mdlHeader.unkmembercount1] <fgcolor=cRed>;
-    unksectionmember3 unk_bytes3[mdlHeader.unkmembercount2] <fgcolor=cRed>;
+    aabbsection1 unk_bytes1[mdlHeader.numaabb] <fgcolor=cRed>;
+    aabbsection2 unk_bytes2[mdlHeader.numaabb1] <fgcolor=cRed>;
+    aabbsection3 unk_bytes3[mdlHeader.numaabb2] <fgcolor=cRed>;
 };
 
 

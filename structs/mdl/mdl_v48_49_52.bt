@@ -242,15 +242,15 @@ if (mdlSubHeader.linearboneindex > 0)
 
 if (mdlHeader.version == 52)
 {
-    // header completely nulled out if unused.
-    FSeek(mdlSubHeader.unkmemberindex + 408);
-    unksectionheader unk_bytes_hdr <fgcolor=cDkRed>;
+    // per tri aabb data
+    FSeek(startof(mdlSubHeader) + mdlSubHeader.aabbindex);
+    aabbheader_t aabb_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
     
-    if (mdlSubHeader.unkmembercount != 0 || mdlSubHeader.unkmembercount1 != 0 || mdlSubHeader.unkmembercount2 != 0)
+    if (mdlSubHeader.numaabb != 0 || mdlSubHeader.numaabb1 != 0 || mdlSubHeader.numaabb2 != 0)
     {
-        unksectionmember1 unk_bytes1[mdlSubHeader.unkmembercount] <fgcolor=cRed>;
-        unksectionmember2 unk_bytes2[mdlSubHeader.unkmembercount1] <fgcolor=cRed>;
-        unksectionmember3 unk_bytes3[mdlSubHeader.unkmembercount2] <fgcolor=cRed>;
+        aabbsection1 unk_bytes1[mdlSubHeader.numaabb] <fgcolor=cRed>;
+        aabbsection2 unk_bytes2[mdlSubHeader.numaabb1] <fgcolor=cRed>;
+        aabbsection3 unk_bytes3[mdlSubHeader.numaabb2] <fgcolor=cRed>;
     };
 };
 
