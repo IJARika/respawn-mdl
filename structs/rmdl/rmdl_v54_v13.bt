@@ -71,7 +71,3 @@ char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
 // third set of core parts, done like this for spacing.
 #include "../rmdl/rmdl_v54_v121_core3.bt"
-
-
-FSeek(mdlHeader.boneremapindex + 348);
-mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;

@@ -286,20 +286,6 @@ FSeek(mdlHeader.vphyindex);
 
 struct vphygroup_t
 {   
-    /*phyheader_t vphy_header <bgcolor=cLtRed>;
-    compactsurfaceheader_t vphy_section[vphy.vphy_header.numsolids] <bgcolor=cLtRed, optimize=false>;
-
-    local int64 charSize = mdlHeader.vphysize;
-
-    for (i = 0; i < vphy_header.numsolids; i++)
-    {
-        charSize -= vphy_section[i].size + 4;
-    };
-
-    charSize -= 16;
-    
-    char vphy_stringdata[charSize] <bgcolor=cDkRed>;*/
-
     phyheader_t vphy_header <bgcolor=cLtRed>;
     physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
     
