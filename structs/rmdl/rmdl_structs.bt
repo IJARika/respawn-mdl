@@ -340,8 +340,8 @@ struct studiohdrv54_v121_t
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
+    int numboneflexdrivers; // unsure if that's what it is in apex
+	int boneflexdriverindex;
 
 	int unk3_v54_a[2]; // I think this section was split vs old v54
 
@@ -503,8 +503,8 @@ struct studiohdrv54_v122_t
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
+    int numboneflexdrivers; // unsure if that's what it is in apex
+	int boneflexdriverindex;
 
 	int unk3_v54_a[2]; // I think this section was split vs old v54
 
@@ -666,8 +666,8 @@ struct studiohdrv54_v13_t
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
+    int numboneflexdrivers; // unsure if that's what it is in apex
+	int boneflexdriverindex;
 
 	int unk3_v54_a[2]; // I think this section was split vs old v54
 
@@ -833,8 +833,8 @@ struct studiohdrv54_v14_t
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
+    int numboneflexdrivers; // unsure if that's what it is in apex
+	int boneflexdriverindex;
 
 	int unk3_v54_a[2]; // I think this section was split vs old v54
 
