@@ -5,7 +5,7 @@
 //   Authors: Rika & Others
 //   Version: 256
 //   Purpose: Valve Physics Files
-//  Category: Model
+//  Category: Struct
 // File Mask: *.phy
 //  ID Bytes: 
 //   History: 
@@ -107,18 +107,42 @@ struct physection_t
     trianglefaceheader_t trihdr <bgcolor=cDkRed, fgcolor=cDkYellow, optimize=false>;
     trianglevertmap_t vertmap[trihdr.numfaces] <bgcolor=cDkRed, fgcolor=cLtYellow, optimize=false>;
     
+    local int numfaces = 0;
+
+    while(FTell() < trihdr[0].vertexindex + startof(trihdr[0]))
+    {   
+        trianglefaceheader_t trihdr <bgcolor=cDkRed, fgcolor=cDkYellow, optimize=false>;
+        trianglevertmap_t vertmap[trihdr[k].numfaces] <bgcolor=cDkRed, fgcolor=cLtYellow, optimize=false>;
+
+        k++;
+    }
+
+    for(x = 0; x < k; x++)
+    {
+        numfaces += trihdr[x].numfaces;
+    }
+
     local int numvertices = 0;
     
-    for(i = 0; i < trihdr.numfaces; i++)
+    for(i = 0; i < numfaces; i++)
     {
-        numvertices = vertmap[i].vertex1 > numvertices ? vertmap[i].vertex1 : numvertices;
-        numvertices = vertmap[i].vertex2 > numvertices ? vertmap[i].vertex2 : numvertices;
-        numvertices = vertmap[i].vertex3 > numvertices ? vertmap[i].vertex3 : numvertices;
-    
-    };
+            numvertices = vertmap[i].vertex1 > numvertices ? vertmap[i].vertex1 : numvertices;
+            numvertices = vertmap[i].vertex2 > numvertices ? vertmap[i].vertex2 : numvertices;
+            numvertices = vertmap[i].vertex3 > numvertices ? vertmap[i].vertex3 : numvertices;   
+    }
     
     numvertices++;
     
+    FSeek(startof(trihdr[0]) + trihdr[0].vertexindex);
     phyvertex_t vertices[numvertices] <bgcolor=cDkRed, fgcolor=cYellow, optimize=false>;
-    phynode_t node<bgcolor=cRed, optimize=false>;
+
+    FSeek(startof(surfaceheader2) + surfaceheader2.nodeindex);
+
+    while(FTell() - startof(surfaceheader) < surfaceheader.size)
+    {
+        phynode_t node <bgcolor=cRed, optimize=false>;
+    }
+
+    //phynode_t rightnode[numrightnodes] <bgcolor=cRed, optimize=false>;
+
 };

@@ -149,7 +149,13 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodel_t models[modelCount]<bgcolor=cDkGray>;
+
+if (mdlHeader.version > 49)
+    mstudiomodel_t_v52 models[modelCount]<bgcolor=cDkGray>;
+else
+    mstudiomodel_t models[modelCount]<bgcolor=cDkGray>;
+
+
 
 
 // ik

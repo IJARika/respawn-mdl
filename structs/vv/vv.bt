@@ -1,0 +1,49 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vvc, vvd, other (IDDV probably)
+//   Authors: Valve
+//   Version: 1 (vvc), 4 (vvd)
+//   Purpose: Valve Vertex Files
+//  Category: Struct
+// File Mask: *.vvc, *.vvd
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#define MAX_NUM_LODS 8
+#define MAX_NUM_BONES_PER_VERT 3
+
+
+struct vertexFileHeader_t
+{
+	int id; // MODEL_VERTEX_FILE_ID
+	int version; // MODEL_VERTEX_FILE_VERSION
+	int checksum; // same as studiohdr_t, ensures sync
+
+	int numLODs; // num of valid lods
+	int numLODVertexes[MAX_NUM_LODS]; // num verts for desired root lod
+
+	int numFixups; // num of vertexFileFixup_t
+
+	int fixupTableStart; // offset from base to fixup table
+	int vertexDataStart; // offset from base to vertex block
+	int tangentDataStart; // offset from base to tangent block
+};
+
+struct vertexFileFixup_t
+{
+	int		lod;				// used to skip culled root lod
+	int		sourceVertexID;		// absolute index from start of vertex/tangent blocks
+	int		numVertexes;
+};
+
+struct thinModelVertices_t
+{
+	int				m_numBoneInfluences;// Number of bone influences per vertex, N
+	float			m_boneWeights;		// This array stores (N-1) weights per vertex (unless N is zero)
+	byte			m_boneIndices;		// This array stores N indices per vertex
+	Vector3			m_vecPositions;
+	uint	m_vecNormals;		// Normals are compressed into 16 bits apiece (see PackNormal_UBYTE4() )
+};

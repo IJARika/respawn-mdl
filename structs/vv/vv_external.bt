@@ -1,0 +1,41 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vvc, vvd, other (IDDV probably)
+//   Authors: Valve
+//   Version: 1 (vvc), 4 (vvd)
+//   Purpose: Valve Vertex Files
+//  Category: Model
+// File Mask: *.vvc, *.vvd
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "../source_math.bt"
+#include "../vv/vv.bt"
+#include "../mdl/mdl_structs.bt"
+
+
+vertexFileHeader_t vv_header <bgcolor=cYellow>;
+
+if(vv_header.id == 1447248969)
+    int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+
+if(vv_header.fixupTableStart > 0)
+{
+    FSeek(vv_header.fixupTableStart);
+    vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
+}
+
+if(vv_header.vertexDataStart > 0)
+{
+    FSeek(vv_header.vertexDataStart);
+    mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+}
+
+if(vv_header.tangentDataStart > 0)
+{
+    FSeek(vv_header.tangentDataStart);
+    Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+}

@@ -1008,14 +1008,15 @@ struct mstudioikchainv54_t
 	int numlinks;
 	int linkindex;
     
-    float	kneeDir;
+    float unk; // no clue what this does tbh, tweaking it does nothing
+               // default value: 0.707f
 };
 
 // ikinfo
 struct mstudioiklinkv54_t
 {
 	uint32 bone;
-	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
+	Vector3	unused0; // no kneeDir in apex I think
 };
 
 // linear bone

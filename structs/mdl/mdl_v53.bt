@@ -14,11 +14,14 @@
 
 #include "../source_math.bt"
 #include "../mdl/mdl_structs.bt"
-#include "../phy/vphy_internal.bt"
+#include "../phy/vphy.bt"
 #include "../vtx/vtx.bt"
+#include "../vv/vv.bt"
 
 local int i = 0;
 local int j = 0;
+local int k = 1;
+local int x = 0;
 
 
 // headers
@@ -130,7 +133,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 };
 
-mstudiomodelv53_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodel_t_v52 models[modelCount]<bgcolor=cDkGray>;
 
 
 // ik
@@ -298,13 +301,16 @@ struct vphygroup_t
     
     charSize -= 16;
     
+    FSeek(startof(vphy_header) + (mdlHeader.vphysize - charSize));
     char vphy_stringdata[charSize] <fgcolor=cRed>;
 };
+
 
 if (mdlHeader.vphyindex > 0)
 {
     vphygroup_t vphy;
 };
+
 
 // can't get it working outside here :/
 i = 0;
@@ -341,7 +347,7 @@ if (mdlHeader.vphysize > 0)
 // vtx
 FSeek(mdlHeader.vtxindex);
 
-struct vtxgroup_t
+struct vtxgroup
 {
     FileHeader_t vtx_header <bgcolor=cLtPurple>;
     BodyPartHeader_t vtx_partheader[vtx_header.numBodyParts] <bgcolor=cPurple>;
@@ -401,4 +407,58 @@ struct vtxgroup_t
 };
 
 if (mdlHeader.vtxsize > 0)
-    vtxgroup_t vtx <fgcolor=0xe8daef>;
+    vtxgroup vtx <fgcolor=0xe8daef>;
+
+
+// vvd
+struct vvdgroup
+{
+    FSeek(mdlHeader.vvdindex);
+    vertexFileHeader_t vv_header <bgcolor=cYellow>;
+
+    if(vv_header.fixupTableStart > 0)
+    {
+        FSeek(startof(vv_header) + vv_header.fixupTableStart);
+        vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
+    }
+    
+    if(vv_header.vertexDataStart > 0)
+    {
+        FSeek(startof(vv_header) + vv_header.vertexDataStart);
+        mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    }
+    
+    if(vv_header.tangentDataStart > 0)
+    {
+        FSeek(startof(vv_header) + vv_header.tangentDataStart);
+        Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    }
+};
+
+if (mdlHeader.vvdsize > 0)
+{
+    FSeek(mdlHeader.vvdindex);
+    vvdgroup vvd;
+}
+
+// vvc
+struct vvcgroup
+{
+    FSeek(mdlHeader.vvcindex);
+    vertexFileHeader_t vv_header <bgcolor=cYellow>;
+
+    int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;\
+
+    // leaving this here however the rest of the data has two ints per vert
+    if(vv_header.fixupTableStart > 0)
+    {
+        FSeek(startof(vv_header) + vv_header.fixupTableStart);
+        vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
+    }
+};
+
+if (mdlHeader.vvcsize > 0)
+{
+    FSeek(mdlHeader.vvcindex);
+    vvcgroup vvc;
+}
