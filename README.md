@@ -6,25 +6,21 @@ Currently these templates work for:
 
 Valve:
 
-  -V48
-  
+  -V48 
   -V49
 
 Respawn:
 
-  -V52
+  -V52  
+  -V53  
+  -V54 subversions: 8/9/10/11/12/12.1/12.2/13/14(.1?)
   
-  -V53
+As well as:
   
-  -V54 subversions: 8/9/10/11/12
+  -VPHY
+  -RPHY (incomplete)
+  -VTX (partial)
+  -VVD
+  -VVC (partial)
+  -VG (soon)
   
-  -V54 subversion: 13
-  
-  -V54 subversion: 14
-  
-
-
-Versions V52 & V53 have the best support.
-
-
-I hate readme formatting
