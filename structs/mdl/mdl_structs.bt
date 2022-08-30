@@ -3,7 +3,7 @@
 //
 //      File: mdl
 //   Authors: Valve, Rika, & Others
-//   Version: 48/49/52/53
+//   Version: 47/48/49/52/53
 //   Purpose: Valve/Respawn MDL Structs
 //  Category: Struct
 // File Mask: *.mdl
@@ -22,10 +22,284 @@
 
 //========
 // Headers
+struct studiohdr_t_v47
+{
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
+ 
+    Vector3 eyeposition;	// ideal eye position
 
+	Vector3 illumposition;	// illumination center
+	
+	Vector3 hull_min;		// ideal movement hull size
+	Vector3 hull_max;			
+
+	Vector3 view_bbmin;		// clipping bounding box
+	Vector3 view_bbmax;		
+ 
+    int flags;
+  
+    int numbones; // bones
+	int boneindex;
+ 
+    int numbonecontrollers; // bone controllers
+	int bonecontrollerindex;
+ 
+    int numhitboxsets;
+	int hitboxsetindex;
+ 
+    int numlocalanim; // animations/poses
+	int localanimindex; // animation descriptions
+ 
+    int numlocalseq; // sequences
+	int	localseqindex;
+ 
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
+ 
+    // raw textures
+	int numtextures;
+	int textureindex;
+ 
+    /// raw textures search paths
+	int numcdtextures;
+	int cdtextureindex;
+ 
+    // replaceable textures tables
+	int numskinref;
+	int numskinfamilies;
+	int skinindex;
+ 
+	int numbodyparts;		
+	int bodypartindex;
+ 
+    int numlocalattachments;
+	int localattachmentindex;
+ 
+    int numlocalnodes;
+	int localnodeindex;
+	int localnodenameindex;
+ 
+    int numflexdesc;
+	int flexdescindex;
+ 
+    int numflexcontrollers;
+	int flexcontrollerindex;
+ 
+    int numflexrules;
+	int flexruleindex;
+ 
+    int numikchains;
+	int ikchainindex;
+	
+    int nummouths;
+	int mouthindex;
+ 
+    int numlocalposeparameters;
+	int localposeparamindex;
+ 
+    int surfacepropindex;
+ 
+    int keyvalueindex;
+	int keyvaluesize;
+ 
+    int numlocalikautoplaylocks;
+	int localikautoplaylockindex;
+ 
+ 
+    float mass;
+	int contents;
+ 
+    // external animations, models, etc.
+	int numincludemodels;
+	int includemodelindex;
+    
+    uint32 virtualModel;
+ 
+    int szanimblocknameindex;	
+	int numanimblocks;
+	int animblockindex;
+	uint32 animblockModel;
+
+	int bonetablebynameindex;
+
+    // used by tools only that don't cache, but persist mdl's peer data
+	// engine uses virtualModel to back link to cache pointers
+	uint32 pVertexBase;
+	uint32 pIndexBase;
+    
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	// this value is used to calculate directional components of lighting 
+	// on static props
+	byte constdirectionallightdot;
+
+	// set during load of mdl data to track *desired* lod configuration (not actual)
+	// the *actual* clamped root lod is found in studiohwdata
+	// this is stored here as a global store to ensure the staged loading matches the rendering
+	byte rootLOD;
+	
+	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+	// to be set as root LOD:
+	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+	byte numAllowedRootLODs;
+
+	byte unused;
+    
+    int unused1[7];
+};
 
 // main headers
-struct studiohdr_t
+struct studiohdr_t_v48
+{
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
+ 
+    Vector3 eyeposition;	// ideal eye position
+
+	Vector3 illumposition;	// illumination center
+	
+	Vector3 hull_min;		// ideal movement hull size
+	Vector3 hull_max;			
+
+	Vector3 view_bbmin;		// clipping bounding box
+	Vector3 view_bbmax;		
+ 
+    int flags;
+  
+    int numbones; // bones
+	int boneindex;
+ 
+    int numbonecontrollers; // bone controllers
+	int bonecontrollerindex;
+ 
+    int numhitboxsets;
+	int hitboxsetindex;
+ 
+    int numlocalanim; // animations/poses
+	int localanimindex; // animation descriptions
+ 
+    int numlocalseq; // sequences
+	int	localseqindex;
+ 
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
+ 
+    // raw textures
+	int numtextures;
+	int textureindex;
+ 
+    /// raw textures search paths
+	int numcdtextures;
+	int cdtextureindex;
+ 
+    // replaceable textures tables
+	int numskinref;
+	int numskinfamilies;
+	int skinindex;
+ 
+	int numbodyparts;		
+	int bodypartindex;
+ 
+    int numlocalattachments;
+	int localattachmentindex;
+ 
+    int numlocalnodes;
+	int localnodeindex;
+	int localnodenameindex;
+ 
+    int numflexdesc;
+	int flexdescindex;
+ 
+    int numflexcontrollers;
+	int flexcontrollerindex;
+ 
+    int numflexrules;
+	int flexruleindex;
+ 
+    int numikchains;
+	int ikchainindex;
+	
+    int nummouths;
+	int mouthindex;
+ 
+    int numlocalposeparameters;
+	int localposeparamindex;
+ 
+    int surfacepropindex;
+ 
+    int keyvalueindex;
+	int keyvaluesize;
+ 
+    int numlocalikautoplaylocks;
+	int localikautoplaylockindex;
+ 
+ 
+    float mass;
+	int contents;
+ 
+    // external animations, models, etc.
+	int numincludemodels;
+	int includemodelindex;
+    
+    uint32 virtualModel;
+ 
+    int szanimblocknameindex;	
+	int numanimblocks;
+	int animblockindex;
+	uint32 animblockModel;
+
+	int bonetablebynameindex;
+    
+    // used by tools only that don't cache, but persist mdl's peer data
+	// engine uses virtualModel to back link to cache pointers
+	uint32 pVertexBase;
+	uint32 pIndexBase;
+    
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	// this value is used to calculate directional components of lighting 
+	// on static props
+	byte constdirectionallightdot;
+
+	// set during load of mdl data to track *desired* lod configuration (not actual)
+	// the *actual* clamped root lod is found in studiohwdata
+	// this is stored here as a global store to ensure the staged loading matches the rendering
+	byte rootLOD;
+	
+	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+	// to be set as root LOD:
+	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+	byte numAllowedRootLODs;
+
+	byte unused;
+
+	int unused4; // zero out if version < 47
+
+	int numflexcontrollerui;
+	int flexcontrolleruiindex;
+
+    float flVertAnimFixedPointScale;
+    int unused3; // this index must be cached by the loader, not saved in the file
+                           // unused in v48 but it isn't worth making another struct over that.
+    
+	int studiohdr2index;
+	
+    // NOTE: No room to add stuff? Up the .mdl file format version 
+	// [and move all fields in studiohdr2_t into studiohdr_t and kill studiohdr2_t],
+	// or add your stuff to studiohdr2_t. See NumSrcBoneTransforms/SrcBoneTransform for the pattern to use.
+	int unused2;
+};
+
+struct studiohdr_t_v49
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
     int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -170,7 +444,7 @@ struct studiohdr_t
 	int unused2;
 };
 
-struct studiohdrv52_t
+struct studiohdr_t_v52
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
     int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -314,7 +588,7 @@ struct studiohdrv52_t
 	int mayaindex; // in v52 not every model has these strings, only four bytes when not present.
 };
 
-struct studiohdrv53_t
+struct studiohdr_t_v53
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
     int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -506,6 +780,7 @@ struct studiohdrv53_t
 };
 
 // sub header
+// v48/49 are the same
 struct studiohdr2_t
 {
 	// NOTE: For forward compat, make sure any methods in this struct
@@ -528,7 +803,7 @@ struct studiohdr2_t
 	int reserved[56];
 };
 
-struct studiohdr2v52_t
+struct studiohdr2_t_v52
 {
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -561,7 +836,7 @@ struct studiohdr2v52_t
 // Bone Structs
 
 // bones
-struct mstudiobonev48_t
+struct mstudiobone_t_v47
 {
 	int sznameindex;
 
@@ -591,7 +866,7 @@ struct mstudiobonev48_t
 	int unused[8]; // remove as appropriate
 };
 
-struct mstudiobonev49_t
+struct mstudiobone_t_v49
 {
 	int sznameindex;
 
@@ -623,7 +898,7 @@ struct mstudiobonev49_t
 	int unused[7]; // remove as appropriate
 };
 
-struct mstudiobonev52_t
+struct mstudiobone_t_v52
 {
 	int sznameindex;
 
@@ -662,7 +937,7 @@ struct mstudiobonev52_t
 	int unused[1]; // remove as appropriate
 };
 
-struct mstudiobonev53_t
+struct mstudiobone_t_v53
 {
 	int sznameindex;
 
@@ -706,7 +981,7 @@ struct mstudiobonev53_t
 // jigglebone
 struct mstudiojigglebone_t
 {
-	uint32 flags;
+	int flags;
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
@@ -806,7 +1081,7 @@ struct mstudioikchainv53_t
 // ikinfo
 struct mstudioiklink_t
 {
-	uint32 bone;
+	int bone;
 	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 	Vector3	unused0; // unused in v49
 };
@@ -814,12 +1089,12 @@ struct mstudioiklink_t
 // iklock
 struct mstudioiklock_t
 {
-	uint32 chain;
+	int chain;
 	float flPosWeight;
 	float flLocalQWeight;
-	uint32 flags;
+	int flags;
 
-	uint32 unused[4];
+	int unused[4];
 };
 
 // pose parameter desc
@@ -1416,6 +1691,7 @@ struct mstudiomodel_t
     
     // sections of this are removed as needed.
 	int unused[10]; // remove as appropriate
+                    // first two get used in v47
 };
 
 struct mstudiomodel_t_v52
@@ -1515,15 +1791,28 @@ struct mstudiotexturedir_t
 };
 
 // skin info
+struct mstudiotexture_t_v47
+{
+	int sznameindex;
+
+	int flags;
+	int used;
+    int unused1;
+
+    int unk;
+	
+    int unused[11];
+};
+
 struct mstudiotexture_t
 {
-	int						sznameindex;
+	int sznameindex;
 
-	int						flags;
-	int						used;
-    int						unused1;
+	int flags;
+	int used;
+    int unused1;
 	
-    int						unused[12];
+    int unused[12];
 };
 
 struct mstudiotexturev53_t

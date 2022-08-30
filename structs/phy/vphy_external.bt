@@ -6,7 +6,7 @@
 //   Version: 256
 //   Purpose: Valve Physics Files
 //  Category: Model
-// File Mask: *.phy
+// File Mask: *.phy, *.phx
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -32,5 +32,8 @@ for (i = 0; i < vphy_header.numsolids; i++)
 
 charSize -= 16;
 
+// string data in xbox is weird, lists bone names
 FSeek(startof(vphy_header) + (FileSize() - charSize));
 char vphy_stringdata[charSize] <fgcolor=cRed>;
+
+// xbox has stuff after string data

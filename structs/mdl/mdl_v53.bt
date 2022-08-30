@@ -25,7 +25,7 @@ local int x = 0;
 
 
 // headers
-studiohdrv53_t mdlHeader <bgcolor=cLtBlue>;
+studiohdr_t_v53 mdlHeader <bgcolor=cLtBlue>;
 
 // this is a check for non shipped models.
 if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
@@ -36,7 +36,7 @@ if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
 
 // bones
 FSeek(mdlHeader.boneindex);
-mstudiobonev53_t bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
+mstudiobone_t_v53 bones[mdlHeader.numbones] <bgcolor=cLtGreen>; // get names working
 
 local int jigglebonecount = 0;
 

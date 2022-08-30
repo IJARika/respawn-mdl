@@ -3,8 +3,8 @@
 //
 //      File: mdl
 //   Authors: Rika
-//   Version: 48/49/52
-//   Purpose: Valve/Respawn MDL Files
+//   Version: 47
+//   Purpose: Valve MDL Files
 //  Category: Model
 // File Mask: *.mdl
 //  ID Bytes: 
@@ -19,41 +19,12 @@ local int i = 0;
 local int j = 0;
 
 
-// version before the header is created.
-local int pre_version = ReadInt(4);
-
-
-// headers
-if (pre_version == 52)
-{ 
-    studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue>;
-    studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
-
-    // this is a check for non shipped models.
-    // this isn't essential for models to function, however when not present it should be four bytes instead of just nothing.
-    if (mdlHeader.boneindex > mdlHeader.mayaindex)
-        char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
-}
-else if (pre_version == 49)
-{
-    studiohdr_t_v49 mdlHeader <bgcolor=cLtBlue>;
-    studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
-}
-else
-{
-    studiohdr_t_v48 mdlHeader <bgcolor=cLtBlue>;
-    studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
-}
+studiohdr_t_v47 mdlHeader <bgcolor=cLtBlue>;
 
 
 // bones
 FSeek(mdlHeader.boneindex);
-if (mdlHeader.version == 52)
-    mstudiobone_t_v52 bones[mdlHeader.numbones] <bgcolor=cLtGreen>;
-else if (mdlHeader.version == 49)
-    mstudiobone_t_v49 bones[mdlHeader.numbones] <bgcolor=cLtGreen>;
-else
-    mstudiobone_t_v47 bones[mdlHeader.numbones] <bgcolor=cLtGreen>;
+mstudiobone_t_v47 bones[mdlHeader.numbones] <bgcolor=cLtGreen>;
 
 local int jigglebonecount = 0;
 
@@ -200,7 +171,7 @@ FSeek(mdlHeader.includemodelindex);
 mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue>;
 
 FSeek(mdlHeader.textureindex);
-mstudiotexture_t textures[mdlHeader.numtextures] <bgcolor=cGreen>;
+mstudiotexture_t_v47 textures[mdlHeader.numtextures] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.cdtextureindex);
 mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen>;
@@ -211,64 +182,6 @@ mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
 FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
-
-FSeek(mdlSubHeader.srcbonetransformindex);
-mstudiosrcbonetransform_t srcbonetransform[mdlSubHeader.numsrcbonetransform] <bgcolor=cDkGreen>;
-
-if (mdlSubHeader.linearboneindex > 0)
-{
-    FSeek(mdlSubHeader.linearboneindex + 408);
-    mstudiolinearbone_t linearbone <bgcolor=cGreen>;
-
-    struct mstudiolinearbonedata_t
-    {
-        if(linearbone.flagsindex > 0)
-            uint32 bone_flags[linearbone.numbones];
-        if(linearbone.parentindex > 0)
-            uint32 bone_parents[linearbone.numbones];
-        
-        if(linearbone.posindex > 0)
-            Vector3 bone_pos[linearbone.numbones];
-        if(linearbone.quatindex > 0)
-	        Quaternion bone_quat[linearbone.numbones];
-        if(linearbone.rotindex > 0)
-	        RadianEuler bone_rot[linearbone.numbones];
-        
-        if(linearbone.posetoboneindex > 0)
-            matrix3x4_t bone_poseToBone[linearbone.numbones];
-
-        if(linearbone.posscaleindex > 0)
-            Vector3 bone_posscale[linearbone.numbones];
-        if(linearbone.rotscaleindex > 0)
-	        Vector3 bone_rotscale[linearbone.numbones];
-	
-        if(linearbone.qalignmentindex > 0)
-	        Quaternion bone_qAlignment[linearbone.numbones];
-    };
-
-    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
-};
-
-
-
-if (mdlHeader.version == 52)
-{
-    // per tri aabb data
-    FSeek(startof(mdlSubHeader) + mdlSubHeader.aabbindex);
-    aabbheader_t aabb_hdr <fgcolor=cDkRed>; // header completely nulled out if unused.
-    
-    if (mdlSubHeader.numaabb != 0 || mdlSubHeader.numaabb1 != 0 || mdlSubHeader.numaabb2 != 0)
-    {
-        aabbsection1 unk_bytes1[mdlSubHeader.numaabb] <fgcolor=cRed>;
-        aabbsection2 unk_bytes2[mdlSubHeader.numaabb1] <fgcolor=cRed>;
-        aabbsection3 unk_bytes3[mdlSubHeader.numaabb2] <fgcolor=cRed>;
-    };
-};
-
-
-// unk_index1 always follows this, and always seems to be one byte in front of the string table.
-
-
 // string table
-FSeek(mdlSubHeader.sznameindex  + 408);
-char stringtable[mdlHeader.length - (mdlSubHeader.sznameindex  + 408)] <fgcolor=cLtRed>;
+//FSeek(mdlSubHeader.sznameindex  + 408);
+//char stringtable[mdlHeader.length - (mdlSubHeader.sznameindex  + 408)] <fgcolor=cLtRed>;

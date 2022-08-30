@@ -1,0 +1,345 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl
+//   Authors: Valve, Rika, & Others
+//   Version: 47 Xbox
+//   Purpose: Valve/Respawn MDL Structs
+//  Category: Struct
+// File Mask: *.mdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#define MAX_NUM_LODS 8
+#define MAX_NUM_BONES_PER_VERT 3
+
+//local int i = 0;
+
+// these are just all structs that I have mostly working/fitting, it does not mean they are correct.
+// a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
+// xbox is bitfield hell
+
+
+//========
+// Headers
+struct studiohdr_t_v47_xbox
+{
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+
+    int sznameindex;
+
+    int length; // Data size of MDL file in bytes.
+ 
+    Vector48 eyeposition;	// ideal eye position
+
+	Vector48 illumposition;	// illumination center
+	
+	Vector48 hull_min;		// ideal movement hull size
+	Vector48 hull_max;			
+
+	Vector48 view_bbmin;		// clipping bounding box
+	Vector48 view_bbmax;		
+
+    int flags;
+  
+    int numbones : 8; // bones
+	int boneindex : 24;
+ 
+    int numbonecontrollers : 8; // bone controllers
+	int bonecontrollerindex : 24;
+ 
+    int numhitboxsets : 8;
+	int hitboxsetindex : 24;
+ 
+    int16 numlocalanim; // animations/poses
+    int16 numlocalseq; // sequences
+
+	int localanimindex; // animation descriptions   
+	int localseqindex;
+ 
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
+ 
+    // raw textures
+	int numtextures : 8;
+	int textureindex : 24;
+ 
+    /// raw textures search paths
+	int numcdtextures : 8;
+	int cdtextureindex : 24;
+ 
+    // replaceable textures tables
+	int16 numskinref;
+	int16 numskinfamilies;
+	int skinindex;
+ 
+	int numbodyparts : 8;		
+	int bodypartindex : 24;
+ 
+    int numlocalattachments : 8;
+	int localattachmentindex : 24;
+ 
+    int numlocalnodes : 8;
+	int localnodeindex : 24;
+	int localnodenameindex;
+ 
+    int numflexdesc : 8;
+	int flexdescindex : 24;
+ 
+    int numflexcontrollers : 8;
+	int flexcontrollerindex : 24;
+ 
+    int numflexrules : 8;
+	int flexruleindex : 24;
+ 
+    int numikchains : 8;
+	int ikchainindex : 24;
+	
+    int nummouths : 8;
+	int mouthindex : 24;
+ 
+    int numlocalposeparameters : 8;
+	int localposeparamindex : 24;
+ 
+    int surfacepropindex;
+ 
+    int keyvalueindex;
+	int keyvaluesize;
+ 
+    int numlocalikautoplaylocks : 8;
+	int localikautoplaylockindex : 24;
+  
+    float mass;
+	int contents;
+ 
+    // external animations, models, etc.
+	int numincludemodels : 8;
+	int includemodelindex : 24;
+    
+    uint32 virtualModel;
+ 
+    int szanimblocknameindex;	
+	int numanimblocks : 8;
+	int animblockindex : 24;
+	uint32 animblockModel;
+
+	int bonetablebynameindex;
+    
+    // used by tools only that don't cache, but persist mdl's peer data
+	// engine uses virtualModel to back link to cache pointers
+	uint32 pVertexBase;
+	uint32 pIndexBase;
+    
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	// this value is used to calculate directional components of lighting 
+	// on static props
+	byte constdirectionallightdot;
+
+	// set during load of mdl data to track *desired* lod configuration (not actual)
+	// the *actual* clamped root lod is found in studiohwdata
+	// this is stored here as a global store to ensure the staged loading matches the rendering
+	byte rootLOD;
+	
+	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+	// to be set as root LOD:
+	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+	byte numAllowedRootLODs;
+
+	byte unused;
+};
+
+
+//=============
+// Bone Structs
+
+// bones
+struct mstudiobone_t_v47_xbox
+{
+	int sznameindex;
+
+	int parent; // parent bone
+	int bonecontroller; // bone controller index, -1 == none
+
+	// default values
+	Vector3 pos;
+	Quaternion quat;
+	RadianEuler rot;
+	// compression scale
+	Vector3 posscale;
+	Vector3 rotscale;
+
+	matrix3x4_t poseToBone;
+	Quaternion qAlignment;
+
+    int flags;
+	int proctype;
+    int procindex; // procedural rule
+	//int physicsbone; // index into physically simulated bone
+	
+    int surfacepropidx; // index into string tablefor property name
+
+	int contents; // See BSPFlags.h for the contents flags
+
+	//int unused[8]; // remove as appropriate
+};
+
+/// attachments
+struct mstudioattachment_t_v47_xbox
+{
+	int sznameindex;
+	int		flags;
+
+	int					localbone; // parent bone
+
+	matrix3x4_t			localmatrix; // attachment point
+};
+
+// ikchain
+struct mstudioikchain_t_v47_xbox
+{
+	int				sznameindex;
+
+	int16				linktype;
+	int16				numlinks;
+	int				linkindex;
+};
+
+struct mstudioiklink_t_v47_xbox
+{
+	uint32 bone;
+	Vector3	kneeDir; // ideal bending direction (per link, if applicable)
+};
+
+struct mstudioiklock_t_v47_xbox
+{
+	int chain;
+	float flPosWeight;
+	float flLocalQWeight;
+	//int flags;
+};
+
+
+//===============
+// Hitbox Structs
+
+
+// hboxset
+struct mstudiobbox_t_v47_xbox
+{
+	int16 bone;
+	int16 group; // intersection group
+
+	Vector3 bbmin; // bounding box
+	Vector3 bbmax;	
+
+	int szhitboxnameindex; // offset to the name of the hitbox.
+};
+
+
+//==================
+// Animation Structs
+
+
+
+
+//===================
+// Model/Mesh Structs
+
+
+// body part index
+struct mstudiobodyparts_t_v47_xbox
+{
+	int sznameindex;
+	int nummodels;
+
+	int base : 8;
+	int modelindex : 24; // index into models array
+};
+
+// studio models
+struct mstudiomodel_t_v47_xbox
+{
+	int nameindex;
+
+	int type;
+
+	float boundingradius;
+
+    int meshindex;
+	int16 nummeshes;	
+
+	// cache purposes
+	int16 numvertices; // number of unique vertices/normals/texcoords
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
+
+	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
+
+	int numattachments : 8;
+	int attachmentindex : 24;
+
+	int	numeyeballs : 8;
+	int eyeballindex : 24;
+
+    int unk[2];
+};
+
+struct mstudio_meshvertexdata_t_v47_xbox
+{
+    int unk;    
+
+	int16 numLODVertexes[MAX_NUM_LODS];
+};
+
+
+
+
+// meshes
+struct mstudiomesh_t_v47_xbox
+{
+	int material;
+
+	int modelindex;
+
+	int numvertices; // number of unique vertices/normals/texcoords
+	int vertexoffset; // vertex mstudiovertex_t
+
+	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
+	
+	int numflexes : 8; // vertex animation
+	int flexindex : 24;
+
+	// special codes for material operations
+	int materialtype;
+	int materialparam;
+
+	// a unique ordinal for this mesh
+	int meshid;
+
+	Vector3 center;
+
+	mstudio_meshvertexdata_t_v47_xbox vertexdata;
+};
+
+
+//=================
+// Material Structs
+
+
+// cdmaterials
+// skin info
+struct mstudiotexture_t_v47_xbox
+{
+	int sznameindex;
+
+	int16 flags;
+	int16 used;
+
+    int unk;
+
+    int unused1;
+};
