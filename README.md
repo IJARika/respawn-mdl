@@ -6,8 +6,9 @@ Currently these templates work for:
 
 Valve:
 
-  -V48 
-  -V49
+  -V47 (with xbox version lul)
+  -V48  
+  -V49  
 
 Respawn:
 
