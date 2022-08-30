@@ -6,7 +6,7 @@ Currently these templates work for:
 
 Valve:
 
-  -V47 (with xbox version lul)
+  -V47 (with xbox version lul)  
   -V48  
   -V49  
 
