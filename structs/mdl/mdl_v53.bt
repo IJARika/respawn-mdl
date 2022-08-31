@@ -136,6 +136,14 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
 mstudiomodel_t_v52 models[modelCount]<bgcolor=cDkGray>;
 
 
+//setup nodes, not fully understood
+if(mdlHeader.numlocalnodes > 0)
+{
+    FSeek(mdlHeader.localnodenameindex);
+    mstudionode_t node <bgcolor=cDkYellow>;
+}
+
+
 // ik
 FSeek(mdlHeader.ikchainindex);
 mstudioikchainv53_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef>;
@@ -265,6 +273,7 @@ FSeek(mdlHeader.sznameindex);
 
 local int64 stringtable_size;
 
+// todo: fix this breaking on anim models
 if(mdlHeader.vphysize >= 0 || mdlHeader.vtxsize >= 0)
 {
     if(mdlHeader.vtxsize >= 0 && mdlHeader.vphysize == 0)
@@ -444,6 +453,7 @@ if (mdlHeader.vvdsize > 0)
 // vvc
 struct vvcgroup
 {
+    // in total the vvc has three ints per vert, not sure what each and everything is for.
     FSeek(mdlHeader.vvcindex);
     vertexFileHeader_t vv_header <bgcolor=cYellow>;
 

@@ -1928,12 +1928,22 @@ struct aabbheader_t
 
 struct aabbsection1
 {
-    int unk[5];
+    int16 unk[10];
+};
+
+struct aabbtype
+{
+    int16 unk[3];
+    int16 unk1;
 };
 
 struct aabbsection2
 {
-    float unk[28];
+    int unk[3];
+
+    int unk1;
+    
+    aabbtype unk2[12];
 };
 
 struct aabbsection3
@@ -1971,9 +1981,20 @@ struct unkphysectiondatatype_t
 //=====
 // Misc
 
+struct mstudionodedata
+{
+    int16 unk[2];
+};
 
-// unverified if this is just for v54
 struct mstudionode_t
+{
+    int sznameindex[mdlHeader.numlocalnodes];
+
+    mstudionodedata node[mdlHeader.numlocalnodes];
+};
+
+// todo: move to rmdl structs
+struct mstudionode_t_v54
 {
     int sznameindex[mdlHeader.numlocalnodes];
 
