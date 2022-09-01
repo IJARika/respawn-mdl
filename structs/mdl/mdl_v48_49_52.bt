@@ -63,12 +63,10 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
         jigglebonecount++;
-        
-        s_jigglebonename = bones[i].sznameindex;
     }
 }
 
-mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;
+mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.localattachmentindex);
 mstudioattachment_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca>;
@@ -113,7 +111,8 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
         
 		mstudioanim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
 		numanimboneheader += 1;
-        FSkip(animheader[numanimboneheader - 1].nextoffset - 4);
+        FSeek(startof(animheader[numanimboneheader - 1]));
+        FSkip(animheader[numanimboneheader - 1].nextoffset);
         
 		if (animheader[numanimboneheader - 1].nextoffset <= 0) 
 		{

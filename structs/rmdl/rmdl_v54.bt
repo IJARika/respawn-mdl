@@ -42,12 +42,10 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
         jigglebonecount++;
-        
-        s_jigglebonename = bones[i].sznameindex;
     }
 }
 
-mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;
+mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 // not sure what's the deal
 //FSeek(mdlHeader.m_nBoneFlexDriverIndex);

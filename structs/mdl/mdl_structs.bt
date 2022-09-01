@@ -1310,40 +1310,78 @@ struct mstudioanimdescv53_t
     int unused[4];
 };
 
-struct animflags_t
+#define STUDIO_ANIM_RAWPOS	0x01 // Vector48
+#define STUDIO_ANIM_RAWROT	0x02 // Quaternion48
+#define STUDIO_ANIM_ANIMPOS	0x04 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMROT	0x08 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_DELTA	0x10
+#define STUDIO_ANIM_RAWROT2	0x20 // Quaternion64
+
+struct mstudioanim_valueptr_t
 {
-	byte unused : 1;
-	byte statictranslation : 1;		// If zero, one per data set
-	byte staticrotation : 1;		// If zero, one per data set
-	byte staticscale : 1;			// If zero, one per data set
-	byte unused2 : 1;
-	byte unused3 : 1;
-	byte unused4 : 1;
+	int16 xOffset;
+    int16 yOffset;
+    int16 zOffset;
+};
+
+struct mstudioanim_valueptr_t_v53
+{
+	int16 xOffset;
+    int16 yOffset;
+    int16 zOffset;
+    int16 wOffset;
 };
 
 struct mstudioanim_t
 {
 	byte bone;
-	animflags_t flags;		// weighing options
+	byte flags;		// weighing options
 
-	short nextoffset;
+    short nextoffset;
+
+    if(flags & STUDIO_ANIM_ANIMROT)
+        mstudioanim_valueptr_t animrot;
+
+	if(flags & STUDIO_ANIM_ANIMPOS)
+	    mstudioanim_valueptr_t animpos;
+
+	if(flags & STUDIO_ANIM_RAWROT)
+	    Quat48 rawrot;
+
+	if(flags & STUDIO_ANIM_RAWROT2)
+	    Quat64 rawrot2;
+
+	if (flags & STUDIO_ANIM_RAWPOS)
+	    Vector48 rawpos;
 };
 
+#define STUDIO_ANIM_RAWPOS_53	0x02 // Vector48
+#define STUDIO_ANIM_RAWROT_53	0x04 // Quaternion48
+#define STUDIO_ANIM_RAWSCALE_53	0x08 // Vector48
 
 struct mstudioanimv53_t
 {
 	float translationscale;
 
 	byte bone;
-	animflags_t flags;
+	byte flags;
 
 	int16 unk;
 	
-    Quat64 roation;
+    if(flags & STUDIO_ANIM_RAWROT_53)
+	    Quat64 rawrot;
+    else
+        mstudioanim_valueptr_t_v53 animrot;
 
-	Vector48 translation;
+	if (flags & STUDIO_ANIM_RAWPOS_53)
+	    Vector48 rawpos;
+    else
+        mstudioanim_valueptr_t animpos;
 
-	Vector48 scale;
+    if (flags & STUDIO_ANIM_RAWSCALE_53)
+	    Vector48 rawscale; // new in v53
+    else
+        mstudioanim_valueptr_t animscale;
 
 	int nextoffset;
 };

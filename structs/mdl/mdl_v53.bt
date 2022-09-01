@@ -46,12 +46,10 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
         jigglebonecount++;
-        
-        s_jigglebonename = bones[i].sznameindex;
     }
 }
 
-mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen, name = s_jigglebonename>;
+mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.localattachmentindex);
 mstudioattachment_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;

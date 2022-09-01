@@ -142,7 +142,4 @@ struct physection_t
     {
         phynode_t node <bgcolor=cRed, optimize=false>;
     }
-
-    //phynode_t rightnode[numrightnodes] <bgcolor=cRed, optimize=false>;
-
 };

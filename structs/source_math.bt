@@ -13,6 +13,7 @@
 
 // math stuff used by all structs.
 
+// vector
 struct Vector2
 {
     float x;
@@ -34,6 +35,7 @@ struct Vector4
     float w;
 };
 
+// packed vector
 struct Vector48
 {
     hfloat x;
@@ -41,6 +43,7 @@ struct Vector48
     hfloat z;
 };
 
+// quaternion
 struct Quaternion
 {
     float x;
@@ -49,7 +52,15 @@ struct Quaternion
     float w;
 };
 
-// compressed quaternion
+// packed quaternion
+struct Quat48
+{
+	int x : 16;
+	int y : 16;
+	int16 z : 15;
+	int16 wneg : 1;
+};
+
 struct Quat64
 {
     int64 x : 21;
