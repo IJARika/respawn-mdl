@@ -270,5 +270,13 @@ if (mdlHeader.version == 52)
 
 
 // string table
-FSeek(mdlSubHeader.sznameindex  + 408);
-char stringtable[mdlHeader.length - (mdlSubHeader.sznameindex  + 408)] <fgcolor=cLtRed>;
+if(mdlHeader.version == 52)
+{
+    FSeek(mdlSubHeader.stringtableindex  + startof(mdlSubHeader));
+    char stringtable[mdlHeader.length - (mdlSubHeader.stringtableindex  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
+}
+else
+{
+    FSeek(mdlSubHeader.sznameindex  + startof(mdlSubHeader));
+    char stringtable[mdlHeader.length - (mdlSubHeader.sznameindex  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
+}

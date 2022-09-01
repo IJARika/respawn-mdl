@@ -747,9 +747,7 @@ struct studiohdr_t_v53
     int numaabb1;
     int numaabb2;
 
-    // maybe this is for the string table since it always has one byte padding it?
-    // this is probably for some section I haven't seen or a string that hasn't been filled out.
-    int unkindex1; // byte before string table start? as of yet unseen member.
+    int stringtableindex;
 
     // start of model combination stuff.
     // anis are no longer used from what I can tell, v52s that had them don't in v53.
@@ -826,7 +824,7 @@ struct studiohdr2_t_v52
     int numaabb1;
     int numaabb2;
 
-    int unkindex1; // byte before string table start?
+    int stringtableindex; // byte before string table start?
 
 	int reserved[39];
 };
@@ -847,6 +845,7 @@ struct mstudiobone_t_v47
 	Vector3 pos;
 	Quaternion quat;
 	RadianEuler rot;
+
 	// compression scale
 	Vector3 posscale;
 	Vector3 rotscale;
@@ -877,6 +876,7 @@ struct mstudiobone_t_v49
 	Vector3 pos;
 	Quaternion quat;
 	RadianEuler rot;
+
 	// compression scale
 	Vector3 posscale;
 	Vector3 rotscale;
@@ -910,9 +910,8 @@ struct mstudiobone_t_v52
 	Quaternion quat;
 	RadianEuler rot;
 	
-	Vector3 unkvector;
-	
 	// compression scale
+	Vector3 posscale;
 	Vector3 rotscale;
 
 	matrix3x4_t poseToBone;
@@ -929,9 +928,7 @@ struct mstudiobone_t_v52
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-	// compression scale
-	Vector3 posscale; // moved here in v52
-	
+	Vector3 unkvector;	
 	Vector3 unkvector1;
 	
 	int unused[1]; // remove as appropriate
@@ -971,9 +968,9 @@ struct mstudiobone_t_v53
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-    // these two are related, value gets set to '1' when id is not -1
-	int16 unkid;
-    int16 unkvalue;
+    // these two are related, toggle gets set to '1' when id is not -1
+	int16 unkid; // id is for unk section after phy
+    int16 unktoggle;
 	
 	int unused[7]; // remove as appropriate
 };

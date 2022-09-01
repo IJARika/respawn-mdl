@@ -901,7 +901,7 @@ struct mstudiobonev54_t
 	
 	int surfacepropLookup; // unsure, the normal spot has data though
 	
-	int unkid;
+	int unkid; // id is for unk section after stringblock, lacks toggle
 };
 
 struct mstudiobonev54_v121_t
@@ -932,7 +932,7 @@ struct mstudiobonev54_v121_t
 	
 	int unk; // similar value in studiohdr
 
-    int unkid; // same as v53 but without the extra value, maybe just assumes '1' if not '-1'
+    int unkid; // id is for unk section after stringblock, lacks toggle
 };
 
 // jigglebone
