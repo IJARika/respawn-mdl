@@ -18,10 +18,10 @@ Respawn:
   
 As well as:
   
-  -VPHY
-  -RPHY (incomplete)
-  -VTX (partial)
-  -VVD
-  -VVC (partial)
-  -VG (soon)
+  -VPHY 
+  -RPHY (incomplete)  
+  -VTX (partial)  
+  -VVD  
+  -VVC (partial)  
+  -VG (soon)  
   
