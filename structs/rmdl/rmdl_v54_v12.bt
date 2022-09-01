@@ -48,12 +48,12 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.localattachmentindex);
-mstudioattachmentv54_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudioattachmentv54_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 
 // hitbox
 FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]  <bgcolor=0xf2e46a, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets] <bgcolor=0xf2e46a, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 // have to do this because some things actually do have more than one.
 local int bboxCount = 0;
@@ -63,7 +63,7 @@ for (i = 0; i < mdlHeader.numhitboxsets; ++i)
    bboxCount += hboxset[i].numhitboxes;
 }
 
-mstudiobboxv54_t bboxes[bboxCount]  <bgcolor=0xa29418, read=Str("%s", ReadString(startof(this) + this.szhitboxnameindex))>;
+mstudiobboxv54_t bboxes[bboxCount] <bgcolor=0xa29418, read=Str("%s", ReadString(startof(this) + this.szhitboxnameindex))>;
 
 
 FSeek(mdlHeader.bonetablebynameindex);
@@ -137,13 +137,9 @@ if (mdlHeader.numruimeshes > 0)
 {
     FSeek(mdlHeader.ruimeshindex);
     mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
-
-    // some padding here to make it even I think.
-    //char ruiheader_filler[12];
     
     FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
     mstudioruimeshv54_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
-    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
 };
 
 
@@ -215,7 +211,7 @@ if(mdlHeader.unkindex4 > 0)
 {
     FSeek(mdlHeader.unkindex4);
     unkheader_v54 unkhdr <bgcolor=cDkBlue>;
-    unksectionheader_v54 unksecthdr[unkhdr.numsection] <bgcolor=cBlue>;
+    unksectionheader_v54_v12 unksecthdr[unkhdr.numsection] <bgcolor=cBlue>;
     unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;
 }
 

@@ -25,7 +25,7 @@ local int x = 0;
 
 
 // headers
-studiohdr_t_v53 mdlHeader <bgcolor=cLtBlue>;
+studiohdr_t_v53 mdlHeader <bgcolor=cLtBlue, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 // this is a check for non shipped models.
 if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
@@ -36,23 +36,21 @@ if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
 
 // bones
 FSeek(mdlHeader.boneindex);
-mstudiobone_t_v53 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>; // get names working
+mstudiobone_t_v53 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 local int jigglebonecount = 0;
-
-local char s_jigglebonename;
 
 for (i = 0; i < mdlHeader.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
-        jigglebonecount++;
+        jigglebonecount++;      
     }
 }
 
 mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 FSeek(mdlHeader.localattachmentindex);
-mstudioattachment_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudioattachment_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 
 // hitbox
@@ -81,7 +79,7 @@ FSeek(mdlHeader.localanimindex);
 //NOTE: Using this loop instead of above array so that the "offset" variables are calculated correctly.
 for (i = 0; i < mdlHeader.numlocalanim; ++i)
 {
-	mstudioanimdescv53_t animdesc <bgcolor=0xdc7633>;
+	mstudioanimdescv53_t animdesc <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 }
 
 // Animation Data
@@ -111,13 +109,13 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
 	for (j = 0; j < animdesc[i].numikrules; ++j)
 	{
-		mstudioikrule_t animikrule <bgcolor=cGreen>;
+		mstudioikrule_t_v53 animikrule <bgcolor=cGreen>;
 		numikrule += 1;
 	};
 };
 
 FSeek(mdlHeader.localseqindex);
-mstudioseqdescv53_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
+mstudioseqdesc_t_v53 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 
 // models
@@ -131,15 +129,17 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 };
 
-mstudiomodel_t_v52 models[modelCount]<bgcolor=cDkGray>;
+mstudiomodel_t_v52 models[modelCount] <bgcolor=cDkGray>;
 
 
-//setup nodes, not fully understood
+// setup nodes, not fully understood
+// nodes have names
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
     mstudionode_t node <bgcolor=cDkYellow>;
 }
+
 
 // ik
 FSeek(mdlHeader.ikchainindex);
@@ -158,7 +158,7 @@ FSeek(mdlHeader.localikautoplaylockindex);
 mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
 
 FSeek(mdlHeader.localposeparamindex);
-mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow>;
+mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 
 // meshes
@@ -193,7 +193,7 @@ FSeek(mdlHeader.includemodelindex);
 mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 FSeek(mdlHeader.textureindex);
-mstudiotexturev53_t textures[mdlHeader.numtextures] <bgcolor=cGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudiotexture_t_v53 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 FSeek(mdlHeader.cdtextureindex);
 mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=Str("%s", ReadString(this.sznameindex))>;
@@ -206,7 +206,7 @@ char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
 
 FSeek(mdlHeader.srcbonetransformindex);
-mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen>;
+mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 if (mdlHeader.linearboneindex > 0)
 {
@@ -266,25 +266,25 @@ if (mdlHeader.numaabb != 0 || mdlHeader.numaabb1 != 0 || mdlHeader.numaabb2 != 0
 
 
 // string table
-FSeek(mdlHeader.stringtableindex);
+FSeek(mdlHeader.sznameindex - 1);
 
-local int64 stringtable_size;
+local int stringtable_size;
 
 // todo: fix this breaking on anim models
-if(mdlHeader.vphysize >= 0 || mdlHeader.vtxsize >= 0)
+if(mdlHeader.vphysize > 0 || mdlHeader.vtxsize > 0)
 {
     if(mdlHeader.vtxsize >= 0 && mdlHeader.vphysize == 0)
     {
-        stringtable_size = mdlHeader.vtxindex - mdlHeader.stringtableindex;
+        stringtable_size = mdlHeader.vtxindex - (mdlHeader.sznameindex - 1);
     }
     else
     {
-        stringtable_size = mdlHeader.vphyindex - mdlHeader.stringtableindex;
+        stringtable_size = mdlHeader.vphyindex - (mdlHeader.sznameindex - 1);
     }
 }
 else
 {
-    stringtable_size = mdlHeader.unkindex3 - mdlHeader.stringtableindex;
+    stringtable_size = mdlHeader.unkmemberindex1 - (mdlHeader.sznameindex - 1);
 }
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;

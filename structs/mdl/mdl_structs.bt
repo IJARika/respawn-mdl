@@ -465,6 +465,7 @@ struct studiohdr_t_v52
  
     int flags;
   
+    // highest observed: 250
     int numbones; // bones
 	int boneindex;
  
@@ -610,6 +611,7 @@ struct studiohdr_t_v53
  
     int flags;
   
+    // highest observed: 250
     int numbones; // bones
 	int boneindex;
  
@@ -666,7 +668,6 @@ struct studiohdr_t_v53
     int numikchains;
 	int ikchainindex;
 
-    // this is rui meshes, todo refind mouth count.
     int numruimeshes;
     int ruimeshindex;
  
@@ -747,7 +748,8 @@ struct studiohdr_t_v53
     int numaabb1;
     int numaabb2;
 
-    int stringtableindex;
+    // always "" or "Titan"
+    int unkstringindex <read=Str("%s", ReadString(startof(mdlHeader) + mdlHeader.unkstringindex))>;
 
     // start of model combination stuff.
     // anis are no longer used from what I can tell, v52s that had them don't in v53.
@@ -824,7 +826,8 @@ struct studiohdr2_t_v52
     int numaabb1;
     int numaabb2;
 
-    int stringtableindex; // byte before string table start?
+    // always "" or "Titan"
+    int unkstringindex <read=Str("%s", ReadString(startof(mdlSubHeader) + mdlSubHeader.unkstringindex))>;
 
 	int reserved[39];
 };
@@ -1097,9 +1100,9 @@ struct mstudioiklock_t
 // pose parameter desc
 struct mstudioposeparamdesc_t
 {
-	uint32 sznameindex;
+	int sznameindex;
 
-	uint32 flags; // ????
+	int flags; // ????
 	float start; // starting value
 	float end; // ending value
 	float loop;	// looping range, 0 for no looping, 360 for rotations, etc.
@@ -1388,84 +1391,84 @@ struct mstudioanimv53_t
 
 struct mstudioikrule_t
 {
-	int			index;
+	int index;
 
-	int			type;
-	int			chain;
+	int type;
+	int chain;
 
-	int			bone;
+	int	bone;
 
-	int			slot;	// iktarget slot.  Usually same as chain.
-	float		height;
-	float		radius;
-	float		floor;
-	Vector3		pos;
-	Quaternion	q;
+	int slot;	// iktarget slot.  Usually same as chain.
+	float height;
+	float radius;
+	float floor;
+	Vector3 pos;
+	Quaternion q;
 
-	int			compressedikerrorindex;
+	int compressedikerrorindex;
 	
-    int			unused2;
+    int unused2;
 
-	int			iStart;
-	int			ikerrorindex;
+	int iStart;
+	int ikerrorindex;
 
-	float		start;	// beginning of influence
-	float		peak;	// start of full influence
-	float		tail;	// end of full influence
-	float		end;	// end of all influence
+	float start;	// beginning of influence
+	float peak;	// start of full influence
+	float tail;	// end of full influence
+	float end;	// end of all influence
 
-	float		unused3;	// 
-	float		contact;	// frame footstep makes ground concact
-	float		drop;		// how far down the foot should drop when reaching for IK
-	float		top;		// top of the foot box
+	float unused3;	// 
+	float contact;	// frame footstep makes ground concact
+	float drop;		// how far down the foot should drop when reaching for IK
+	float top;		// top of the foot box
 
-	int			unused6;
-	int			unused7;
-	int			unused8;
+	int unused6;
+	int unused7;
+	int unused8;
 
-	int			szattachmentindex;		// name of world attachment
+	int szattachmentindex;		// name of world attachment
 
-	int			unused[7];
+	int unused[7];
 };
 
 
-struct mstudioikrulev53_t
+struct mstudioikrule_t_v53
 {
-	int			index;
-	int			type;
-	int			chain;
-	int			bone;
+	int index;
+	int type;
+	int chain;
+	int bone;
 
-	int			slot;	// iktarget slot.  Usually same as chain.
-	float		height;
-	float		radius;
-	float		floor;
-	Vector3		pos;
-	Quaternion	q;
+	int slot;	// iktarget slot.  Usually same as chain.
+	float height;
+	float radius;
+	float floor;
+	Vector3 pos;
+	Quaternion q;
 
-	int			compressedikerrorindex;
-	int			unused2;
+	int compressedikerrorindex;
+	int unused2;
 
-	int			iStart;
-	int			ikerrorindex;
+	int iStart;
+	int ikerrorindex;
 
-	float		start;	// beginning of influence
-	float		peak;	// start of full influence
-	float		tail;	// end of full influence
-	float		end;	// end of all influence
+	float start;	// beginning of influence
+	float peak;	// start of full influence
+	float tail;	// end of full influence
+	float end;	// end of all influence
 
-	float		unused3;	// 
-	float		contact;	// frame footstep makes ground concact
-	float		drop;		// how far down the foot should drop when reaching for IK
-	float		top;		// top of the foot box
+	float unused3;	// 
+	float contact;	// frame footstep makes ground concact
+	float drop;		// how far down the foot should drop when reaching for IK
+	float top;		// top of the foot box
 
-	int			unused6;
-	int			unused7;
-	int			unused8;
+	int unused6;
+	int unused7;
+	int unused8;
 
-	int			szattachmentindex;		// name of world attachment
+	int szattachmentindex;		// name of world attachment
 
-	int			unused[4];
+	int unused[4];
 };
 
 // sequence descriptions
@@ -1606,7 +1609,7 @@ struct mstudioseqdescv49_t
 	int unused[5];
 };
 
-struct mstudioseqdescv53_t
+struct mstudioseqdesc_t_v53
 {
 	int baseptr;
 
@@ -1850,7 +1853,7 @@ struct mstudiotexture_t
     int unused[12];
 };
 
-struct mstudiotexturev53_t
+struct mstudiotexture_t_v53
 {
 	int sznameindex;
 
@@ -2025,7 +2028,8 @@ struct mstudionode_t
 {
     int sznameindex[mdlHeader.numlocalnodes];
 
-    mstudionodedata node[mdlHeader.numlocalnodes];
+    
+    mstudionodedata nodedata[mdlHeader.numlocalnodes];
 };
 
 // todo: move to rmdl structs

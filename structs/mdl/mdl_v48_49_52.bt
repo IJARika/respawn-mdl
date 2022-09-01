@@ -31,7 +31,7 @@ if (pre_version == 52)
 
     // this is a check for non shipped models.
     // this isn't essential for models to function, however when not present it should be four bytes instead of just nothing.
-    if (mdlHeader.boneindex > mdlHeader.mayaindex)
+    if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
         char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
 }
 else if (pre_version == 49)
@@ -269,13 +269,5 @@ if (mdlHeader.version == 52)
 
 
 // string table
-if(mdlHeader.version == 52)
-{
-    FSeek(mdlSubHeader.stringtableindex  + startof(mdlSubHeader));
-    char stringtable[mdlHeader.length - (mdlSubHeader.stringtableindex  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
-}
-else
-{
-    FSeek(mdlSubHeader.sznameindex  + startof(mdlSubHeader));
-    char stringtable[mdlHeader.length - (mdlSubHeader.sznameindex  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
-}
+FSeek((mdlSubHeader.sznameindex - 1)  + startof(mdlSubHeader));
+char stringtable[mdlHeader.length - ((mdlSubHeader.sznameindex - 1)  + startof(mdlSubHeader))] <fgcolor=cLtRed>;

@@ -24,7 +24,7 @@
 
 
 // main headers
-struct studiohdrv54_t
+struct studiohdr_t_v54
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -172,9 +172,8 @@ struct studiohdrv54_t
 	
 	int unk1_v54[7];
 
-	// maybe this is for the string table since it always has one byte padding it?
-	// this is probably for some section I haven't seen or a string that hasn't been filled out.
-	int unkindex1; // byte before string table start?
+	// always "" or "Titan"
+    int unkstringindex <read=Str("%s", ReadString(startof(mdlHeader) + mdlHeader.unkstringindex))>;
 
 	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.
@@ -194,6 +193,7 @@ struct studiohdrv54_t
 
     int unkindex3; // index to chunk after string block
 
+    // likely related to AABB
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
@@ -209,7 +209,7 @@ struct studiohdrv54_t
 
 };
 
-struct studiohdrv54_v121_t
+struct studiohdr_t_v54_v121
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -362,6 +362,7 @@ struct studiohdrv54_v121_t
 
     int unkindex3; // index to chunk after string block
 
+    // likely related to AABB
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
@@ -370,7 +371,7 @@ struct studiohdrv54_v121_t
     int unk4_v54[3];
 };
 
-struct studiohdrv54_v122_t
+struct studiohdr_t_v54_v122
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -525,6 +526,7 @@ struct studiohdrv54_v122_t
 
     int unkindex3; // index to chunk after string block
 
+    // likely related to AABB
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
@@ -533,7 +535,7 @@ struct studiohdrv54_v122_t
     int unk4_v54[3];
 };
 
-struct studiohdrv54_v13_t
+struct studiohdr_t_v54_v13
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -688,6 +690,7 @@ struct studiohdrv54_v13_t
 
     int unkindex3; // index to chunk after string block
 
+    // likely related to AABB
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
@@ -698,7 +701,7 @@ struct studiohdrv54_v13_t
     int unk1_v54_v13[3];
 };
 
-struct studiohdrv54_v14_t
+struct studiohdr_t_v54_v14
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
@@ -855,6 +858,7 @@ struct studiohdrv54_v14_t
 
     int unkindex3; // index to chunk after string block
 
+    // likely related to AABB
     Vector3 mins; // min/max for Something
     Vector3 maxs; // seem to be the same as hull size
 
@@ -871,7 +875,7 @@ struct studiohdrv54_v14_t
 
 // bones
 // v54 is a heavily gutted v53 bone
-struct mstudiobonev54_t
+struct mstudiobone_t_v54
 {
 	int sznameindex;
 
@@ -904,7 +908,7 @@ struct mstudiobonev54_t
 	int unkid; // id is for unk section after stringblock, lacks toggle
 };
 
-struct mstudiobonev54_v121_t
+struct mstudiobone_t_v54_v121
 {
 	int sznameindex;
 
@@ -1071,7 +1075,7 @@ struct mstudiobboxv54_t
 
 
 // seq descriptions
-struct mstudioseqdescv54_t
+struct mstudioseqdesc_t_v54
 {
 	int baseptr;
 
@@ -1357,7 +1361,7 @@ struct mstudiomeshv54_v121_t
 
 
 // skin info
-struct mstudiotexturev54_t
+struct mstudiotexture_t_v54
 {
 	int sznameindex;
 
@@ -1428,7 +1432,7 @@ struct mstudioruimeshv54_t
 //========
 // Unknown
 
-struct unkheaderv54
+struct unkheader_v54
 {
     int dataindex1;
     int dataindex2;
@@ -1437,7 +1441,7 @@ struct unkheaderv54
     int numsection;
 };
 
-struct unksectionheaderv54
+struct unksectionheader_v54
 {
     int unk;
 
@@ -1451,7 +1455,7 @@ struct unksectionheaderv54
 };
 
 // v12
-struct unksectionheaderv54_v12
+struct unksectionheader_v54_v12
 {
     int unk;
 
@@ -1468,7 +1472,7 @@ struct unksectionheaderv54_v12
     int unk1;
 };
 
-struct unkheaderdatav54
+struct unkheaderdata_v54
 {
     int unk[2];
     int unk1;
