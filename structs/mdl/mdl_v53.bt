@@ -112,7 +112,31 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 		mstudioikrule_t_v53 animikrule <bgcolor=cGreen>;
 		numikrule += 1;
 	};
+
+    for(j = -animdesc[i].numikrules; j < 0; j++)
+    {
+        if(animikrule[numikrule + j].compressedikerrorindex > 0)
+        {
+            FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
+            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+        }
+    }
+
+    if(animdesc[i].compressedikerrorindex > 0)
+    {
+        FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+        mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
+    }
+
+    
 };
+
+for(j = 0; j < mdlHeader.numlocalanim; j++)
+{
+    
+}
+
+
 
 FSeek(mdlHeader.localseqindex);
 mstudioseqdesc_t_v53 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;

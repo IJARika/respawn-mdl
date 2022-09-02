@@ -1193,7 +1193,7 @@ struct mstudiobboxv53_t
 
 
 // animdesc, what.
-struct mstudioanimdescv48_t
+struct mstudioanimdesc_t_v48
 {
 	int baseptr;
 
@@ -1231,7 +1231,7 @@ struct mstudioanimdescv48_t
 
 };
 
-struct mstudioanimdescv49_t
+struct mstudioanimdesc_t_v49
 {
 	int baseptr;
 
@@ -1268,7 +1268,47 @@ struct mstudioanimdescv49_t
 	int zeroframeindex;
 
 	float zeroframestalltime; // saved during read stalls
+};
 
+struct mstudioanimdesc_t_v52
+{
+	int baseptr;
+
+	int sznameindex;
+
+	float fps; // frames per second	
+	int	flags; // looping/non-looping flags
+
+	int numframes;
+
+	// piecewise movement
+	int	nummovements;
+	int movementindex;
+
+    int ikrulezeroframeindex;
+
+    int compressedikerrorindex;
+
+	int unused1[4]; // remove as appropriate (and zero if loading older versions)	
+
+	int animblock;
+	int animindex; // non-zero when anim data isn't in sections
+
+	int numikrules;
+	int ikruleindex; // non-zero when IK data is stored in the mdl
+	int animblockikruleindex; // non-zero when IK data is stored in animblock file
+
+	int numlocalhierarchy;
+	int localhierarchyindex;;
+
+	int sectionindex;
+	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+
+	short zeroframespan; // frames per span
+	short zeroframecount; // number of spans
+	int zeroframeindex;
+
+	float zeroframestalltime; // saved during read stalls
 };
 
 typedef int offset <read=Str("%d  =>  %d", this, this - parentof(this).baseptr)>;
@@ -1286,16 +1326,15 @@ struct mstudioanimdescv53_t
 	// piecewise movement
 	int nummovements;
 	int movementindex;
-    
-    // pretty sure this gets removed and the anim index is here now.
-	//int unused1[4]; // remove as appropriate (and zero if loading older versions)	
 
-	int animblock;
+	int compressedikerrorindex; // might be ikrulezeroframe
 	int animindex; // non-zero when anim data isn't in sections
 
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
-	int animblockikruleindex; // non-zero when IK data is stored in animblock file
+
+    // this can't  exist since they no longer use ani
+	//int animblockikruleindex; // non-zero when IK data is stored in animblock file
 
 	int numlocalhierarchy;
 	int localhierarchyindex;
@@ -1310,7 +1349,7 @@ struct mstudioanimdescv53_t
     float zeroframestalltime; // saved during read stalls
 
     // ikrulezeroframeindex might be in here
-    int unused[4];
+    int unused[5];
 };
 
 #define STUDIO_ANIM_RAWPOS	0x01 // Vector48
@@ -1389,6 +1428,7 @@ struct mstudioanimv53_t
 	int nextoffset;
 };
 
+// ik rule
 struct mstudioikrule_t
 {
 	int index;
@@ -1434,41 +1474,63 @@ struct mstudioikrule_t
 
 struct mstudioikrule_t_v53
 {
-	int index;
-	int type;
-	int chain;
-	int bone;
+    int index;
+    int type;
+    int chain;
+    int bone;
 
-	int slot;	// iktarget slot.  Usually same as chain.
-	float height;
-	float radius;
-	float floor;
+    int slot; // iktarget slot. Usually same as chain.
+    float height;
+    float radius;
+    float floor;
+    Vector3 pos;
+    Quaternion q;
+
+    int compressedikerrorindex;
+
+    int iStart;
+    int ikerrorindex;
+
+    float start; // beginning of influence
+    float peak; // start of full influence
+    float tail; // end of full influence
+    float end; // end of all influence
+
+    float contact; // frame footstep makes ground concact
+    float drop; // how far down the foot should drop when reaching for IK
+    float top; // top of the foot box
+
+    int szattachmentindex; // name of world attachment
+
+    int unused[9];
+};
+
+struct mstudiocompressedikerror_t
+{
+	float scale[6];
+	int16 index[6]; // 'offset' but 010 cries about it
+};
+
+struct mstudiocompressedikerror_t_v52
+{
+	float scale[4];
+	int16 index[4]; // 'offset' but 010 cries about it
+};
+
+struct mstudioikerror_t
+{
 	Vector3 pos;
 	Quaternion q;
+};
 
-	int compressedikerrorindex;
-	int unused2;
-
-	int iStart;
-	int ikerrorindex;
-
-	float start;	// beginning of influence
-	float peak;	// start of full influence
-	float tail;	// end of full influence
-	float end;	// end of all influence
-
-	float unused3;	// 
-	float contact;	// frame footstep makes ground concact
-	float drop;		// how far down the foot should drop when reaching for IK
-	float top;		// top of the foot box
-
-	int unused6;
-	int unused7;
-	int unused8;
-
-	int szattachmentindex;		// name of world attachment
-
-	int unused[4];
+struct mstudioikrulezeroframe_t
+{
+	int16		chain;
+	int16		slot;
+	hfloat		start;	// beginning of influence
+	hfloat		peak;	// start of full influence
+	hfloat		tail;	// end of full influence
+	hfloat		end;	// end of all influence
 };
 
 // sequence descriptions

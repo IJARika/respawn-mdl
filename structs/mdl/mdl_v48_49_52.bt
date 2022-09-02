@@ -95,9 +95,11 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 // animation
 FSeek(mdlHeader.localanimindex);
 if (mdlHeader.version < 49)
-    mstudioanimdescv48_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+    mstudioanimdesc_t_v48 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+else if(mdlHeader.version == 49)
+    mstudioanimdesc_t_v49 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 else
-    mstudioanimdescv49_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+    mstudioanimdesc_t_v52 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
 
 
 // Animation Data
@@ -131,6 +133,24 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 		mstudioikrule_t animikrule <bgcolor=cGreen>;
 		numikrule += 1;
 	};
+
+    for(j = -animdesc[i].numikrules; j < 0; j++)
+    {
+        if(animikrule[numikrule + j].compressedikerrorindex > 0)
+        {
+            FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
+            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+        }
+    }
+
+    if(mdlHeader.version == 52)
+    {
+        if(animdesc[i].compressedikerrorindex > 0)
+        {
+            FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+            ikcompressederror_v52 ikcompressederrorNEW <bgcolor=cLtGreen>;
+        }
+    }
 };
 
 
