@@ -131,12 +131,6 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
     
 };
 
-for(j = 0; j < mdlHeader.numlocalanim; j++)
-{
-    
-}
-
-
 
 FSeek(mdlHeader.localseqindex);
 mstudioseqdesc_t_v53 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
@@ -380,60 +374,94 @@ FSeek(mdlHeader.vtxindex);
 struct vtxgroup
 {
     FileHeader_t vtx_header <bgcolor=cLtPurple>;
+    
+    FSeek(startof(vtx_header) + vtx_header.bodyPartOffset);
     BodyPartHeader_t vtx_partheader[vtx_header.numBodyParts] <bgcolor=cPurple>;
-
+    
+    
     // gets the total amount of parts.
     local int vtxPartCount = 0;
-
+    
     for (i = 0; i < vtx_header.numBodyParts; ++i)
     {
        vtxPartCount += vtx_partheader[i].numModels;
     };
-
+    
+    FSeek(startof(vtx_partheader[0]) + vtx_partheader[0].modelOffset);
     ModelHeader_t vtx_modelheader[vtxPartCount] <bgcolor=cDkPurple>;
-
+    
+    
     // gets the total amount of LODs.
     local int vtxLodCount = 0;
-
+    
     for (i = 0; i < vtxPartCount; ++i)
     {
        vtxLodCount += vtx_modelheader[i].numLODs;
     };
-
+    
+    FSeek(startof(vtx_modelheader[0]) + vtx_modelheader[0].lodOffset);
     ModelLODHeader_t vtx_lodheader[vtxLodCount] <bgcolor=cLtPurple>;
-
+    
+    
     // gets the total amount of LODs.
     local int vtxMeshCount = 0;
-
+    
     for (i = 0; i < vtxLodCount; ++i)
     {
        vtxMeshCount += vtx_lodheader[i].numMeshes;
     };
-
+    
+    FSeek(startof(vtx_lodheader[0]) + vtx_lodheader[0].meshOffset);
     MeshHeader_t vtx_meshheader[vtxMeshCount] <bgcolor=cPurple>;
-
+    
+    
     // gets the total amount of strip groups.
     local int vtxStripGrpCount = 0;
-
-    for (i = 0; i < vtxLodCount; ++i)
+    
+    for (i = 0; i < vtxMeshCount; ++i)
     {
        vtxStripGrpCount += vtx_meshheader[i].numStripGroups;
     };
-
+    
+    FSeek(startof(vtx_meshheader[0]) + vtx_meshheader[0].stripGroupHeaderOffset);
     StripGroupHeader_t vtx_stripgrphdr[vtxStripGrpCount] <bgcolor=cDkPurple>;
     
-    //char piss[33];
-
+    
     // gets the total amount of strips.
-    /*local int vtxStripCount = 0;
-
+    local int vtxStripCount = 0;
+    
     for (i = 0; i < vtxStripGrpCount; ++i)
     {
        vtxStripCount += vtx_stripgrphdr[i].numStrips;
     }
-
-    StripHeader_t vtx_strips[4];*/
-
+    
+    FSeek(startof(vtx_stripgrphdr[0]) + vtx_stripgrphdr[0].stripOffset);
+    StripHeader_t vtx_strips[vtxStripCount] <bgcolor=cLtPurple>;
+    
+    
+    for (i = 0; i < vtxStripGrpCount; ++i)
+    {
+       FSeek(startof(vtx_stripgrphdr[i]) + vtx_stripgrphdr[i].vertOffset);
+       vertgroup vtx_vertgroup <optimize=false>;
+    };
+    
+    
+    for (i = 0; i < vtxStripGrpCount; ++i)
+    {
+       FSeek(startof(vtx_stripgrphdr[i]) + vtx_stripgrphdr[i].indexOffset);
+       indicegroup vtx_indicegroup <optimize=false>;
+    };
+    
+    
+    for (i = 0; i < vtxStripCount; ++i)
+    {
+       FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
+       bonestategroup vtx_bonestategroup <optimize=false>;
+    };
+    
+    
+    FSeek(startof(vtx_header) + vtx_header.materialReplacementListOffset);
+    MaterialReplacementListHeader_t materiallist[vtx_header.numLODs] <bgcolor=cDkPurple>;
 };
 
 if (mdlHeader.vtxsize > 0)

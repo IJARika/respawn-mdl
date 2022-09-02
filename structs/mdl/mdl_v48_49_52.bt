@@ -148,7 +148,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
         if(animdesc[i].compressedikerrorindex > 0)
         {
             FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
-            ikcompressederror_v52 ikcompressederrorNEW <bgcolor=cLtGreen>;
+            mstudiocompressedikerror_t_v52 ikcompressederrorNEW <bgcolor=cLtGreen>;
         }
     }
 };

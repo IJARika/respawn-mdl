@@ -41,9 +41,9 @@ struct vertexFileFixup_t
 
 struct thinModelVertices_t
 {
-	int				m_numBoneInfluences;// Number of bone influences per vertex, N
-	float			m_boneWeights;		// This array stores (N-1) weights per vertex (unless N is zero)
-	byte			m_boneIndices;		// This array stores N indices per vertex
-	Vector3			m_vecPositions;
-	uint	m_vecNormals;		// Normals are compressed into 16 bits apiece (see PackNormal_UBYTE4() )
+	int m_numBoneInfluences; // Number of bone influences per vertex, N
+	float m_boneWeights; // This array stores (N-1) weights per vertex (unless N is zero)
+	byte m_boneIndices; // This array stores N indices per vertex
+	Vector3 m_vecPositions;
+	uint m_vecNormals; // Normals are compressed into 16 bits apiece (see PackNormal_UBYTE4() )
 };
