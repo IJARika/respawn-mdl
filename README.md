@@ -23,7 +23,7 @@ As well as:
   
   -VPHY   
   -RPHY (incomplete)  
-  -VTX subversions: 7
+  -VTX subversions: 7 
   -VVD    
   -VVC (partial)  
   -VG (soon)  
