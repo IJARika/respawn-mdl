@@ -749,7 +749,7 @@ struct studiohdr_t_v53
     int numaabb2;
 
     // always "" or "Titan"
-    int unkstringindex <read=Str("%s", ReadString(startof(mdlHeader) + mdlHeader.unkstringindex))>;
+    int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
 
     // start of model combination stuff.
     // anis are no longer used from what I can tell, v52s that had them don't in v53.
@@ -827,7 +827,7 @@ struct studiohdr2_t_v52
     int numaabb2;
 
     // always "" or "Titan"
-    int unkstringindex <read=Str("%s", ReadString(startof(mdlSubHeader) + mdlSubHeader.unkstringindex))>;
+    int unkstringindex <read=ReadString(startof(mdlSubHeader) + mdlSubHeader.unkstringindex)>;
 
 	int reserved[39];
 };

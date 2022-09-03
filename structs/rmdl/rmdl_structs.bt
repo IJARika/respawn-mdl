@@ -173,7 +173,7 @@ struct studiohdr_t_v54
 	int unk1_v54[7];
 
 	// always "" or "Titan"
-    int unkstringindex <read=Str("%s", ReadString(startof(mdlHeader) + mdlHeader.unkstringindex))>;
+    int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
 
 	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.

@@ -23,7 +23,7 @@ if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
 
 // setup bones
 FSeek(mdlHeader.boneindex);
-mstudiobone_t_v54_v121 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudiobone_t_v54_v121 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int jigglebonecount = 0;
 local int i = 0;
@@ -41,12 +41,12 @@ mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
 // setup attachments
 FSeek(mdlHeader.localattachmentindex);
-mstudioattachmentv54_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;;
+mstudioattachmentv54_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
 
 
 // setup hitboxes
 FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]<bgcolor=0xf2e46a, read=Str("%s", ReadString(startof(this) + this.sznameindex))>;
+mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]<bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
 
 // we have to check here because some models have more than one hitboxset.
 local int bboxCount = 0;
@@ -56,7 +56,7 @@ for (i = 0; i < mdlHeader.numhitboxsets; ++i)
    bboxCount += hboxset[i].numhitboxes;
 }
 
-mstudiobboxv54_t bboxes[bboxCount] <bgcolor=0xa29418, read=Str("%s", ReadString(startof(this) + this.szhitboxnameindex))>;
+mstudiobboxv54_t bboxes[bboxCount] <bgcolor=0xa29418, read=ReadString(startof(this) + this.szhitboxnameindex)>;
 
 
 // setup alphabetical bone table
