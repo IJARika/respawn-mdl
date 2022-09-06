@@ -37,5 +37,8 @@ if(mdlHeader.unkindex1_v121 > 0)
 }
 
 
-FSeek(startof(mdlHeader.boneremapindex) + mdlHeader.boneremapindex);
-mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;
+if(mdlHeader.boneremapindex > 0)
+{
+    FSeek(startof(mdlHeader.boneremapindex) + mdlHeader.boneremapindex);
+    mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;
+}

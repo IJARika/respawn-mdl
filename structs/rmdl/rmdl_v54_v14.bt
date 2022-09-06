@@ -19,7 +19,7 @@
 
 
 // header
-studiohdr_t_v54_v14 mdlHeader <bgcolor=cLtBlue>;
+studiohdr_t_v54_v14 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // first set of core parts

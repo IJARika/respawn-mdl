@@ -3,7 +3,7 @@
 //
 //      File: vphy
 //   Authors: Rika & Others
-//   Version: 256
+//   Version: 16
 //   Purpose: Valve Physics Files
 //  Category: Struct
 // File Mask: *.phy
@@ -21,7 +21,7 @@
 
 struct phyheader_t
 {
-	int size; // Size of this header section (generally 16)
+	int size; // Size of this header section (generally 16), this is also version.
 	int id; // Often zero, unknown purpose.
 	int numsolids; // Number of solids in file
 	int checksum; // checksum of source .mdl file (4-bytes)
@@ -62,7 +62,7 @@ struct legacysurfaceheader_t
 struct trianglefaceheader_t
 {
     int vertexindex; // from this member to verts
-    int parent; // parent bone
+    int parent; // parent bone, starting at 1
     int flags;
     int numfaces;
 };
@@ -72,20 +72,20 @@ struct trianglevertmap_t
     byte faceindex;
     byte unkdata[3];
 
-    int16 vertex1;
+    int16 vertid;
     byte unkdata1[2];
 
-    int16 vertex2;
+    int16 vertid1;
     byte unkdata2[2];
 
-    int16 vertex3;
+    int16 vertid2;
     byte unkdata3[2];
 };
 
 struct phyvertex_t
 {
     Vector3 pos; // relative to bone
-    int unk;
+    float unk;
 };
 
 struct phynode_t
@@ -126,9 +126,9 @@ struct physection_t
     
     for(i = 0; i < numfaces; i++)
     {
-            numvertices = vertmap[i].vertex1 > numvertices ? vertmap[i].vertex1 : numvertices;
-            numvertices = vertmap[i].vertex2 > numvertices ? vertmap[i].vertex2 : numvertices;
-            numvertices = vertmap[i].vertex3 > numvertices ? vertmap[i].vertex3 : numvertices;   
+            numvertices = vertmap[i].vertid > numvertices ? vertmap[i].vertid : numvertices;
+            numvertices = vertmap[i].vertid1 > numvertices ? vertmap[i].vertid1 : numvertices;
+            numvertices = vertmap[i].vertid2 > numvertices ? vertmap[i].vertid2 : numvertices;   
     }
     
     numvertices++;

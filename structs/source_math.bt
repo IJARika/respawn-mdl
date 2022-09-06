@@ -53,20 +53,30 @@ struct Quaternion
 };
 
 // packed quaternion
+struct Quat32
+{
+	uint x : 11 <read=Str("%f", (this - 1024) * (1 / 1024.0))>;
+	uint y : 10 <read=Str("%f", (this - 512) * (1 / 512.0))>;
+	uint z : 10 <read=Str("%f", (this - 512) * (1 / 512.0))>;
+	uint wneg : 1;
+};
+
 struct Quat48
 {
-	int x : 16;
-	int y : 16;
-	int16 z : 15;
-	int16 wneg : 1;
+	uint16 x : 16 <read=Str("%f", (this - 32768) * (1 / 32768.5))>;
+	uint16 y : 16 <read=Str("%f", (this - 32768) * (1 / 32768.5))>;
+	uint16 z : 15 <read=Str("%f", (this - 16384) * (1 / 16384.5))>; // broken
+	uint16 wneg : 1;
 };
 
 struct Quat64
 {
-    int64 x : 21;
-    int64 y : 21;
-    int64 z : 21;
-    int64 wneg : 1;
+    uint64 x : 21 <read=Str("%f", (this - 1048576) * (1 / 1048576.5))>;
+    uint64 y : 21 <read=Str("%f", (this - 1048576) * (1 / 1048576.5))>;
+    uint64 z : 21 <read=Str("%f", (this - 1048576) * (1 / 1048576.5))>;
+    uint64 wneg : 1;
+
+    //  <read=ReadShort(sqrt( 1 - x * x - y * y - z * z ))>
 };
 
 struct RadianEuler

@@ -44,7 +44,7 @@ struct studiohdr_t_v54
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-	int flags;
+	rmdlflags_t flags;
   
 	int numbones; // bones
 	int boneindex;
@@ -229,7 +229,7 @@ struct studiohdr_t_v54_v121
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-	int flags;
+	rmdlflags_t flags;
   
 	int numbones; // bones
 	int boneindex;
@@ -391,7 +391,7 @@ struct studiohdr_t_v54_v122
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-	int flags;
+	rmdlflags_t flags;
   
 	int numbones; // bones
 	int boneindex;
@@ -555,7 +555,7 @@ struct studiohdr_t_v54_v13
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-	int flags;
+	rmdlflags_t flags;
   
 	int numbones; // bones
 	int boneindex;
@@ -706,7 +706,7 @@ struct studiohdr_t_v54_v14
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int unk; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex; // No longer stored in string block, uses string in header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -721,7 +721,7 @@ struct studiohdr_t_v54_v14
 	Vector3 view_bbmin;		// clipping bounding box
 	Vector3 view_bbmax;		
  
-	int flags;
+	rmdlflags_t flags;
   
 	int numbones; // bones
 	int boneindex;
@@ -1142,7 +1142,12 @@ struct mstudioseqdesc_t_v54
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-	int unk[4];
+	int unk;
+    int unk1;
+
+    int unkindex;
+
+    int unk2;
 };
 
 
@@ -1469,7 +1474,7 @@ struct unksectionheader_v54_v12
 
     float unkfloat[3]; // unsure if this is a vector
 
-    int unk1;
+    hfloat unk1[2]; // sus
 };
 
 struct unkheaderdata_v54
