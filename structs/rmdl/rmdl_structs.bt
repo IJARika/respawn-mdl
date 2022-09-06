@@ -193,8 +193,8 @@ struct studiohdr_t_v54
 
     int unkindex3; // index to chunk after string block
 
-    // likely related to AABB
-    Vector3 mins; // min/max for Something
+    // Per Tri Collision AABB size
+    Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unk3_v54[3];
@@ -362,8 +362,8 @@ struct studiohdr_t_v54_v121
 
     int unkindex3; // index to chunk after string block
 
-    // likely related to AABB
-    Vector3 mins; // min/max for Something
+    // Per Tri Collision AABB size
+    Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unkindex4; // chunk before unkindex2 sometimes
@@ -526,8 +526,8 @@ struct studiohdr_t_v54_v122
 
     int unkindex3; // index to chunk after string block
 
-    // likely related to AABB
-    Vector3 mins; // min/max for Something
+    // Per Tri Collision AABB size
+    Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unkindex4; // chunk before unkindex2 sometimes
@@ -690,8 +690,8 @@ struct studiohdr_t_v54_v13
 
     int unkindex3; // index to chunk after string block
 
-    // likely related to AABB
-    Vector3 mins; // min/max for Something
+    // Per Tri Collision AABB size
+    Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unkindex4; // chunk before unkindex2 sometimes
@@ -858,8 +858,8 @@ struct studiohdr_t_v54_v14
 
     int unkindex3; // index to chunk after string block
 
-    // likely related to AABB
-    Vector3 mins; // min/max for Something
+    // Per Tri Collision AABB size
+    Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unkindex4; // chunk before unkindex2 sometimes

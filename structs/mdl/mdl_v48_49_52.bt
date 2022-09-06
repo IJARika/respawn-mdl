@@ -156,47 +156,47 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 
 FSeek(mdlHeader.localseqindex);
 if (mdlHeader.version < 49)
-    mstudioseqdescv48_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+    mstudioseqdescv48_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 else
-    mstudioseqdescv49_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+    mstudioseqdescv49_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 
 for(i = 0; i < mdlHeader.numlocalseq; i++)
 {
-    if(animseq[i].posekeyindex > 0)
+    if(seqdesc[i].posekeyindex > 0)
     {
-        FSeek(startof(animseq[i]) + animseq[i].posekeyindex);
+        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
         posekey_t posekey <bgcolor=0x55ee00>;
     }
 
-    if(animseq[i].numevents > 0)
+    if(seqdesc[i].numevents > 0)
     {
-        FSeek(startof(animseq[i]) + animseq[i].eventindex);
-        for(j = 0; j < animseq[i].numevents; j++)
+        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
+        for(j = 0; j < seqdesc[i].numevents; j++)
         {
             mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
         }
     }
 
-    FSeek(startof(animseq[i]) + animseq[i].autolayerindex);
-    for(j = 0; j < animseq[i].numautolayers; j++)
+    FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
+    for(j = 0; j < seqdesc[i].numautolayers; j++)
     {
         mstudioautolayer_t autolayers <bgcolor=0x226600>;
     }
 
-    FSeek(startof(animseq[i]) + animseq[i].weightlistindex);
+    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
     seqweightlist_t weightlist <bgcolor=0xe1f27a>;
 
     struct blendgroup_t
     {
-        int16 blends[animseq[i].groupsize[0] * animseq[i].groupsize[1]];
+        int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
     };
     
-    FSeek(startof(animseq[i]) + animseq[i].animindexindex);
+    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
     blendgroup_t blendgroup <bgcolor=0xffff00>;
 
-    FSeek(startof(animseq[i]) + animseq[i].activitymodifierindex);
-    for(j = 0; j < animseq[i].numactivitymodifiers; j++)
+    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
     {
         mstudioactivitymodifier_t activitymodifier <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
     }

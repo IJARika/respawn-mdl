@@ -75,35 +75,70 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 // animation
 FSeek(mdlHeader.localanimindex);
-mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+mstudioanimdesc_t_v53 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 //NOTE: Using this loop instead of above array so that the "offset" variables are calculated correctly.
 /*for (i = 0; i < ; ++i)
 {
 	mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 }*/
 
+struct sectionindexes_t
+{
+    int sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
+};
+
 // Animation Data
 local int numanimboneheader = 0;
+local int numsectionanimboneheader = 0;
 local int numikrule = 0;
+local int numsections = 0;
+local int sectionlength = 0;
+
 for (i = 0; i < mdlHeader.numlocalanim; ++i)
 {
-	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
-	for (j = 0; j < mdlHeader.numbones; ++j)
-	{
-        
-		mstudioanim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
-		numanimboneheader += 1;
-        FSkip(animheader[numanimboneheader - 1].nextoffset - 32);
-        
-		if (animheader[numanimboneheader - 1].nextoffset <= 0) 
-		{
-			// Read in unused empty data structure at the end of the list.
-			//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
-			break;
-		}
-	};
-	// Read in unused empty data structure at the end of the list.
-	//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+    if(animdesc[i].sectionframes > 0)
+    {
+        FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
+        sectionindexes_t sectionindexes;
+        numsections++;
+        sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
+
+        for(j = 0; j < sectionlength; j++)
+        {
+            FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j]);
+
+            for (k = 0; k < mdlHeader.numbones; ++k)
+            {   
+                mstudioanim_t_v53 sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
+                numsectionanimboneheader += 1;
+                FSkip(sectionanimheader[numsectionanimboneheader - 1].nextoffset - 32);
+
+                if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
+		        {
+			        break;
+		        }
+            };
+        };
+    }
+
+	if(animdesc[i].sectionframes == 0)
+    {
+        FSeek(animdesc[i].animindex - animdesc[i].baseptr);
+	    for (j = 0; j < mdlHeader.numbones; ++j)
+	    {
+            
+		    mstudioanim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+		    numanimboneheader += 1;
+            FSkip(animheader[numanimboneheader - 1].nextoffset - 32);
+            
+		    if (animheader[numanimboneheader - 1].nextoffset <= 0) 
+		    {
+			    // Read in unused empty data structure at the end of the list.
+			    //RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+			    break;
+		    }
+	    };
+    }
 
 	// Animation IK Rules
 	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
@@ -133,44 +168,44 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 
 
 FSeek(mdlHeader.localseqindex);
-mstudioseqdesc_t_v53 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+mstudioseqdesc_t_v53 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 for(i = 0; i < mdlHeader.numlocalseq; i++)
 {
-    if(animseq[i].posekeyindex > 0)
+    if(seqdesc[i].posekeyindex > 0)
     {
-        FSeek(startof(animseq[i]) + animseq[i].posekeyindex);
+        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
         posekey_t posekey <bgcolor=0x55ee00>;
     }
 
-    if(animseq[i].numevents > 0)
+    if(seqdesc[i].numevents > 0)
     {
-        FSeek(startof(animseq[i]) + animseq[i].eventindex);
-        for(j = 0; j < animseq[i].numevents; j++)
+        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
+        for(j = 0; j < seqdesc[i].numevents; j++)
         {
             mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
         }
     }
 
-    FSeek(startof(animseq[i]) + animseq[i].autolayerindex);
-    for(j = 0; j < animseq[i].numautolayers; j++)
+    FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
+    for(j = 0; j < seqdesc[i].numautolayers; j++)
     {
         mstudioautolayer_t autolayers <bgcolor=0x226600>;
     }
 
-    FSeek(startof(animseq[i]) + animseq[i].weightlistindex);
+    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
     seqweightlist_t weightlist <bgcolor=0xe1f27a>;
 
     struct blendgroup_t
     {
-        int16 blends[animseq[i].groupsize[0] * animseq[i].groupsize[1]];
+        int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
     };
     
-    FSeek(startof(animseq[i]) + animseq[i].animindexindex);
+    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
     blendgroup_t blendgroup <bgcolor=0xffff00>;
 
-    FSeek(startof(animseq[i]) + animseq[i].activitymodifierindex);
-    for(j = 0; j < animseq[i].numactivitymodifiers; j++)
+    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
     {
         mstudioactivitymodifier_t activitymodifier <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
     }
@@ -182,7 +217,7 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionode_t node <bgcolor=cDkYellow>;
+    mstudionodename_t nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
 }
 
 

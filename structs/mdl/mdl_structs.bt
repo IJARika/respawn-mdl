@@ -1518,8 +1518,8 @@ struct mstudioanimdesc_t_v52
 	float zeroframestalltime; // saved during read stalls
 };
 
-typedef int offset <read=Str("%d  =>  %d", this, this - parentof(this).baseptr)>;
-struct mstudioanimdescv53_t
+//typedef int offset <read=Str("%d  =>  %d", this, this - parentof(this).baseptr)>;
+struct mstudioanimdesc_t_v53
 {
 	int baseptr;
 
@@ -1955,7 +1955,7 @@ struct mstudioseqdesc_t_v53
 
 struct posekey_t
 {
-    float unk[animseq[i].groupsize[0] + animseq[i].groupsize[1]];
+    float unk[seqdesc[i].groupsize[0] + seqdesc[i].groupsize[1]];
 };
 
 struct mstudioevent_t
@@ -2335,12 +2335,9 @@ struct mstudionodedata
     int16 unk[2];
 };
 
-struct mstudionode_t
+struct mstudionodename_t
 {
-    int sznameindex[mdlHeader.numlocalnodes];
-
-    
-    mstudionodedata nodedata[mdlHeader.numlocalnodes];
+    int sznameindex;
 };
 
 // todo: move to rmdl structs
