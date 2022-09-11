@@ -36,6 +36,14 @@ struct Vector4
 };
 
 // packed vector
+struct Vector32
+{
+	uint x : 10;
+	uint y : 10;
+	uint z : 10;
+	uint exp : 2;
+};
+
 struct Vector48
 {
     hfloat x;

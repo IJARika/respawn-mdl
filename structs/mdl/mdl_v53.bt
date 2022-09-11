@@ -82,10 +82,6 @@ mstudioanimdesc_t_v53 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=R
 	mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 }*/
 
-struct sectionindexes_t
-{
-    int sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
-};
 
 // Animation Data
 local int numanimboneheader = 0;
@@ -99,7 +95,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
     if(animdesc[i].sectionframes > 0)
     {
         FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
-        sectionindexes_t sectionindexes;
+        sectionindexes_t_53 sectionindexes;
         numsections++;
         sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
 
@@ -530,8 +526,11 @@ struct vtxgroup
     
     for (i = 0; i < vtxStripCount; ++i)
     {
-       FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
-       bonestategroup vtx_bonestategroup <optimize=false>;
+       if(vtx_strips[i].boneStateChangeOffset > 0)
+        {
+            FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
+            bonestategroup vtx_bonestategroup <optimize=false>;
+        }
     };
     
     

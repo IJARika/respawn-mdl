@@ -37,5 +37,5 @@ if(vv_header.vertexDataStart > 0)
 if(vv_header.tangentDataStart > 0)
 {
     FSeek(vv_header.tangentDataStart);
-    Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cYellow>;
 }

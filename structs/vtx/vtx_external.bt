@@ -103,8 +103,11 @@ for (i = 0; i < vtxStripGrpCount; ++i)
 
 for (i = 0; i < vtxStripCount; ++i)
 {
-   FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
-   bonestategroup vtx_bonestategroup <optimize=false>;
+   if(vtx_strips[i].boneStateChangeOffset > 0)
+    {
+        FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
+        bonestategroup vtx_bonestategroup <optimize=false>;
+    }
 };
 
 

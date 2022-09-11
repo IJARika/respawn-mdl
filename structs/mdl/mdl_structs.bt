@@ -818,6 +818,7 @@ struct studiohdr_t_v53
     rmdlflags_t flags;
   
     // highest observed: 250
+    // max is definitely 256 because 8bit uint limit
     int numbones; // bones
 	int boneindex;
  
@@ -948,7 +949,8 @@ struct studiohdr_t_v53
 	int m_nBoneFlexDriverIndex;
     
     // for static props (and maybe others)
-    // Per Triangle AABB
+    // Per Triangle Collision AABB
+    // Basically a high detail collision mesh
     int aabbindex;
     int numaabb;
     int numaabb1;
@@ -957,23 +959,20 @@ struct studiohdr_t_v53
     // always "" or "Titan"
     int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
 
-    // start of model combination stuff.
-    // anis are no longer used from what I can tell, v52s that had them don't in v53.
+    // ANIs are no longer used and this is reflected in many structs
+    // Start of interal file data
     int vtxindex; // VTX
 	int vvdindex; // VVD / IDSV
     int vvcindex; // VVC / IDCV 
     int vphyindex; // VPHY / IVPS
 
-    int vtxsize;
-    int vvdsize;
-    int vvcsize;
-    int vphysize;
-
-    // the following 'unks' could actually be indexs.
-    // one of these is probably the ANI/IDAG index
-    // vertAnimFixedPointScale might be in here but I doubt it.
+    int vtxsize; // VTX
+    int vvdsize; // VVD / IDSV
+    int vvcsize; // VVC / IDCV 
+    int vphysize; // VPHY / IVPS
 
     // this data block is related to the vphy, if it's not present the data will not be written
+    // definitely related to phy, apex phy has this merged into it
     int unkmemberindex1; // section between vphy and vtx.?
     int numunkmember1; // only seems to be used when phy has one solid
 
@@ -1042,7 +1041,19 @@ struct studiohdr2_t_v52
 //=============
 // Bone Structs
 
+
 // bones
+enum boneprocflags
+{
+    STUDIO_PROC_AXISINTERP = 1,
+    STUDIO_PROC_QUATINTERP = 2,
+    STUDIO_PROC_AIMATBONE = 3,
+    STUDIO_PROC_AIMATATTACH = 4,
+    STUDIO_PROC_JIGGLE = 5,
+    STUDIO_PROC_TWIST_MASTER = 6,
+    STUDIO_PROC_TWIST_SLAVE = 7
+};
+
 struct mstudiobone_t_v47
 {
 	int sznameindex;
@@ -1063,7 +1074,7 @@ struct mstudiobone_t_v47
 	Quaternion qAlignment;
 
     int flags;
-	int proctype;
+	boneprocflags proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 	
@@ -1094,7 +1105,7 @@ struct mstudiobone_t_v49
 	Quaternion qAlignment;
 
     int flags;
-	int proctype;
+	boneprocflags proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
@@ -1127,7 +1138,7 @@ struct mstudiobone_t_v52
 	Quaternion qAlignment;
 
     int flags;
-	int proctype;
+	boneprocflags proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
@@ -1168,7 +1179,7 @@ struct mstudiobone_t_v53
 	Quaternion qAlignment;
 
     int flags;
-	int proctype;
+	boneprocflags proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
@@ -1185,10 +1196,22 @@ struct mstudiobone_t_v53
 	int unused[7]; // remove as appropriate
 };
 
+struct jiggleboneflags_t
+{
+	int JIGGLE_IS_FLEXIBLE : 1;
+	int JIGGLE_IS_RIGID : 1;
+	int JIGGLE_HAS_YAW_CONSTRAINT : 1;
+	int JIGGLE_HAS_PITCH_CONSTRAINT : 1;
+	int JIGGLE_HAS_ANGLE_CONSTRAINT : 1;
+	int JIGGLE_HAS_LENGTH_CONSTRAINT : 1;
+	int JIGGLE_HAS_BASE_SPRING : 1;
+    int unused : 25;
+};
+
 // jigglebone
 struct mstudiojigglebone_t
 {
-	int flags;
+	jiggleboneflags_t flags;
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
@@ -1358,7 +1381,7 @@ struct mstudiolinearbone_t
 // hboxset
 struct mstudiohitboxset_t
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int numhitboxes;
 	int hitboxindex;
@@ -1373,7 +1396,7 @@ struct mstudiobbox_t
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
-	int szhitboxnameindex; // offset to the name of the hitbox.
+	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
 	
 	int unused[8];
 };
@@ -1386,10 +1409,10 @@ struct mstudiobbox_t_v53
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
-	int szhitboxnameindex; // offset to the name of the hitbox.
+	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
-    int unk;
-    int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
+    int unk; // this gets used, 0 or 1 observed, boolean?
+    int keyvalueindex <read=ReadString(startof(this) + this - 40)>; // used for KV names in string block, should be set to hitboxname if kv unneeded.
 
 	int unused[6];
 };
@@ -1555,7 +1578,24 @@ struct mstudioanimdesc_t_v53
     int unused[5];
 };
 
-// v49 flags
+struct sectionindexesindex_t
+{
+    int anioffset; // unconfirmed
+    int sectionoffset;
+};
+
+struct sectionindexes_t
+{
+    sectionindexesindex_t sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
+};
+
+struct sectionindexes_t_53
+{
+    int sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
+};
+
+// v48/49/52 flags
+// v52 might've added flags for scale
 #define STUDIO_ANIM_RAWPOS	0x01 // Vector48
 #define STUDIO_ANIM_RAWROT	0x02 // Quaternion48
 #define STUDIO_ANIM_ANIMPOS	0x04 // mstudioanim_valueptr_t
@@ -1588,7 +1628,7 @@ struct mstudioanim_valueptr_t_quat64
 // 'mstudio_rle_anim_t' in alien swarm
 struct mstudioanim_t
 {
-	byte bone;
+	ubyte bone; // alien swarm/csgo says this is a signed int but that doesn't work well for our purposes.
 	byte flags;		// weighing options
 
     int16 nextoffset;
@@ -1614,7 +1654,7 @@ struct mstudioanim_t_v53
 {
 	float translationscale; // porter naming
 
-	byte bone;
+	ubyte bone; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
 	byte flags;
 
 	int16 unk;
@@ -1639,11 +1679,21 @@ struct mstudioanim_t_v53
 };
 
 // ik rule
+enum ikruletype
+{
+    IK_SELF = 1,
+    IK_WORLD = 2,
+    IK_GROUND = 3,
+    IK_RELEASE = 4,
+    IK_ATTACHMENT = 5,
+    IK_UNLATCH = 6
+};
+
 struct mstudioikrule_t
 {
 	int index;
 
-	int type;
+	ikruletype type;
 	int chain;
 
 	int	bone;
@@ -1685,7 +1735,7 @@ struct mstudioikrule_t
 struct mstudioikrule_t_v53
 {
     int index;
-    int type;
+    ikruletype type;
     int chain;
     int bone;
 
@@ -1832,7 +1882,7 @@ struct mstudioseqdescv49_t
 
 	int numblends;
 
-	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
+	// Index into array of shorts which is groupsize[0] x groupsize[1groupsize[1] in length
 	int animindexindex;
 
 	int movementindex; // [blend] float array for blended movement
@@ -1984,7 +2034,7 @@ struct mstudioactivitymodifier_t
 {	
 	int sznameindex;
 
-    // int here?
+    int unk;
 };
 
 struct seqweightlist_t
@@ -2190,7 +2240,7 @@ struct mstudioskingroup_t
 
 struct mstudiorruiheader_t
 {
-    byte ruiunk[4]; // unsure, it doesn't line up
+    int unk; // unsure, it doesn't line up
     int ruimeshindex;
 };
 
@@ -2347,5 +2397,5 @@ struct mstudionode_t_v54
 
     int nodeindex[mdlHeader.numlocalnodes]; // from file start
 
-    int node[mdlHeader.numlocalnodes];
+    int node[mdlHeader.numlocal];
 };

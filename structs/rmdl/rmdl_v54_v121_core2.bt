@@ -17,7 +17,7 @@
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionode_t node <bgcolor=cDkYellow>;
+    mstudionodename_t node <bgcolor=cDkYellow>;
 }
 
 

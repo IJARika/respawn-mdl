@@ -3,7 +3,7 @@
 //
 //      File: rphy
 //   Authors: Rika & Others
-//   Version: 256
+//   Version: 20
 //   Purpose: Respawn Physics Files
 //  Category: Model
 // File Mask: *.phy
@@ -12,7 +12,7 @@
 //------------------------------------------------
 
 
-#include "./source_math.bt"
+#include "../source_math.bt"
 
 local int i = 0;
 
@@ -36,47 +36,92 @@ struct phyheader_t
 
 struct phyheader2_t
 {
-	int size; // Size of this header section (generally 16)
-	int id; // Often zero, unknown purpose.
-	int numsolids; // Number of solids in file
+    // respawn using int64 for some reason when it's absolutely unneeded
 
-	int unk[3]; // vector maybe?
+	int64 size; // Size of this header section (generally 16)
+	int64 numsolids; // Number of solids in file
+	int64 id; // unsure but this would go with the theme of new stuff.
 
-    int keyvalueindex; // string block or size of data after this member
-    
-    int unk1;
+    int64 keyvalueindex; // string block or size of data after this member
 };
 
-struct compactsurfaceheader_t
+struct surfaceheader_t
 {
-	int size; // size of the content after this byte
-	int id;
-	int16 version;
+	int64 size; // offsets to associated unknown section
+    int64 numsolids;    
 
-	int16 modeltype;
+    float unkfloat;
 
-	int surfacesize;
+    int unk[2];
 
-	Vector3 dragaxisareas;
+    float unkfloat1[20];
 
-	int axismaparea;
+    int unk;
+
+    // differs slightly from model but should be the mostly same assuming it is one solid.
+    // this is PER SOLID so on multi-solid phys this will be smaller than the models
+    Vector3 bbmin;
+    Vector3 bbmax;
+
+    int unk2[2];
 };
 
-struct legacysurfaceheader_t
+struct unktype_t
 {
-	Vector3 mass_center;
-	Vector3 rotation_inertia;
+    byte unk[4];
 
-	float upper_limit_radius;
+    int unk1[7];
+};
 
-    // big if true
-	int	max_deviation : 24;
-	int	byte_size : 8;
-	int	nodeindex;
+struct unktype2_t
+{
+    byte unk[4];
+};
 
-    int pad[2];
+struct unksection_t
+{
+    int unk;
 
-    int id;
+    float unkfloat[3];
+
+    // same as 'verts' in v53 phy related section
+    int64 vertexoffset;
+    int64 numvertexes;
+
+    // unk
+    int64 unkoffset;
+    int64 numunk;    
+
+    // numunk2
+    int64 unk2offset;
+    int64 numunk2;    
+
+    Vector3 vert[numvertexes] <fgcolor=cLtYellow>;
+
+    unktype_t unktype[numunk] <fgcolor=cLtYellow>;
+
+    unktype2_t unktype2[numunk2] <bgcolor=cDkBlue, fgcolor=cLtYellow>; 
+};
+
+struct unksection_t_stub
+{
+    int unk;
+
+    float unkfloat[3];
+
+    // same as 'verts' in v53 phy related section
+    int64 vertexoffset;
+    int64 numvertexes;
+
+    // unk
+    int64 unkoffset;
+    int64 numunk;    
+
+    // numunk2
+    int64 unk2offset;
+    int64 numunk2;
+
+    // don't do data here as it's gonna be in unk sections
 };
 
 struct trianglefaceheader_t
@@ -119,20 +164,27 @@ struct phynode_t
     int bboxsize; // volume?
 };
 
+phyheader_t vphy_header <bgcolor=cLtRed>;
 
-struct physection_t
+// this might be a header for unk sections
+phyheader2_t vphy_subheader <bgcolor=cRed>;
+
+surfaceheader_t vphy_section[vphy_header.numsolids] <bgcolor=cLtRed, fgcolor=cLtYellow, optimize=false>;
+
+// this is similar to "one solid" normal phy, but done differently
+if(vphy_section.numsolids > 1)
 {
-    compactsurfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow, optimize=false>;
-    legacysurfaceheader_t surfaceheader2 <bgcolor=cLtRed, fgcolor=cYellow, optimize=false>;
+    unksection_t_stub vphy_section_child[vphy_section.numsolids - 1] <bgcolor=cLtRed>;
+}
+
+// this doesn't work properly if the above is true
+// needs to inherit values of above children if true
+for(i = 0; i < vphy_header.numsolids; i++)
+{
+    //FSeek(startof(vphy_subheader) + vphy_section[i].size);
+    unksection_t unksection <bgcolor=cBlue, optimize=false>;
 };
 
-phyheader_t vphy_header <bgcolor=cLtRed>;
-phyheader2_t vphy_subheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
-//compactsurfaceheader_t phy_section[vphy_header.numsolids];
-//legacysurfaceheader_t phy_section2[vphy_header.numsolids];
-physection_t vphy_section[2] <optimize=false>;
-//nt unk[7];
-//int unk1[36];
 
 
 FSeek(vphy_header.keyvalueindex);

@@ -11,7 +11,7 @@ Valve:
 
   -V47 (with original xbox version)  
   -V48  
-  -V49  
+  -V49 (not csgo)	
 
 Respawn:
 
@@ -23,7 +23,7 @@ As well as:
   
   -VPHY   
   -RPHY (incomplete)  
-  -VTX subversions: 7 
+  -VTX subversions: 7 	
   -VVD    
   -VVC (partial)  
   -VG (soon)  

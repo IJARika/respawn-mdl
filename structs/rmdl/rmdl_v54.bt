@@ -136,7 +136,7 @@ mstudiomodelv54_t models[modelCount]<bgcolor=cDkGray>;
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionode_t node <bgcolor=cDkYellow>;
+    mstudionodename_t node <bgcolor=cDkYellow>;
 }
 
 
