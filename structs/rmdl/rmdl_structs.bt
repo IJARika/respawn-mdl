@@ -111,7 +111,7 @@ struct studiohdr_t_v54
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex;
+	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -170,7 +170,9 @@ struct studiohdr_t_v54
 	int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
 	int m_nBoneFlexDriverIndex;
 	
-	int unk1_v54[7];
+    int unkindexflex;
+
+	int unk1_v54[6];
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
@@ -289,7 +291,7 @@ struct studiohdr_t_v54_v121
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex;
+	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -451,7 +453,7 @@ struct studiohdr_t_v54_v122
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex;
+	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -615,7 +617,7 @@ struct studiohdr_t_v54_v13
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex;
+	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -783,7 +785,7 @@ struct studiohdr_t_v54_v14
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex;
+	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -897,7 +899,7 @@ struct mstudiobone_t_v54
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 	
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
 
@@ -930,7 +932,7 @@ struct mstudiobone_t_v54_v121
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 	
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
 	
@@ -1160,15 +1162,14 @@ struct mstudiomodelv54_t
 {
 	char name[64];
 
-	int unkindex2; // byte before string block
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes
 
-    // these are probably still used but get written over the name if nothing is set.
-    //int type;
-	//float boundingradius;
+    // it looks like they write the entire name
+    // then write over it with other values where needed
+    // why.
+    int type;
 
-    char name2[8]; // it looks like they write the entire name
-                   // then write over it with other values where needed
-                   // why.
+	float boundingradius;
 
 	int nummeshes;	
 	int meshindex;
@@ -1198,15 +1199,14 @@ struct mstudiomodelv54_v121_t
 {
 	char name[64];
 
-	int unkindex2; // byte before string block
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
-    // these are probably still used but get written over the name if nothing is set.
-    //int type;
-	//float boundingradius;
+    // it looks like they write the entire name
+    // then write over it with other values where needed
+    // why.
+    int type;
 
-    char name2[8]; // it looks like they write the entire name
-                   // then write over it with other values where needed
-                   // why.
+	float boundingradius;
 
 	int nummeshes;	
 	int meshindex;
@@ -1508,4 +1508,16 @@ struct unkindex1sect
     float unkfloat;
 
     int unk1[9];
+};
+
+
+//=====
+// Misc
+
+
+struct mstudionode_t_v54
+{
+    int sznameindex[mdlHeader.numlocalnodes];
+
+    int nodeindex[mdlHeader.numlocalnodes];
 };

@@ -80,6 +80,8 @@ mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read
 FSeek(mdlHeader.skinindex);
 mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
 
+// this is like a skin name
+int unkmaterialdata[mdlHeader.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
 
 // show keyvalues
 FSeek(mdlHeader.keyvalueindex);

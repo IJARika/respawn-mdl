@@ -228,6 +228,15 @@ struct rmdlflags_t
     int unused9 : 1;
 };
 
+enum <int> contents_flags
+{
+    CONTENTS_EMPTY = 0x0, // nonsolid
+    CONTENTS_SOLID = 0x1, // solid
+    CONTENTS_GRATE = 0x8, // grate
+    CONTENTS_MONSTER = 0x2000000, // monster
+    CONTENTS_LADDER = 0x20000000 // ladder
+};
+
 struct studiohdr_t_v47
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
@@ -308,7 +317,7 @@ struct studiohdr_t_v47
     int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+    int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
     int keyvalueindex;
 	int keyvaluesize;
@@ -440,7 +449,7 @@ struct studiohdr_t_v48
     int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+    int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
     int keyvalueindex;
 	int keyvaluesize;
@@ -585,7 +594,7 @@ struct studiohdr_t_v49
     int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+    int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
     int keyvalueindex;
 	int keyvaluesize;
@@ -731,7 +740,7 @@ struct studiohdr_t_v52
     int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+    int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
     int keyvalueindex;
 	int keyvaluesize;
@@ -881,7 +890,7 @@ struct studiohdr_t_v53
     int numlocalposeparameters;
 	int localposeparamindex;
  
-    int surfacepropindex;
+    int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
  
     int keyvalueindex;
 	int keyvaluesize;
@@ -1078,7 +1087,7 @@ struct mstudiobone_t_v47
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 	
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 
 	int contents; // See BSPFlags.h for the contents flags
 
@@ -1109,7 +1118,7 @@ struct mstudiobone_t_v49
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 	
 	int contents; // See BSPFlags.h for the contents flags
 	
@@ -1142,7 +1151,7 @@ struct mstudiobone_t_v52
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 	
 	int contents; // See BSPFlags.h for the contents flags
 	
@@ -1183,7 +1192,7 @@ struct mstudiobone_t_v53
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 
-    int surfacepropidx; // index into string tablefor property name
+    int surfacepropidx <read=ReadString(startof(this) + this - 200)>; // index into string tablefor property name
 	
 	int contents; // See BSPFlags.h for the contents flags
 	
@@ -1607,28 +1616,17 @@ struct sectionindexes_t_53
 #define STUDIO_ANIM_RAWPOS_53	0x02 // Vector48
 #define STUDIO_ANIM_RAWROT_53	0x04 // Quaternion48
 #define STUDIO_ANIM_RAWSCALE_53	0x08 // Vector48
+#define STUDIO_ANIM_READBONE_53 0x10 // read bone data if any of the above are disabled
 
 struct mstudioanim_valueptr_t
 {
-    // int16	offset[3];
-	int16 xOffset;
-    int16 yOffset;
-    int16 zOffset;
-};
-
-// used strictly in v53+
-struct mstudioanim_valueptr_t_quat64
-{
-	int16 xOffset;
-    int16 yOffset;
-    int16 zOffset;
-    int16 wOffset;
+    int16 offset[3];
 };
 
 // 'mstudio_rle_anim_t' in alien swarm
 struct mstudioanim_t
 {
-	ubyte bone; // alien swarm/csgo says this is a signed int but that doesn't work well for our purposes.
+	byte bone; // alien swarm/csgo says this is a signed int but that doesn't work well for our purposes.
 	byte flags;		// weighing options
 
     int16 nextoffset;
@@ -1649,20 +1647,34 @@ struct mstudioanim_t
 	    Vector48 rawpos; // pPos
 };
 
+/*struct r2animflags
+{
+    byte unused : 1; // doubtful this is unused
+    byte STUDIO_ANIM_RAWPOS_53 : 1; // Vector48
+    byte STUDIO_ANIM_RAWROT_53 : 1; // Quaternion48
+    byte STUDIO_ANIM_RAWSCALE_53 : 1; // Vector48
+    byte STUDIO_ANIM_UNKFLAG_53  : 1; // STUDIO_ANIM_DELTA
+    byte unused1 : 3;
+};*/
+
+
 // same as above but the struct is always the same size
 struct mstudioanim_t_v53
 {
 	float translationscale; // porter naming
 
-	ubyte bone; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
+	byte bone; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
 	byte flags;
 
-	int16 unk;
+	int16 unk; // normally null data
 	
     if(flags & STUDIO_ANIM_RAWROT_53)
 	    Quat64 rawrot; // pQuat64
     else
-        mstudioanim_valueptr_t_quat64 animrot; // pRotV
+    {
+        mstudioanim_valueptr_t animrot; // pRotV
+        int16 unused; // pretty sure
+    }
 
 	if (flags & STUDIO_ANIM_RAWPOS_53)
 	    Vector48 rawpos; // pPos
@@ -1821,6 +1833,8 @@ struct mstudioseqdescv48_t
 	int movementindex; // [blend] float array for blended movement
 	int groupsize[2];
 	int paramindex[2]; // X, Y, Z, XR, YR, ZR
+	float paramstart[2]; // local (0..1) starting value
+	
 	float paramstart[2]; // local (0..1) starting value
 	float paramend[2]; // local (0..1) ending value
 	int paramparent;
@@ -2230,7 +2244,8 @@ struct mstudiotexture_t_v53
 // skin groups
 struct mstudioskingroup_t
 {
-    int16 textureId[mdlHeader.numskinref];
+    for(i = 0; i < mdlHeader.numskinref; i++)
+        int16 textureId <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 };
 
 
@@ -2340,7 +2355,7 @@ struct aabbtype
 
 struct aabbsection2
 {
-    int unk[3];
+    int16 unk[6];
 
     int unk1;
     
@@ -2380,6 +2395,7 @@ struct unkphysectiondatatype_t
 //=====
 // Misc
 
+
 struct mstudionodedata
 {
     int16 unk[2];
@@ -2388,14 +2404,4 @@ struct mstudionodedata
 struct mstudionodename_t
 {
     int sznameindex;
-};
-
-// todo: move to rmdl structs
-struct mstudionode_t_v54
-{
-    int sznameindex[mdlHeader.numlocalnodes];
-
-    int nodeindex[mdlHeader.numlocalnodes]; // from file start
-
-    int node[mdlHeader.numlocal];
 };

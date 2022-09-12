@@ -150,8 +150,11 @@ if (mdlHeader.numruimeshes > 0)
 FSeek(mdlHeader.textureindex);
 mstudiotexture_t_v54 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-FSeek(mdlHeader.materialtypesindex);
-MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
+if(mdlHeader.materialtypesindex > 0)
+{
+    FSeek(mdlHeader.materialtypesindex);
+    MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
+}
 
 FSeek(mdlHeader.cdtextureindex);
 mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;

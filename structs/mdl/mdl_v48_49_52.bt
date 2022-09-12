@@ -128,8 +128,8 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
             {   
                 mstudioanim_t sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
                 numsectionanimboneheader += 1;
-                FSeek(startof(animheader[numsectionanimboneheader - 1]));
-                FSkip(animheader[numsectionanimboneheader - 1].nextoffset);
+                FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]));
+                FSkip(sectionanimheader[numsectionanimboneheader - 1].nextoffset);
 
                 if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
 		        {
