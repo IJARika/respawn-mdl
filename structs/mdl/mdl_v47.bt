@@ -17,6 +17,8 @@
 
 local int i = 0;
 local int j = 0;
+local int k = 1;
+local int x = 0;
 
 
 studiohdr_t_v47 mdlHeader <bgcolor=cLtBlue>;
@@ -68,33 +70,67 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 // animation
 FSeek(mdlHeader.localanimindex);
 if (mdlHeader.version < 49)
-    mstudioanimdescv48_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
-else
-    mstudioanimdescv49_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
+    mstudioanimdesc_t_v48 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+if(mdlHeader.version == 49)
+    mstudioanimdesc_t_v49 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+if(mdlHeader.version == 52)
+    mstudioanimdesc_t_v52 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // Animation Data
 local int numanimboneheader = 0;
+local int numsectionanimboneheader = 0;
 local int numikrule = 0;
+local int numsections = 0;
+local int sectionlength = 0;
+
 for (i = 0; i < mdlHeader.numlocalanim; ++i)
 {
-	FSeek(animdesc[i].animindex - animdesc[i].baseptr);
-	for (j = 0; j < mdlHeader.numbones; ++j)
-	{
-        
-		mstudioanim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
-		numanimboneheader += 1;
-        FSkip(animheader[numanimboneheader - 1].nextoffset - 4);
-        
-		if (animheader[numanimboneheader - 1].nextoffset <= 0) 
-		{
-			// Read in unused empty data structure at the end of the list.
-			//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
-			break;
-		}
-	};
-	// Read in unused empty data structure at the end of the list.
-	//RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+	if(animdesc[i].sectionframes > 0)
+    {
+        FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
+        sectionindexes_t sectionindexes;
+        numsections++;
+        sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
+
+        for(j = 0; j < sectionlength; j++)
+        {
+            FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].sectionoffset);
+
+            for (k = 0; k < mdlHeader.numbones; ++k)
+            {   
+                mstudioanim_t sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
+                numsectionanimboneheader += 1;
+                FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]));
+                FSkip(sectionanimheader[numsectionanimboneheader - 1].nextoffset);
+
+                if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
+		        {
+			        break;
+		        }
+            };
+        };
+    }
+
+	if(animdesc[i].sectionframes == 0)
+    {
+        FSeek(animdesc[i].animindex - animdesc[i].baseptr);
+	    for (j = 0; j < mdlHeader.numbones; ++j)
+	    {
+            
+		    mstudioanim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+		    numanimboneheader += 1;
+            FSeek(startof(animheader[numanimboneheader - 1]));
+            FSkip(animheader[numanimboneheader - 1].nextoffset);
+            
+		    if (animheader[numanimboneheader - 1].nextoffset <= 0) 
+		    {
+			    // Read in unused empty data structure at the end of the list.
+			    //RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+			    break;
+		    }
+	    };
+    }
 
 	// Animation IK Rules
 	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
@@ -103,14 +139,74 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 		mstudioikrule_t animikrule <bgcolor=cGreen>;
 		numikrule += 1;
 	};
+
+    for(j = -animdesc[i].numikrules; j < 0; j++)
+    {
+        if(animikrule[numikrule + j].compressedikerrorindex > 0)
+        {
+            FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
+            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+        }
+    }
+
+    if(mdlHeader.version == 52)
+    {
+        if(animdesc[i].compressedikerrorindex > 0)
+        {
+            FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+            mstudiocompressedikerror_t_v52 ikcompressederrorNEW <bgcolor=cLtGreen>;
+        }
+    }
 };
 
 
-FSeek(mdlHeader.localseqindex);
-if (mdlHeader.version < 49)
-    mstudioseqdescv48_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
-else
-    mstudioseqdescv49_t animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a>;
+/*FSeek(mdlHeader.localseqindex);
+if (mdlHeader.version <= 48)
+    mstudioseqdescv48_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+if (mdlHeader.version >= 49)
+    mstudioseqdescv49_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+
+
+for(i = 0; i < mdlHeader.numlocalseq; i++)
+{
+    if(seqdesc[i].posekeyindex > 0)
+    {
+        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
+        posekey_t posekey <bgcolor=0x55ee00>;
+    }
+
+    if(seqdesc[i].numevents > 0)
+    {
+        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
+        for(j = 0; j < seqdesc[i].numevents; j++)
+        {
+            mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+        }
+    }
+
+    FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
+    for(j = 0; j < seqdesc[i].numautolayers; j++)
+    {
+        mstudioautolayer_t autolayers <bgcolor=0x226600>;
+    }
+
+    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
+    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
+
+    struct blendgroup_t
+    {
+        int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
+    };
+    
+    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
+    blendgroup_t blendgroup <bgcolor=0xffff00>;
+
+    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
+    {
+        mstudioactivitymodifier_t activitymodifier <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
+    }
+}*/
 
 
 
@@ -166,21 +262,15 @@ for (i = 0; i < modelCount; ++i)
 mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
-// various includes, materials, and groups
-FSeek(mdlHeader.includemodelindex);
-mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue>;
+// I do an include file because these are mostly the same across all mdl versions,
+// and I really don't wanna have to update every template every time I change something.
+#include "../mdl/mdl_module_texturesincludemdl.bt"
 
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t_v47 textures[mdlHeader.numtextures] <bgcolor=cGreen>;
 
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen>;
-
-FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
-
+// do keyvalues, this remains unchanged in all models since it's just char data.
 FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
+
 
 // string table
 //FSeek(mdlSubHeader.sznameindex  + 408);

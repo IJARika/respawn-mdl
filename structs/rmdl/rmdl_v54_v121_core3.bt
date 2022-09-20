@@ -13,14 +13,6 @@
 //------------------------------------------------
 
 
-// unk section
-if(mdlHeader.unkindex4 > 0)
-{
-    FSeek(mdlHeader.unkindex4);
-    unkheader_v54 unkhdr <bgcolor=cDkBlue>;
-    unksectionheader_v54_v12 unksecthdr[unkhdr.numsection] <bgcolor=cBlue>;
-    unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;
-}
 
 FSeek(startof(mdlHeader.unkindex3_v121) + mdlHeader.unkindex3_v121);
 unkindex3sect unkindex3section[mdlHeader.numunk3_v121];
@@ -37,7 +29,7 @@ if(mdlHeader.unkindex1_v121 > 0)
 }
 
 
-if(mdlHeader.boneremapindex > 0)
+if(mdlHeader.boneremapindex > 0 && mdlHeader.numboneremaps > 0)
 {
     FSeek(startof(mdlHeader.boneremapindex) + mdlHeader.boneremapindex);
     mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;

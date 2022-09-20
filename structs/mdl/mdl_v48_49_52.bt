@@ -31,10 +31,8 @@ if (pre_version == 52)
     studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
     studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
 
-    // this is a check for non shipped models.
-    // this isn't essential for models to function, however when not present it should be four bytes instead of just nothing.
-    if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
-        char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
+    // funny strings that work the same always
+    #include "../mdl/mdl_v52_module_mayastrings.bt"
 }
 else if (pre_version == 49)
 {
@@ -287,19 +285,12 @@ for (i = 0; i < modelCount; ++i)
 mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
-// various includes, materials, and groups
-FSeek(mdlHeader.includemodelindex);
-mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+// I do an include file because these are mostly the same across all mdl versions,
+// and I really don't wanna have to update every template every time I change something.
+#include "../mdl/mdl_module_texturesincludemdl.bt"
 
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
-
-FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
-
+// do keyvalues, this remains unchanged in all models since it's just char data.
 FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
@@ -309,15 +300,15 @@ mstudiosrcbonetransform_t srcbonetransform[mdlSubHeader.numsrcbonetransform] <bg
 
 if (mdlSubHeader.linearboneindex > 0)
 {
-    FSeek(mdlSubHeader.linearboneindex + 408);
+    FSeek(startof(mdlSubHeader) + mdlSubHeader.linearboneindex);
     mstudiolinearbone_t linearbone <bgcolor=cGreen>;
 
     struct mstudiolinearbonedata_t
     {
         if(linearbone.flagsindex > 0)
-            uint32 bone_flags[linearbone.numbones];
+            int bone_flags[linearbone.numbones];
         if(linearbone.parentindex > 0)
-            uint32 bone_parents[linearbone.numbones];
+            int bone_parents[linearbone.numbones];
         
         if(linearbone.posindex > 0)
             Vector3 bone_pos[linearbone.numbones];
@@ -356,9 +347,6 @@ if (mdlHeader.version == 52)
         aabbsection3 unk_bytes3[mdlSubHeader.numaabb2] <fgcolor=cRed>;
     };
 };
-
-
-// unk_index1 always follows this, and always seems to be one byte in front of the string table.
 
 
 // string table

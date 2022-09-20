@@ -29,7 +29,7 @@ struct studiohdr_t_v54
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -55,6 +55,7 @@ struct studiohdr_t_v54
 	int numhitboxsets;
 	int hitboxsetindex;
  
+    // unused now
 	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
@@ -120,7 +121,7 @@ struct studiohdr_t_v54
 	int localikautoplaylockindex;
  
 	float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
 	int numincludemodels;
@@ -216,7 +217,7 @@ struct studiohdr_t_v54_v121
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -242,6 +243,7 @@ struct studiohdr_t_v54_v121
 	int numhitboxsets;
 	int hitboxsetindex;
  
+	// unused now
 	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
@@ -300,7 +302,7 @@ struct studiohdr_t_v54_v121
 	int localikautoplaylockindex;
  
 	float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
 	int numincludemodels;
@@ -345,7 +347,9 @@ struct studiohdr_t_v54_v121
     int numboneflexdrivers; // unsure if that's what it is in apex
 	int boneflexdriverindex;
 
-	int unk3_v54_a[2]; // I think this section was split vs old v54
+    int unkindexflex;
+
+	int unk3_v54_a; // I think this section was split vs old v54
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -378,7 +382,7 @@ struct studiohdr_t_v54_v122
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -404,6 +408,7 @@ struct studiohdr_t_v54_v122
 	int numhitboxsets;
 	int hitboxsetindex;
  
+	// unused now
 	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
@@ -462,7 +467,7 @@ struct studiohdr_t_v54_v122
 	int localikautoplaylockindex;
  
 	float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
 	int numincludemodels;
@@ -509,7 +514,9 @@ struct studiohdr_t_v54_v122
     int numboneflexdrivers; // unsure if that's what it is in apex
 	int boneflexdriverindex;
 
-	int unk3_v54_a[2]; // I think this section was split vs old v54
+	int unkindexflex;
+
+	int unk3_v54_a; // I think this section was split vs old v54
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -542,7 +549,7 @@ struct studiohdr_t_v54_v13
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -568,6 +575,7 @@ struct studiohdr_t_v54_v13
 	int numhitboxsets;
 	int hitboxsetindex;
  
+	// unused now
 	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
@@ -626,7 +634,7 @@ struct studiohdr_t_v54_v13
 	int localikautoplaylockindex;
  
 	float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
 	int numincludemodels;
@@ -673,7 +681,9 @@ struct studiohdr_t_v54_v13
     int numboneflexdrivers; // unsure if that's what it is in apex
 	int boneflexdriverindex;
 
-	int unk3_v54_a[2]; // I think this section was split vs old v54
+	int unkindexflex;
+
+	int unk3_v54_a; // I think this section was split vs old v54
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -708,7 +718,7 @@ struct studiohdr_t_v54_v14
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // No longer stored in string block, uses string in header.
+	int sznameindex <read=ReadString(startof(this) + this)>; // No longer stored in string block, uses string in header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -734,6 +744,7 @@ struct studiohdr_t_v54_v14
 	int numhitboxsets;
 	int hitboxsetindex;
  
+	// unused now
 	int numlocalanim; // animations/poses
 	int localanimindex; // animation descriptions
  
@@ -794,7 +805,7 @@ struct studiohdr_t_v54_v14
 	int localikautoplaylockindex;
  
 	float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
 	int numincludemodels;
@@ -841,7 +852,9 @@ struct studiohdr_t_v54_v14
     int numboneflexdrivers; // unsure if that's what it is in apex
 	int boneflexdriverindex;
 
-	int unk3_v54_a[2]; // I think this section was split vs old v54
+	int unkindexflex;
+
+	int unk3_v54_a; // I think this section was split vs old v54
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -875,13 +888,53 @@ struct studiohdr_t_v54_v14
 //=============
 // Bone Structs
 
+
+/*
+#define BONE_CALCULATE_MASK			0x1F
+#define BONE_PHYSICALLY_SIMULATED	0x01	// bone is physically simulated when physics are active
+#define BONE_PHYSICS_PROCEDURAL		0x02	// procedural when physics is active
+#define BONE_ALWAYS_PROCEDURAL		0x04	// bone is always procedurally animated
+#define BONE_SCREEN_ALIGN_SPHERE	0x08	// bone aligns to the screen, not constrained in motion.
+#define BONE_SCREEN_ALIGN_CYLINDER	0x10	// bone aligns to the screen, constrained by it's own axis.
+
+#define BONE_USED_MASK				0x0007FF00
+#define BONE_USED_BY_ANYTHING		0x0007FF00
+#define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
+#define BONE_USED_BY_ATTACHMENT		0x00000200	// bone (or child) is used by an attachment point
+#define BONE_USED_BY_VERTEX_MASK	0x0003FC00
+#define BONE_USED_BY_VERTEX_LOD0	0x00000400	// bone (or child) is used by the toplevel model via skinned vertex
+#define BONE_USED_BY_VERTEX_LOD1	0x00000800	
+#define BONE_USED_BY_VERTEX_LOD2	0x00001000  
+#define BONE_USED_BY_VERTEX_LOD3	0x00002000
+#define BONE_USED_BY_VERTEX_LOD4	0x00004000
+#define BONE_USED_BY_VERTEX_LOD5	0x00008000
+#define BONE_USED_BY_VERTEX_LOD6	0x00010000
+#define BONE_USED_BY_VERTEX_LOD7	0x00020000
+// bone merge unused?
+
+#define BONE_USED_BY_VERTEX_AT_LOD(lod) ( BONE_USED_BY_VERTEX_LOD0 << (lod) )
+#define BONE_USED_BY_ANYTHING_AT_LOD(lod) ( ( BONE_USED_BY_ANYTHING & ~BONE_USED_BY_VERTEX_MASK ) | BONE_USED_BY_VERTEX_AT_LOD(lod) )
+
+#define MAX_NUM_LODS 8
+
+#define BONE_TYPE_MASK				0x00F00000
+
+// might be different in v54
+#define BONE_FIXED_ALIGNMENT		0x00100000	// bone can't spin 360 degrees, all interpolation is normalized around a fixed orientation
+
+#define BONE_HAS_SAVEFRAME_POS		0x00200000	// Vector48
+#define BONE_HAS_SAVEFRAME_ROT64	0x00400000	// Quaternion64
+#define BONE_HAS_SAVEFRAME_ROT32	0x00800000	// Quaternion32
+*/
+
 // bones
 // v54 is a heavily gutted v53 bone
 struct mstudiobone_t_v54
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
+                // figure out how to read string with funny negative
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
@@ -901,7 +954,7 @@ struct mstudiobone_t_v54
 	
     int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 
     int unk; // similar value in studiohdr
 	
@@ -912,7 +965,7 @@ struct mstudiobone_t_v54
 
 struct mstudiobone_t_v54_v121
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
@@ -934,7 +987,7 @@ struct mstudiobone_t_v54_v121
 	
     int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 	
 	int unk; // similar value in studiohdr
 
@@ -942,19 +995,20 @@ struct mstudiobone_t_v54_v121
 };
 
 // jigglebone
-struct mstudiojigglebonev54_t
+struct mstudiojigglebone_t_v54
 {
     byte flags; // looks to be.
 
-    byte unk;
-    byte unk1;
-    byte unk2;
+    int16 bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // id of bone, might be single byte
+
+    byte unused; // possibly unused
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
 	float tipMass;
 
     float unkfloat; // v54 adds an extra value here but otherwise the same
+                    // observed values are between 0-1
 
 	// flexible params
 	float yawStiffness;
@@ -995,20 +1049,20 @@ struct mstudiojigglebonev54_t
 };
 
 // attachment
-struct mstudioattachmentv54_t
+struct mstudioattachment_t_v54
 {
-	int sznameindex;
-	int		flags;
+	int sznameindex <read=ReadString(startof(this) + this)>;
+	int flags;
 
-	int					localbone; // parent bone
+	int localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
 
 	matrix3x4_t			localmatrix; // attachment point
 };
 
 // ikchain
-struct mstudioikchainv54_t
+struct mstudioikchain_t_v54
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int linktype;
 	int numlinks;
@@ -1019,17 +1073,17 @@ struct mstudioikchainv54_t
 };
 
 // ikinfo
-struct mstudioiklinkv54_t
+struct mstudioiklink_t_v54
 {
-	uint32 bone;
+	uint32 bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	Vector3	unused0; // no kneeDir in apex I think
 };
 
 // linear bone
 
-struct mstudiolinearbonev54_t	
+struct mstudiolinearbone_t_v54
 {
-    // they cut pos and rot scale, understandable since posscale was never used it tf|2
+    // they cut pos and rot scale, understandable since posscale was never used it tf|2 and they do anims different in apex
 	int numbones;
 
 	int flagsindex;
@@ -1045,10 +1099,11 @@ struct mstudiolinearbonev54_t
 	int posetoboneindex;
 };
 
-// bone id in alphabetical order
+// bone remaps
 struct mstudioboneremaptable_t
 {
-    byte bone_id[mdlHeader.numboneremaps];
+    for(i = 0; i < mdlHeader.numboneremaps; i++)
+        ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 };
 
 
@@ -1057,18 +1112,19 @@ struct mstudioboneremaptable_t
 
 
 // hit box boxes
-struct mstudiobboxv54_t
+struct mstudiobbox_t_v54
 {
-	int bone;
-	int group; // intersection group
+	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+	hboxgroup group; // intersection group
 
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
-	int szhitboxnameindex; // offset to the name of the hitbox.
+	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
-    int unk;
-    int keyvalueindex; // used for KV names in string block, should be set to hitboxname if kv unneeded.
+    int critoverride; // overrides the group to be a crit, 0 or 1. might be group override since group 1 is head.
+
+    int keyvalueindex <read=ReadString(startof(this) + this - 40)>; // used for keyvalues, most for titans.
 };
 
 
@@ -1081,9 +1137,9 @@ struct mstudioseqdesc_t_v54
 {
 	int baseptr;
 
-	int	szlabelindex;
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex;
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
 	int flags; // looping/non-looping flags
 
@@ -1157,8 +1213,20 @@ struct mstudioseqdesc_t_v54
 // Model/Mesh Structs
 
 
+// bodyparts
+struct mstudiobodyparts_t_v54_v15
+{
+	int sznameindex;
+	int nummodels;
+	int base;
+	int modelindex; // index into models array
+
+    int unk;
+    int meshindex; // start of meshes?
+};
+
 // studio models
-struct mstudiomodelv54_t
+struct mstudiomodel_t_v54
 {
 	char name[64];
 
@@ -1195,7 +1263,7 @@ struct mstudiomodelv54_t
     int unkindex1;
 };
 
-struct mstudiomodelv54_v121_t
+struct mstudiomodel_t_v54_v121
 {
 	char name[64];
 
@@ -1232,19 +1300,18 @@ struct mstudiomodelv54_v121_t
     //int unkindex1;
 };
 
-struct mstudiomodelv54_v13_t
+struct mstudiomodel_t_v54_v13
 {
 	char name[64];
 
-	int unkindex2; // byte before string block
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
-    // these are probably still used but get written over the name if nothing is set.
-    //int type;
-	//float boundingradius;
+    // it looks like they write the entire name
+    // then write over it with other values where needed
+    // why.
+    int type;
 
-    char name2[8]; // it looks like they write the entire name
-                   // then write over it with other values where needed
-                   // why.
+	float boundingradius;
 
 	int nummeshes;	
 	int meshindex;
@@ -1270,19 +1337,18 @@ struct mstudiomodelv54_v13_t
     //int unkindex1;
 };
 
-struct mstudiomodelv54_v14_t
+struct mstudiomodel_t_v54_v14
 {
 	char name[64];
 
-	int unkindex2; // byte before string block
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
-    // these are probably still used but get written over the name if nothing is set.
-    //int type;
-	//float boundingradius;
+    // it looks like they write the entire name
+    // then write over it with other values where needed
+    // why.
+    int type;
 
-    char name2[8]; // it looks like they write the entire name
-                   // then write over it with other values where needed
-                   // why.
+	float boundingradius;
 
 	int nummeshes;	
 	int meshindex;
@@ -1308,10 +1374,50 @@ struct mstudiomodelv54_v14_t
     //int unkindex1;
 };
 
-// meshes
-struct mstudiomeshv54_t
+struct mstudiomodel_t_v54_v15
 {
-	int material;
+	char name[64];
+
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
+
+    // it looks like they write the entire name
+    // then write over it with other values where needed
+    // why.
+    int type;
+
+	float boundingradius;
+
+	int nummeshes;
+
+    int unk1[2]; // first is the same as nummeshes?
+
+	int meshindex;
+
+	// cache purposes
+	int numvertices; // number of unique vertices/normals/texcoords
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
+
+	int numattachments;
+	int attachmentindex;
+
+    // might be cut
+	int numeyeballs;
+	int eyeballindex;
+
+	//mstudio_modelvertexdata_t vertexdata;
+
+    // same as v53, except trimming the fat
+	int unk; // bruh
+
+    //int unkindex;
+    //int unkindex1;
+};
+
+// meshes
+struct mstudiomesh_t_v54
+{
+	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 
 	int modelindex;
 
@@ -1338,14 +1444,14 @@ struct mstudiomeshv54_t
 	int unused[2];
 };
 
-struct mstudiomeshv54_v121_t
+struct mstudiomesh_t_v54_v121
 {
-	int material;
+	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 
 	int modelindex;
 
 	int numvertices; // number of unique vertices/normals/texcoords
-	int unk; // relates to number of vertices
+	int vertexoffset; // vertex mstudiovertex_t
 	
 	// a unique ordinal for this mesh
 	int meshid;
@@ -1368,7 +1474,7 @@ struct mstudiomeshv54_v121_t
 // skin info
 struct mstudiotexture_t_v54
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int64 guid;
 };
@@ -1489,7 +1595,7 @@ struct unkheaderdata_v54
 // lod related maybe
 struct unkindex3sect
 {
-    int16 unkid[4];
+    int16 unkid[4]; // always very clean numbers, mesh lod map?
 
     float threshold;
 
@@ -1498,7 +1604,11 @@ struct unkindex3sect
 
 struct unkindex2sect
 {
-    int unk[4];
+    // if we take this as an offset and size there is 13 bytes between each section.
+    int unkoffset; // offset?
+    int unksize; // size?
+
+    int16 unk1[4]; // ids for something
 };
 
 struct unkindex1sect

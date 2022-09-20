@@ -237,6 +237,67 @@ enum <int> contents_flags
     CONTENTS_LADDER = 0x20000000 // ladder
 };
 
+string ReadContents(uint flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "CONTENTS_EMPTY";
+
+    int i = 0;
+    int flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case 0x1:
+            value += "CONTENTS_SOLID";
+            break;
+        case 0x8:
+            value += "CONTENTS_GRATE";
+            break;
+        case 0x2000000:
+            value += "CONTENTS_MONSTER";
+            break;
+        case 0x20000000:
+            value += "CONTENTS_LADDER";
+            break;
+        default:
+            value += Str("UNK_%x", flag);
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
+
 struct studiohdr_t_v47
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
@@ -327,7 +388,7 @@ struct studiohdr_t_v47
  
  
     float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
  
     // external animations, models, etc.
 	int numincludemodels;
@@ -459,7 +520,7 @@ struct studiohdr_t_v48
  
  
     float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
  
     // external animations, models, etc.
 	int numincludemodels;
@@ -604,7 +665,7 @@ struct studiohdr_t_v49
  
  
     float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
  
     // external animations, models, etc.
 	int numincludemodels;
@@ -750,7 +811,7 @@ struct studiohdr_t_v52
  
  
     float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
  
     // external animations, models, etc.
 	int numincludemodels;
@@ -809,7 +870,7 @@ struct studiohdr_t_v53
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
     int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
     int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
@@ -899,7 +960,7 @@ struct studiohdr_t_v53
 	int localikautoplaylockindex;
  
     float mass;
-	int contents;
+	int contents <read=ReadContents(this)>;
  
     // external animations, models, etc.
 	int numincludemodels;
@@ -958,8 +1019,7 @@ struct studiohdr_t_v53
 	int m_nBoneFlexDriverIndex;
     
     // for static props (and maybe others)
-    // Per Triangle Collision AABB
-    // Basically a high detail collision mesh
+    // Precomputed Per-Triangle AABB data
     int aabbindex;
     int numaabb;
     int numaabb1;
@@ -1034,7 +1094,7 @@ struct studiohdr2_t_v52
 	int m_nBoneFlexDriverIndex;
     
     // for static props (and maybe others)
-    // Per Triangle AABB
+    // Precomputed Per-Triangle AABB data
     int aabbindex;
     int numaabb;
     int numaabb1;
@@ -1063,64 +1123,77 @@ enum boneprocflags
     STUDIO_PROC_TWIST_SLAVE = 7
 };
 
+// for poseToBone:
+
+// postion is where the origin is relative to this bone, so any transforms are a. inverted, and b. additive of any parents.
+// or just the distance/directions/transformation needed to travel to place it at the origin
+
+// the quaternion's rotation matrix is mapped assuming the provide image is the layout:
+// https://wikimedia.org/api/rest_v1/media/math/render/svg/2036e2c76a8e1c3638fbec4e148d0a9034d1a453
+
+//   c0     c1     c2        c3
+// a m00; d m01; g m02; posX m03; // r0
+// b m10; e m11; h m12; PosY m13; // r1
+// c m20; f m21; i m22; posZ m23; // r2
+
 struct mstudiobone_t_v47
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector3 pos; // base bone position
 	Quaternion quat;
-	RadianEuler rot;
+	RadianEuler rot; // base bone rotation
 
 	// compression scale
-	Vector3 posscale;
-	Vector3 rotscale;
+	Vector3 posscale; // scale muliplier for bone position in animations
+	Vector3 rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
     int flags;
 	boneprocflags proctype;
-    int procindex; // procedural rule
+    int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 	
     int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 
 	int unused[8]; // remove as appropriate
 };
 
 struct mstudiobone_t_v49
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector3 pos; // base bone position
 	Quaternion quat;
-	RadianEuler rot;
+	RadianEuler rot; // base bone rotation
 
 	// compression scale
-	Vector3 posscale;
-	Vector3 rotscale;
+	Vector3 posscale; // scale muliplier for bone position in animations
+	Vector3 rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
     int flags;
 	boneprocflags proctype;
-    int procindex; // procedural rule
+    int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
     int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 	
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
@@ -1129,31 +1202,31 @@ struct mstudiobone_t_v49
 
 struct mstudiobone_t_v52
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector3 pos; // base bone position
 	Quaternion quat;
-	RadianEuler rot;
+	RadianEuler rot; // base bone rotation
 	
 	// compression scale
-	Vector3 posscale;
-	Vector3 rotscale;
+	Vector3 posscale; // scale muliplier for bone position in animations
+	Vector3 rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
     int flags;
 	boneprocflags proctype;
-    int procindex; // procedural rule
+    int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
     int surfacepropidx <read=ReadString(startof(this) + this - 176)>; // index into string tablefor property name
 	
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
@@ -1165,22 +1238,23 @@ struct mstudiobone_t_v52
 
 struct mstudiobone_t_v53
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int parent; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector3 pos; // base bone position
 	Quaternion quat;
-	RadianEuler rot;
+	RadianEuler rot; // base bone rotation
 	
 	Vector3 unkvector; // scale, porter named this though so like yea.
                        // pretty sure this is related to the new data type in mstudioanim
 	
 	// compression scale
-	Vector3 posscale;
-	Vector3 rotscale;
+	Vector3 posscale; // scale muliplier for bone position in animations
+                      // posscale in v53 is not used as the scale is stored in the animation bone headers.
+	Vector3 rotscale; // scale muliplier for bone rotation in animations
 
 	Vector3 unkvector1; // compression scale for scale
 
@@ -1189,18 +1263,18 @@ struct mstudiobone_t_v53
 
     int flags;
 	boneprocflags proctype;
-    int procindex; // procedural rule
+    int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
     int surfacepropidx <read=ReadString(startof(this) + this - 200)>; // index into string tablefor property name
 	
-	int contents; // See BSPFlags.h for the contents flags
+	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-    // these two are related, toggle gets set to '1' when id is not -1
+    // these two are related
 	int16 unkid; // id is for unk section after phy
-    int16 unktoggle;
+    int16 unktoggle; // gets set to '1' when id is not -1
 	
 	int unused[7]; // remove as appropriate
 };
@@ -1277,35 +1351,41 @@ struct mstudioboneflexdriver_t
 // attachments
 struct mstudioattachment_t
 {
-	int sznameindex;
-	int		flags;
+	int sznameindex <read=ReadString(startof(this) + this)>;
+	int flags;
 
-	int					localbone; // parent bone
+	int localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
 
-	matrix3x4_t			localmatrix; // attachment point
+	matrix3x4_t localmatrix; // attachment point
 
-	int					unused[8];
+    //    c0         c1         c2       c3
+    //float m00 float m01 float m02 posX m03 // r0
+    //float m10 float m11 float m12 posY m13 // r1
+    //float m20 float m21 float m22 PosZ m23 // r2
+
+	int	unused[8];
 };
 
 // bone id in alphabetical order
 struct mstudiobonenametable_t
 {
-    byte bone_id[mdlHeader.numbones];
+    for(i = 0; i < mdlHeader.numbones; i++)
+        ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 };
 
 // ikchain
 struct mstudioikchain_t
 {
-	int				sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int				linktype;
-	int				numlinks;
-	int				linkindex;
+	int linktype;
+	int numlinks;
+	int linkindex;
 };
 
 struct mstudioikchainv53_t
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int linktype;
 	int numlinks;
@@ -1320,7 +1400,7 @@ struct mstudioikchainv53_t
 // ikinfo
 struct mstudioiklink_t
 {
-	int bone;
+	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
 	Vector3	unused0; // unused in v49
 };
@@ -1339,7 +1419,7 @@ struct mstudioiklock_t
 // pose parameter desc
 struct mstudioposeparamdesc_t
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int flags; // ????
 	float start; // starting value
@@ -1396,11 +1476,24 @@ struct mstudiohitboxset_t
 	int hitboxindex;
 };
 
+enum <int> hboxgroup
+{
+    Generic = 0,
+    Head = 1,
+    Chest = 2,
+    Stomach = 3,
+    Left_Arm = 4,
+    Right_Arm = 5,
+    Left_Leg = 6,
+    Right_Leg = 7,
+    Neck = 8
+};
+
 // hit box boxes
 struct mstudiobbox_t
 {
-	int bone;
-	int group; // intersection group
+	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+	hboxgroup group; // intersection group
 
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
@@ -1412,16 +1505,16 @@ struct mstudiobbox_t
 
 struct mstudiobbox_t_v53
 {
-	int bone;
-	int group; // intersection group
+	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+	hboxgroup group; // intersection group
 
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
 	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
-    int unk; // this gets used, 0 or 1 observed, boolean?
-    int keyvalueindex <read=ReadString(startof(this) + this - 40)>; // used for KV names in string block, should be set to hitboxname if kv unneeded.
+    int critoverride; // overrides the group to be a crit, 0 or 1. might be group override since group 1 is head.
+    int keyvalueindex <read=ReadString(startof(this) + this - 40)>; // indexes into a kv group if used, mostly for titans.
 
 	int unused[6];
 };
@@ -1436,7 +1529,7 @@ struct mstudioanimdesc_t_v48
 {
 	int baseptr;
 
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
 	int	flags; // looping/non-looping flags
@@ -1474,7 +1567,7 @@ struct mstudioanimdesc_t_v49
 {
 	int baseptr;
 
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
 	int	flags; // looping/non-looping flags
@@ -1513,7 +1606,7 @@ struct mstudioanimdesc_t_v52
 {
 	int baseptr;
 
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
 	int	flags; // looping/non-looping flags
@@ -1555,7 +1648,7 @@ struct mstudioanimdesc_t_v53
 {
 	int baseptr;
 
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
 	int flags; // looping/non-looping flags
@@ -1647,21 +1740,10 @@ struct mstudioanim_t
 	    Vector48 rawpos; // pPos
 };
 
-/*struct r2animflags
-{
-    byte unused : 1; // doubtful this is unused
-    byte STUDIO_ANIM_RAWPOS_53 : 1; // Vector48
-    byte STUDIO_ANIM_RAWROT_53 : 1; // Quaternion48
-    byte STUDIO_ANIM_RAWSCALE_53 : 1; // Vector48
-    byte STUDIO_ANIM_UNKFLAG_53  : 1; // STUDIO_ANIM_DELTA
-    byte unused1 : 3;
-};*/
-
-
 // same as above but the struct is always the same size
 struct mstudioanim_t_v53
 {
-	float translationscale; // porter naming
+	float posscale; // does what posscale is used for
 
 	byte bone; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
 	byte flags;
@@ -1810,9 +1892,9 @@ struct mstudioseqdescv48_t
 {
 	int baseptr;
 
-	int	szlabelindex;
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex;
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
 	int flags; // looping/non-looping flags
 
@@ -1879,9 +1961,9 @@ struct mstudioseqdescv49_t
 {
 	int baseptr;
 
-	int	szlabelindex;
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex;
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
 	int flags; // looping/non-looping flags
 
@@ -1949,9 +2031,9 @@ struct mstudioseqdesc_t_v53
 {
 	int baseptr;
 
-	int	szlabelindex;
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex;
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
 	int flags; // looping/non-looping flags
 
@@ -2022,14 +2104,19 @@ struct posekey_t
     float unk[seqdesc[i].groupsize[0] + seqdesc[i].groupsize[1]];
 };
 
+enum neweventstyle
+{
+    NEW_EVENT_STYLE = ( 1 << 10 ),
+};
+
 struct mstudioevent_t
 {
 	float cycle;
 	int	event;
-	int type;
+	neweventstyle type; // this will be 0 if old style I'd imagine
 	char options[64];
 
-	int szeventindex;
+	int szeventindex <read=ReadString(startof(this) + this - 76)>;
 };
 
 struct mstudioautolayer_t
@@ -2060,7 +2147,7 @@ struct seqweightlist_t
 struct mstudiomodelgroup_t
 {
 	int szlabelindex; // textual name
-	int sznameindex; // file name
+	int sznameindex <read=ReadString(startof(this) + this - 4)>; // file name
 };
 
 
@@ -2071,7 +2158,7 @@ struct mstudiomodelgroup_t
 // body part index
 struct mstudiobodyparts_t
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 	int nummodels;
 	int base;
 	int modelindex; // index into models array
@@ -2092,7 +2179,9 @@ struct mstudiomodel_t
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
 	int vertexindex; // vertex Vector
+                     // offset by vertexindex number of bytes into vvd verts
 	int tangentsindex; // tangents Vector
+                       // offset by tangentsindex number of bytes into vvd tangents
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 
@@ -2123,7 +2212,9 @@ struct mstudiomodel_t_v52
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
 	int vertexindex; // vertex Vector
+                     // offset by vertexindex number of bytes into vvd verts
 	int tangentsindex; // tangents Vector
+                       // offset by tangentsindex number of bytes into vvd tangents
 
 	int numattachments;
 	int attachmentindex;
@@ -2153,12 +2244,13 @@ struct mstudio_meshvertexdata_t
 
 struct mstudiomesh_t
 {
-	int material;
+	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 
 	int modelindex;
 
 	int numvertices; // number of unique vertices/normals/texcoords
 	int vertexoffset; // vertex mstudiovertex_t
+                      // offset by vertexoffset number of verts into vvd vertexes, relative to the models offset
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 	
@@ -2202,13 +2294,13 @@ struct mstudiovertex_t
 // cdmaterials
 struct mstudiotexturedir_t
 {
-	int sznameindex; // file name
+	int sznameindex <read=ReadString(this)>; // file name
 };
 
 // skin info
 struct mstudiotexture_t_v47
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int flags;
 	int used;
@@ -2221,7 +2313,7 @@ struct mstudiotexture_t_v47
 
 struct mstudiotexture_t
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int flags;
 	int used;
@@ -2232,7 +2324,7 @@ struct mstudiotexture_t
 
 struct mstudiotexture_t_v53
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 
 	int flags;
 	int used;
@@ -2344,7 +2436,11 @@ struct pertriheader_t
 
 struct aabbsection1
 {
-    int16 unk[10];
+    int16 unk[3];
+    int16 unk1[3];
+    
+    // sometimes negative
+    int unk2[2];
 };
 
 struct aabbtype

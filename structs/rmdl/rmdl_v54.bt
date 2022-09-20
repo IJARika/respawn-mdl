@@ -1,13 +1,13 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: rmdl
+//      File: rmdl, rrig
 //   Authors: Rika
 //   Version: 54
 // Increment: 8/9/10/11(?)
 //   Purpose: Respawn MDL Files
 //  Category: Model
-// File Mask: *.rmdl
+// File Mask: *.rmdl, *.rrig
 //  ID Bytes: 
 //   History: 
 //------------------------------------------------
@@ -17,104 +17,34 @@
 #include "../mdl/mdl_structs.bt"
 #include "../rmdl/rmdl_structs.bt"
 
+local int i = 0;
+local int j = 0;
+local int k = 1;
+local int x = 0;
+
 
 // headers
 studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
-// this is a check for non shipped models.
-if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
-{
-    FSeek(mdlHeader.mayaindex);
-    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
-}
+
+// funny strings that work the same always
+#include "../mdl/mdl_v52_module_mayastrings.bt"
 
 
-// bones
-FSeek(mdlHeader.boneindex);
-mstudiobone_t_v54 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int jigglebonecount = 0;
-local int i = 0;
-local int j = 0;
-
-local char s_jigglebonename;
-
-for (i = 0; i < mdlHeader.numbones; ++i)
-{
-    if (bones[i].proctype == 5) {
-        jigglebonecount++;
-    }
-}
-
-mstudiojigglebonev54_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
-
-FSeek(mdlHeader.localattachmentindex);
-mstudioattachmentv54_t attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
+// global section here because it's unchanged from v8-v12, but required for two templates
+#include "../rmdl/rmdl_v54_module_bonejiggleattach.bt"
 
 
-// hitbox
-FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]  <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
-
-// have to do this because some things actually do have more than one.
-local int bboxCount = 0;
-
-for (i = 0; i < mdlHeader.numhitboxsets; ++i)
-{
-   bboxCount += hboxset[i].numhitboxes;
-}
-
-mstudiobboxv54_t bboxes[bboxCount]  <bgcolor=0xa29418, read=ReadString(startof(this) + this.szhitboxnameindex)>;
+// global hitbox for v54 since it doesn't change
+#include "../rmdl/rmdl_v54_module_hitbox.bt"
 
 
 FSeek(mdlHeader.bonetablebynameindex);
 mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
-// animation
-//FSeek(mdlHeader.localanimindex);
-//mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633>;
-
-FSeek(mdlHeader.localseqindex);
-mstudioseqdesc_t_v54 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-
-for(i = 0; i < mdlHeader.numlocalseq; i++)
-{
-    if(animseq[i].posekeyindex > 0)
-    {
-        FSeek(startof(animseq[i]) + animseq[i].posekeyindex);
-        posekey_t posekey <bgcolor=0x55ee00>;
-    }
-
-    if(animseq[i].numevents > 0)
-    {
-        FSeek(startof(animseq[i]) + animseq[i].eventindex);
-        for(j = 0; j < animseq[i].numevents; j++)
-        {
-            mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
-        }
-    }
-
-    if(animseq[i].numautolayers > 0)
-    {
-        FSeek(startof(animseq[i]) + animseq[i].autolayerindex);
-        for(j = 0; j < animseq[i].numautolayers; j++)
-        {
-            mstudioautolayer_t autolayers <bgcolor=0x226600>;
-        }
-    }
-    
-    FSeek(startof(animseq[i]) + animseq[i].weightlistindex);
-    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
-
-    struct blendgroup_t
-    {
-        int16 blends[animseq[i].groupsize[0] * animseq[i].groupsize[1]];
-    };
-    
-    FSeek(startof(animseq[i]) + animseq[i].animindexindex);
-    blendgroup_t blendgroup <bgcolor=0xffff00>;
-}
+// global sequences, unchanged across all v54 so far.
+#include "../rmdl/rmdl_v54_module_sequences.bt"
 
 
 // models
@@ -128,7 +58,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodelv54_t models[modelCount]<bgcolor=cDkGray>;
+mstudiomodel_t_v54 models[modelCount]<bgcolor=cDkGray>;
 
 
 //setup nodes, not fully understood
@@ -136,7 +66,7 @@ mstudiomodelv54_t models[modelCount]<bgcolor=cDkGray>;
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionodename_t node <bgcolor=cDkYellow>;
+    mstudionodename_t nodenames[mdlHeader.numlocalnodes] <bgcolor=cDkYellow>;
 }
 
 
@@ -144,18 +74,8 @@ FSeek(mdlHeader.localposeparamindex);
 mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
 
 
-// ik
-FSeek(mdlHeader.ikchainindex);
-mstudioikchainv54_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int linkCount = 0;
-
-for (i = 0; i < mdlHeader.numikchains; ++i)
-{
-   linkCount += ikchains[i].numlinks;
-}
-
-mstudioiklinkv54_t iklinks[linkCount] <bgcolor=0x7d3c98>;
+// unchanged between subversions
+#include "../rmdl/rmdl_v54_module_ikchain.bt"
 
 
 // meshes
@@ -168,46 +88,23 @@ for (i = 0; i < modelCount; ++i)
 }
 
 FSeek(mdlHeader.meshindex);
-mstudiomeshv54_t meshes[meshCount] <bgcolor=cLtGray>;
+mstudiomesh_t_v54 meshes[meshCount] <bgcolor=cLtGray>;
 
 
-// rui
-if (mdlHeader.numruimeshes > 0)
-{
-    FSeek(mdlHeader.ruimeshindex);
-    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
-
-    // some padding here to make it even I think.
-    //char ruiheader_filler[12];
-    
-    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
-    mstudioruimeshv54_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
-    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
-};
+// unchanged between subversions
+#include "../rmdl/rmdl_v54_module_ruimesh.bt"
 
 
 // various includes, materials, and groups
-//FSeek(mdlHeader.includemodel_index);
-//mstudiomodelgroup_t includemodels[mdlHeader.includemodel_count] <bgcolor=cLtBlue>;
 
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t_v54 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+// we no longer do include model because that's handled in the rpak header.
 
-if(mdlHeader.materialtypesindex > 0)
-{
-    FSeek(mdlHeader.materialtypesindex);
-    MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
-}
+// I do an include file because these are the same across all v54 (for now),
+// and I really don't wanna have to update every template every time I change something.
+#include "../rmdl/rmdl_v54_module_textures.bt"
 
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
 
-FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
-
-// this is like a skin name
-int unkmaterialdata[mdlHeader.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
-
+// do keyvalues, this remains unchanged in all models since it's just char data.
 FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
@@ -215,45 +112,13 @@ char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 FSeek(mdlHeader.srcbonetransformindex);
 mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-if (mdlHeader.linearboneindex > 0)
-{
-    FSeek(mdlHeader.linearboneindex);
-    mstudiolinearbonev54_t linearbone <bgcolor=cGreen>;
-    
-    struct mstudiolinearbonedata_t
-    {
-        if(linearbone.flagsindex > 0)
-            uint32 bone_flags[linearbone.numbones];
-        if(linearbone.parentindex > 0)
-            uint32 bone_parents[linearbone.numbones];
-        
-        if(linearbone.posindex > 0)
-            Vector3 bone_pos[linearbone.numbones];
-        if(linearbone.quatindex > 0)
-	        Quaternion bone_quat[linearbone.numbones];
-        if(linearbone.rotindex > 0)
-	        RadianEuler bone_rot[linearbone.numbones];
-        
-        if(linearbone.posetoboneindex > 0)
-            matrix3x4_t bone_poseToBone[linearbone.numbones];
-    };
 
-    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
-
-};
+// unchanged between subversions
+#include "../rmdl/rmdl_v54_module_linearbone.bt"
 
 
-// string table
-FSeek(mdlHeader.sznameindex - 1);
-
-local int64 stringtable_size;
-
-if(mdlHeader.unkindex4 == 0)
-    stringtable_size = mdlHeader.length - (mdlHeader.sznameindex - 1);
-else
-    stringtable_size = mdlHeader.unkindex4 - mdlHeader.sznameindex;
-
-char stringtable[stringtable_size] <fgcolor=cLtRed>;
+// global string table setup, only changes for v14
+#include "../rmdl/rmdl_v54_module_stringtable.bt"
 
 
 if(mdlHeader.unkindex4 > 0)

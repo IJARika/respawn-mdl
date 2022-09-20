@@ -1,0 +1,40 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl
+//   Authors: Rika
+//   Version: 54
+// Increment: 8/9/10/11/12
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 BONE JIGGLEBONE ATTACHMENT MODULE*/
+
+
+
+// do bones
+FSeek(mdlHeader.boneindex);
+mstudiobone_t_v54 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+local int jigglebonecount = 0;
+
+// get jiggle bone count
+for (i = 0; i < mdlHeader.numbones; ++i)
+{
+    if (bones[i].proctype == 5) {
+        jigglebonecount++;
+    }
+}
+
+// do jigglebones
+mstudiojigglebone_t_v54 jigglebones[jigglebonecount] <bgcolor=cGreen, read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex)>;
+
+
+// do attachements
+FSeek(mdlHeader.localattachmentindex);
+mstudioattachment_t_v54 attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;

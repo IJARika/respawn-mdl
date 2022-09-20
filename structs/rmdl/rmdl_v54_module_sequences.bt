@@ -1,0 +1,60 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: File: rmdl, rrig
+//   Authors: Rika
+//   Version: 54
+// Increment: All
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 SEQUENCE MODULE*/
+
+
+// do sequences, these are unchanged across all V54.
+FSeek(mdlHeader.localseqindex);
+mstudioseqdesc_t_v54 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+
+// loop through all sequences to do it's data structures.
+for(i = 0; i < mdlHeader.numlocalseq; i++)
+{
+    if(animseq[i].posekeyindex > 0)
+    {
+        FSeek(startof(animseq[i]) + animseq[i].posekeyindex);
+        posekey_t posekey <bgcolor=0x55ee00>;
+    }
+
+    if(animseq[i].numevents > 0)
+    {
+        FSeek(startof(animseq[i]) + animseq[i].eventindex);
+        for(j = 0; j < animseq[i].numevents; j++)
+        {
+            mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+        }
+    }
+
+    if(animseq[i].numautolayers > 0)
+    {
+        FSeek(startof(animseq[i]) + animseq[i].autolayerindex);
+        for(j = 0; j < animseq[i].numautolayers; j++)
+        {
+            mstudioautolayer_t autolayers <bgcolor=0x226600>;
+        }
+    }
+    
+    FSeek(startof(animseq[i]) + animseq[i].weightlistindex);
+    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
+
+    struct blendgroup_t
+    {
+        int16 blends[animseq[i].groupsize[0] * animseq[i].groupsize[1]];
+    };
+    
+    FSeek(startof(animseq[i]) + animseq[i].animindexindex);
+    blendgroup_t blendgroup <bgcolor=0xffff00>;
+}

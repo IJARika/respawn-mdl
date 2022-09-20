@@ -27,11 +27,9 @@ local int x = 0;
 // headers
 studiohdr_t_v53 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
-// this is a check for non shipped models.
-if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
-{
-    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
-};
+
+// funny strings that work the same always
+#include "../mdl/mdl_v52_module_mayastrings.bt"
 
 
 // bones
@@ -65,7 +63,7 @@ for (i = 0; i < mdlHeader.numhitboxsets; ++i)
    hboxCount += hboxset[i].numhitboxes;
 };
 
-mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=ReadString(startof(this) + this.szhitboxnameindex)>;
+mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=Str("%s : %s : %i", ReadString(startof(this) + this.szhitboxnameindex), ReadString(startof(this) + this.keyvalueindex), this.critoverride)>;
 
 
 // more bones
@@ -267,29 +265,18 @@ if (mdlHeader.numruimeshes > 0)
 {
     FSeek(mdlHeader.ruimeshindex);
     mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
-
-    // some padding here to make it even I think.
-    //char ruiheader_filler[12];
     
     FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
     mstudioruimesh_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
-    //float ruidata[(mdlHeader.textureindex - (mdlHeader.ruimeshindex + ruiheader[0].ruimesh_offset)) / 4] <fgcolor=cGreen>;
 };
 
 
-// various includes, materials, and groups
-FSeek(mdlHeader.includemodelindex);
-mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+// I do an include file because these are mostly the same across all mdl versions,
+// and I really don't wanna have to update every template every time I change something.
+#include "../mdl/mdl_module_texturesincludemdl.bt"
 
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t_v53 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
-
-FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
-
+// do keyvalues, this remains unchanged in all models since it's just char data.
 FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
@@ -305,9 +292,9 @@ if (mdlHeader.linearboneindex > 0)
     struct mstudiolinearbonedata_t
     {
         if(linearbone.flagsindex > 0)
-            uint32 bone_flags[linearbone.numbones];
+            int bone_flags[linearbone.numbones];
         if(linearbone.parentindex > 0)
-            uint32 bone_parents[linearbone.numbones];
+            int bone_parents[linearbone.numbones];
         
         if(linearbone.posindex > 0)
             Vector3 bone_pos[linearbone.numbones];
@@ -385,7 +372,8 @@ FSeek(mdlHeader.vphyindex);
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
+    // no difference in this and normal section besides reading bones
+    physection_t_v53 vphy_section[vphy_header.numsolids] <optimize=false>;
     
     local int64 charSize = mdlHeader.vphysize;
     

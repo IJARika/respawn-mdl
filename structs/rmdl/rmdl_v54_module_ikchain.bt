@@ -1,0 +1,32 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: File: rmdl, rrig
+//   Authors: Rika
+//   Version: 54
+// Increment: All
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 IKCHAIN MODULE*/
+
+
+// do ikchains
+FSeek(mdlHeader.ikchainindex);
+mstudioikchain_t_v54 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+
+local int linkCount = 0;
+
+// get link count
+for (i = 0; i < mdlHeader.numikchains; ++i)
+{
+   linkCount += ikchains[i].numlinks;
+}
+
+// do links
+mstudioiklink_t_v54 iklinks[linkCount] <bgcolor=0x7d3c98>;

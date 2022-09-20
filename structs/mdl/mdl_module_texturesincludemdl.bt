@@ -1,0 +1,38 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+// do included models
+FSeek(mdlHeader.includemodelindex);
+mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+
+// seek to textures
+FSeek(mdlHeader.textureindex);
+
+// do textures and version checks
+if(mdlHeader.version == 53)
+    mstudiotexture_t_v53 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+if(mdlHeader.version <= 52 && mdlHeader.version >= 48)
+    mstudiotexture_t textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+if(mdlHeader.version <= 47)
+    mstudiotexture_t_v47 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+// do cdmaterials
+FSeek(mdlHeader.cdtextureindex);
+mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
+
+// do skingroups
+FSeek(mdlHeader.skinindex);
+mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;

@@ -4,7 +4,7 @@
 //      File: rmdl, rrig
 //   Authors: Rika
 //   Version: 54
-// Increment: 12
+// Increment: 15
 //   Purpose: Respawn MDL Files
 //  Category: Model
 // File Mask: *.rmdl, *.rrig
@@ -23,8 +23,8 @@ local int k = 1;
 local int x = 0;
 
 
-// headers
-studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+// header
+studiohdr_t_v54_v14 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // funny strings that work the same always
@@ -32,7 +32,7 @@ studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this
 
 
 // global section here because it's unchanged from v8-v12, but required for two templates
-#include "../rmdl/rmdl_v54_module_bonejiggleattach.bt"
+#include "../rmdl/rmdl_v54_v121_module_bonejiggleattach.bt"
 
 
 // global hitbox for v54 since it doesn't change
@@ -48,8 +48,9 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
 // models
+// these change between v12.1/v13/v14 because Respawn.
 FSeek(mdlHeader.bodypartindex);
-mstudiobodyparts_t bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
+mstudiobodyparts_t_v54_v15 bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int modelCount = 0;
 
@@ -58,7 +59,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodel_t_v54 models[modelCount]<bgcolor=cDkGray>;
+mstudiomodel_t_v54_v15 models[modelCount] <bgcolor=cDkGray>;
 
 
 // setup nodes, not fully understood
@@ -87,8 +88,7 @@ for (i = 0; i < modelCount; ++i)
    meshCount += models[i].nummeshes;
 }
 
-FSeek(mdlHeader.meshindex);
-mstudiomesh_t_v54 meshes[meshCount] <bgcolor=cLtGray>;
+mstudiomesh_t_v54_v121 meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // unchanged between subversions
@@ -118,13 +118,12 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 
 
 // global string table setup, only changes for v14
-#include "../rmdl/rmdl_v54_module_stringtable.bt"
+#include "../rmdl/rmdl_v54_v14_module_stringtable.bt"
 
 
 // unkdata headers changed in v12
 #include "../rmdl/rmdl_v54_v12_module_unkdata.bt"
 
 
-// related data chunks here
-
-//unksectiondata unksectdata1[unkhdr.numsection] <bgcolor=cBlue>;
+// third set of core parts, done like this for spacing.
+#include "../rmdl/rmdl_v54_v121_core3.bt"

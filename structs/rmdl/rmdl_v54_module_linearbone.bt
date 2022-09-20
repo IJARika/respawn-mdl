@@ -1,0 +1,45 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: File: rmdl, rrig
+//   Authors: Rika
+//   Version: 54
+// Increment: All
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 LINEARBONE MODULE*/
+
+
+
+// do linear bone table
+if (mdlHeader.linearboneindex > 0)
+{
+    FSeek(mdlHeader.linearboneindex);
+    mstudiolinearbone_t_v54 linearbone <bgcolor=cGreen>;
+    
+    struct mstudiolinearbonedata_t
+    {
+        if(linearbone.flagsindex > 0)
+            int bone_flags[linearbone.numbones];
+        if(linearbone.parentindex > 0)
+            int bone_parents[linearbone.numbones];
+        
+        if(linearbone.posindex > 0)
+            Vector3 bone_pos[linearbone.numbones];
+        if(linearbone.quatindex > 0)
+	        Quaternion bone_quat[linearbone.numbones];
+        if(linearbone.rotindex > 0)
+	        RadianEuler bone_rot[linearbone.numbones];
+        
+        if(linearbone.posetoboneindex > 0)
+            matrix3x4_t bone_poseToBone[linearbone.numbones];
+    };
+
+    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
+};

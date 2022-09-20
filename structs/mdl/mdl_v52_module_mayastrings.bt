@@ -1,0 +1,24 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 52/53/54
+// Increment: 8/9/10/11/12/12.1/12.2/13/14/unk
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*MAYA STRING MODULE*/
+
+
+// this is a check for non shipped models, or others that may not have maya strings.
+if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
+{
+    FSeek(mdlHeader.mayaindex);
+    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
+}

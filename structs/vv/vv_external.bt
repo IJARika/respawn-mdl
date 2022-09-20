@@ -19,23 +19,38 @@
 
 vertexFileHeader_t vv_header <bgcolor=cYellow>;
 
+struct unkfloatsection
+{
+    float a;
+    float b;
+};
+
 if(vv_header.id == 1447248969)
+{
     int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
 
-if(vv_header.fixupTableStart > 0)
-{
-    FSeek(vv_header.fixupTableStart);
-    vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
-}
+    char padding[sizeof(unkpervertdata) % 8];
 
-if(vv_header.vertexDataStart > 0)
-{
-    FSeek(vv_header.vertexDataStart);
-    mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    // uv fixup?
+    unkfloatsection unkfloats[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
 }
-
-if(vv_header.tangentDataStart > 0)
-{
-    FSeek(vv_header.tangentDataStart);
-    Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cYellow>;
+else
+{  
+    if(vv_header.fixupTableStart > 0)
+    {
+        FSeek(vv_header.fixupTableStart);
+        vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
+    }
+    
+    if(vv_header.vertexDataStart > 0)
+    {
+        FSeek(vv_header.vertexDataStart);
+        mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    }
+    
+    if(vv_header.tangentDataStart > 0)
+    {
+        FSeek(vv_header.tangentDataStart);
+        Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cYellow>;
+    }
 }
