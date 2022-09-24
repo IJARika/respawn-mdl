@@ -1,0 +1,28 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 52/53/54
+// Increment: 8/9/10/11/12/12.1/12.2/13/14/15
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*NODE MODULE*/
+
+
+// setup nodes, not fully understood
+// nodes have names
+if(mdlHeader.numlocalnodes > 0)
+{
+    FSeek(mdlHeader.localnodenameindex);
+    mstudionodename_t nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
+
+    FSeek(mdlHeader.localnodeindex);
+    mstudionodedata nodedata[mdlHeader.numlocalnodes] <bgcolor=cLtYellow>;
+}

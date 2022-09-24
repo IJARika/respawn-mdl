@@ -29,7 +29,7 @@ struct studiohdr_t_v54
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -217,7 +217,7 @@ struct studiohdr_t_v54_v121
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -382,7 +382,7 @@ struct studiohdr_t_v54_v122
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -549,7 +549,7 @@ struct studiohdr_t_v54_v13
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -718,7 +718,7 @@ struct studiohdr_t_v54_v14
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this)>; // No longer stored in string block, uses string in header.
+	int sznameindex <read=ReadString(startof(this) + this - 12)>; // No longer stored in string block, uses string in header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -933,8 +933,7 @@ struct mstudiobone_t_v54
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int parent; // parent bone
-                // figure out how to read string with funny negative
+	int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
@@ -967,7 +966,7 @@ struct mstudiobone_t_v54_v121
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int parent; // parent bone
+	int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
@@ -1132,14 +1131,43 @@ struct mstudiobbox_t_v54
 // Animation Structs
 
 
+// anim descriptions
+struct mstudioanimdesc_t_v54
+{
+	int baseptr;
+
+	int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
+
+	float fps; // frames per second	
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+
+	int numframes;
+
+	// piecewise movement
+	int nummovements;
+	int movementindex;
+
+	int compressedikerrorindex;
+	int animindex; // non-zero when anim data isn't in sections
+
+	int numikrules;
+	int ikruleindex; // non-zero when IK data is stored in the mdl
+
+	int numlocalhierarchy;
+	int localhierarchyindex;
+
+	int sectionindex;
+	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+};
+
 // seq descriptions
 struct mstudioseqdesc_t_v54
 {
 	int baseptr;
 
-	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
+	int	szlabelindex <read=ReadString(startof(parentof(this)) + this)>;
 
-	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
+	int szactivitynameindex <read=ReadString(startof(parentof(this)) + this)>;
 
 	int flags; // looping/non-looping flags
 
@@ -1530,7 +1558,7 @@ struct mstudioruimeshv54_t
 
     char szruimeshname[parentindex - 28]; // have to subtract header to get actual size (padding included)
 
-    int16 parent[numparents]; // parent(s) bone of mesh
+    int16 parent[numparents] <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent(s) bone of mesh
 
     mstudioruivertmapv54_t vertexmap[numfaces]; // vertex map for each face
     mstudioruifourthvertv54_t fourthvertmap[numfaces];

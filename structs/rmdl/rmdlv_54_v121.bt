@@ -62,13 +62,8 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
 mstudiomodel_t_v54_v121 models[modelCount] <bgcolor=cDkGray>;
 
 
-// setup nodes, not fully understood
-// nodes have names
-if(mdlHeader.numlocalnodes > 0)
-{
-    FSeek(mdlHeader.localnodenameindex);
-    mstudionodename_t nodenames[mdlHeader.numlocalnodes] <bgcolor=cDkYellow>;
-}
+// v54 node
+#include "../rmdl/rmdl_v54_module_nodes.bt"
 
 
 FSeek(mdlHeader.localposeparamindex);

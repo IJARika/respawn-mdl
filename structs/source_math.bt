@@ -101,3 +101,9 @@ struct matrix3x4_t
 		float m10; float m11; float m12; float m13; // r1
 		float m20; float m21; float m22; float m23; // r2
 };
+
+enum <int> boolean
+{
+    False = 0,
+    True = 1,
+};

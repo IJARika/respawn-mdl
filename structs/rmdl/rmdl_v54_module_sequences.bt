@@ -20,6 +20,31 @@
 FSeek(mdlHeader.localseqindex);
 mstudioseqdesc_t_v54 animseq[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
+struct animboneflag_t
+{   
+    // don't think this is correct
+    byte STUDIO_ANIM_RAWPOS_54 : 1;
+    byte STUDIO_ANIM_RAWROT_54 : 1;
+    byte STUDIO_ANIM_RAWSCALE_54 : 1;
+    byte STUDIO_ANIM_UNK_54 : 1;    
+};
+
+struct boneflagarray_t
+{
+    
+    for(i = 0; i < mdlHeader.numbones; i++)
+        animboneflag_t boneflag <bgcolor=0xaa8822>;
+};
+
+struct mstudio_rle_anim_t_v54
+{
+	int16 size; // actually size and not next offset since it's always filled
+
+    Vector48 rawpos;
+
+    Quat64 rawrot;
+};
+
 // loop through all sequences to do it's data structures.
 for(i = 0; i < mdlHeader.numlocalseq; i++)
 {
@@ -57,4 +82,20 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
     
     FSeek(startof(animseq[i]) + animseq[i].animindexindex);
     blendgroup_t blendgroup <bgcolor=0xffff00>;
+
+    //char padding[sizeof(blendgroup[i]) % 4];
+
+    int16 padd;
+
+    mstudioanimdesc_t_v54 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+
+    FSeek(startof(animdesc[i]) + animdesc[i].animindex);
+    BitfieldDisablePadding();
+    boneflagarray_t flags;
+    BitfieldEnablePadding();
+
+    //byte padd1;
+
+    mstudio_rle_anim_t_v54 wow;
+
 }

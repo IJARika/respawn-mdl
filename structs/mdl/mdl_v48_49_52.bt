@@ -120,11 +120,11 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 
         for(j = 0; j < sectionlength; j++)
         {
-            FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].sectionoffset);
+            FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].animindex);
 
             for (k = 0; k < mdlHeader.numbones; ++k)
             {   
-                mstudioanim_t sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
+                mstudio_rle_anim_t sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
                 numsectionanimboneheader += 1;
                 FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]));
                 FSkip(sectionanimheader[numsectionanimboneheader - 1].nextoffset);
@@ -143,7 +143,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 	    for (j = 0; j < mdlHeader.numbones; ++j)
 	    {
             
-		    mstudioanim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+		    mstudio_rle_anim_t animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
 		    numanimboneheader += 1;
             FSeek(startof(animheader[numanimboneheader - 1]));
             FSkip(animheader[numanimboneheader - 1].nextoffset);
@@ -232,6 +232,10 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
         mstudioactivitymodifier_t activitymodifier <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
     }
 }
+
+
+// unchanged until v54
+#include "../mdl/mdl_module_nodes.bt"
 
 // models
 FSeek(mdlHeader.bodypartindex);

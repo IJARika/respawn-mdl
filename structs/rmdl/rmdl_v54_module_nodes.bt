@@ -13,12 +13,15 @@
 //------------------------------------------------
 
 
-/*MAYA STRING MODULE*/
+/*NODE MODULE*/
 
 
-// this is a check for non shipped models, or others that may not have maya strings.
-if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
+// setup nodes, not fully understood
+// nodes have names
+if(mdlHeader.numlocalnodes > 0)
 {
-    FSeek(mdlHeader.mayaindex);
-    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
+    FSeek(mdlHeader.localnodenameindex);
+    mstudionodename_t nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
+    
+    int nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
 }
