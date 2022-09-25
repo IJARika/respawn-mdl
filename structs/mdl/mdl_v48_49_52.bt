@@ -217,11 +217,6 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
 
     FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
     seqweightlist_t weightlist <bgcolor=0xe1f27a>;
-
-    struct blendgroup_t
-    {
-        int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
-    };
     
     FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
     blendgroup_t blendgroup <bgcolor=0xffff00>;

@@ -1674,7 +1674,7 @@ struct mstudioanimdesc_t_v48
 	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
-	int	flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int numframes;
 
@@ -1712,7 +1712,7 @@ struct mstudioanimdesc_t_v49
 	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
-	int	flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int numframes;
 
@@ -1751,7 +1751,7 @@ struct mstudioanimdesc_t_v52
 	int sznameindex <read=ReadString(startof(this) + this - 4)>;
 
 	float fps; // frames per second	
-	int	flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int numframes;
 
@@ -2140,7 +2140,9 @@ struct mstudioikrule_t_v53
 
     int szattachmentindex; // name of world attachment
 
-    int unused[9];
+    int unk; // there is an int here in apex and 9 unused doesn't make sense.
+
+    int unused[8];
 };
 
 struct mstudiocompressedikerror_t
@@ -2520,6 +2522,11 @@ struct mstudioactivitymodifier_t_v53
 struct seqweightlist_t
 {
     float boneweight[mdlHeader.numbones];
+};
+
+struct blendgroup_t
+{
+    int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
 };
 
 // demand loaded sequence groups

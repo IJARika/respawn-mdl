@@ -1153,11 +1153,156 @@ struct mstudioanimdesc_t_v54
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
 
-	int numlocalhierarchy;
-	int localhierarchyindex;
+	//int numlocalhierarchy;
+	//int localhierarchyindex;
 
 	int sectionindex;
 	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+};
+
+struct mstudioanimdesc_t_v54_v121
+{
+	int baseptr;
+
+	int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
+
+	float fps; // frames per second	
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+
+	int numframes;
+
+	// piecewise movement
+	int nummovements;
+	int movementindex;
+
+	int compressedikerrorindex;
+	int animindex; // non-zero when anim data isn't in sections
+
+	int numikrules;
+	int ikruleindex; // non-zero when IK data is stored in the mdl
+
+	//int numlocalhierarchy;
+	//int localhierarchyindex;
+
+	int sectionindex;
+	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+
+    int unk; // FrameMedianCount, looks like an offset
+             // 62, 63, 64, 65, 67
+    int unk1; // Padding
+    int unk2; // Padding
+    int unk3; // SomeDataOffset
+    int unk4; // SomeDataOffset
+};
+
+struct animflagarray_t_v54
+{   
+    // don't think this is correct
+    byte STUDIO_ANIM_POS_54 : 1;
+    byte STUDIO_ANIM_ROT_54 : 1;
+    byte STUDIO_ANIM_SCALE_54 : 1;
+    byte STUDIO_ANIM_UNK_54 : 1;    
+};
+
+struct boneflagarray_t
+{
+    BitfieldDisablePadding();
+    for(i = 0; i < mdlHeader.numbones; i++)
+        animflagarray_t_v54 boneflag <bgcolor=0xaa8822>;
+    BitfieldEnablePadding();
+};
+
+struct animflag_t_v54
+{   
+    byte STUDIO_ANIM_RAWROT_54 : 1;
+    byte STUDIO_ANIM_RAWPOS_54 : 1;
+    byte STUDIO_ANIM_RAWSCALE_54 : 1;
+    byte STUDIO_ANIM_UNK_54 : 1;    
+};
+
+struct mstudioanim_valueptr_t_v54
+{
+    int x : 9;
+    int y : 9;
+    int z : 9; 
+};
+
+struct mstudio_rle_anim_t_v54
+{
+
+	int16 size : 12; // total size of all animation data
+
+    int16 STUDIO_ANIM_UNK_54 : 1;
+    int16 STUDIO_ANIM_RAWSCALE_54 : 1;    
+    int16 STUDIO_ANIM_RAWROT_54 : 1;
+    int16 STUDIO_ANIM_RAWPOS_54 : 1;
+    
+    if(STUDIO_ANIM_RAWPOS_54)
+        float posscale;
+
+    //float cool;
+
+    //mstudioanim_valueptr_t_v54 notcool;
+
+    /*if(flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+    {
+        float posscale;
+    }*/
+
+    if(flagarray.boneflag[j].STUDIO_ANIM_POS_54)
+    {
+        if(STUDIO_ANIM_RAWPOS_54)
+            mstudioanim_valueptr_t_v54 animpos;
+        else
+            Vector48 rawpos;
+    }
+
+    if(flagarray.boneflag[j].STUDIO_ANIM_ROT_54)
+    {
+        if(STUDIO_ANIM_RAWROT_54)
+            mstudioanim_valueptr_t_v54 animrot;
+        else
+            Quat64 rawrot;
+    }
+};
+
+// unknown if this changes.
+struct mstudioikrule_t_v54
+{
+    int index;
+    ikruletype type;
+    int chain;
+    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+
+    int slot; // iktarget slot. Usually same as chain.
+    float height;
+    float radius;
+    float floor;
+    Vector3 pos;
+    Quaternion q;
+
+    float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+	int16 offset[6];
+
+    //int compressedikerrorindex;
+
+    int iStart;
+    //int ikerrorindex;
+
+    float start; // beginning of influence
+    float peak; // start of full influence
+    float tail; // end of full influence
+    float end; // end of all influence
+
+    float contact; // frame footstep makes ground concact
+    float drop; // how far down the foot should drop when reaching for IK
+    float top; // top of the foot box
+
+    int szattachmentindex; // name of world attachment
+
+    int unk;
+
+    //int unused[9];
 };
 
 // seq descriptions
@@ -1165,9 +1310,9 @@ struct mstudioseqdesc_t_v54
 {
 	int baseptr;
 
-	int	szlabelindex <read=ReadString(startof(parentof(this)) + this)>;
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex <read=ReadString(startof(parentof(this)) + this)>;
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
 	int flags; // looping/non-looping flags
 
@@ -1234,6 +1379,35 @@ struct mstudioseqdesc_t_v54
     int unkindex;
 
     int unk2;
+};
+
+struct mstudioevent_t_v54
+{
+	float cycle;
+	int	event;
+	eventtype type; // this will be 0 if old style I'd imagine
+	char options[256];
+
+	int szeventindex <read=ReadString(startof(parentof(this)) + this)>;
+};
+
+// unknown when this changed
+struct mstudioevent_t_v54_new
+{
+	float cycle;
+	int	event;
+	eventtype type; // this will be 0 if old style I'd imagine
+	char options[256]; // this is the only difference compared to normal v54
+
+    int unk;
+
+	int szeventindex <read=ReadString(startof(parentof(this)) + this)>;
+};
+
+struct blendgroup_t_v54
+{
+    // this is an offset now
+    int blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
 };
 
 

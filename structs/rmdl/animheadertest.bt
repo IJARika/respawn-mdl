@@ -22,69 +22,45 @@ local int j = 0;
 local int k = 1;
 local int x = 0;
 
-struct mstudio_rle_anim_t_v54
-{
-	float posscale; // does what posscale is used for
-
-	ubyte bone; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
-
-    byte whar1 : 4;    
-
-	byte flags : 4 <read=ReadAnimFlagsV53(this)>;
-
-	if(flags & STUDIO_ANIM_RAWROT_53)
-	    Quat64 rawrot; // pQuat64
-    else
-    {
-        mstudioanim_valueptr_t animrot; // pRotV
-        int16 unused; // pretty sure
-    }
-
-	if (flags & STUDIO_ANIM_RAWPOS_53)
-	    Vector48 rawpos; // pPos
-    else
-        mstudioanim_valueptr_t animpos; // pPosV
-
-    // named by porter
-    if (flags & STUDIO_ANIM_RAWSCALE_53)
-	    Vector48 rawscale; // new in v53
-    else
-        mstudioanim_valueptr_t animscale;
-
-    int whar;
-
-	int nextoffset;
+struct animflag_t_v54
+{   
+    byte STUDIO_ANIM_RAWROT_54 : 1;
+    byte STUDIO_ANIM_RAWPOS_54 : 1;
+    byte STUDIO_ANIM_RAWSCALE_54 : 1;
+    byte STUDIO_ANIM_UNK_54 : 1;    
 };
 
-/*struct mstudio_rle_anim_t_v53
+struct mstudioanim_valueptr_t_v54
 {
-	float posscale; // does what posscale is used for
+    int x : 11;
+    int y : 11;
+    int z : 10;
+};
 
-	ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
-	byte flags <read=ReadAnimFlagsV53(this)>;
+struct mstudio_rle_anim_t_v54
+{
+    BitfieldDisablePadding();
 
-	int16 unk; // normally null data
-	
-    if(flags & STUDIO_ANIM_RAWROT_53)
-	    Quat64 rawrot; // pQuat64
+	int16 size : 12; // total size of all animation data
+
+    animflag_t_v54 flags;
+
+    BitfieldEnablePadding();
+
+    if(flags.STUDIO_ANIM_RAWSCALE_54)
+        mstudioanim_valueptr_t_v54 animscale;
     else
-    {
-        mstudioanim_valueptr_t animrot; // pRotV
-        int16 unused; // pretty sure
-    }
+        float posscale;    
 
-	if (flags & STUDIO_ANIM_RAWPOS_53)
-	    Vector48 rawpos; // pPos
+    if(flags.STUDIO_ANIM_RAWPOS_54)
+        mstudioanim_valueptr_t_v54 animpos;
     else
-        mstudioanim_valueptr_t animpos; // pPosV
+        Vector48 rawpos;
 
-    // named by porter
-    if (flags & STUDIO_ANIM_RAWSCALE_53)
-	    Vector48 rawscale; // new in v53
+    if(flags.STUDIO_ANIM_RAWROT_54)
+        mstudioanim_valueptr_t_v54 animrot;
     else
-        mstudioanim_valueptr_t animscale;
+        Quat64 rawrot;
+};
 
-	int nextoffset;
-};*/
-
-mstudio_rle_anim_t_v54 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+mstudio_rle_anim_t_v54 animheader <bgcolor=cDkBlue>;
