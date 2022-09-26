@@ -93,7 +93,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
     if(animdesc[i].sectionframes > 0)
     {
         FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
-        sectionindexes_t_53 sectionindexes;
+        sectionindexes_t_v53 sectionindexes;
         numsections++;
         sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
 

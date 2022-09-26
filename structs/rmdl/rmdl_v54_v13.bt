@@ -43,8 +43,8 @@ FSeek(mdlHeader.bonetablebynameindex);
 mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 
 
-// global sequences, unchanged across all v54 so far.
-#include "../rmdl/rmdl_v54_module_sequences.bt"
+// seqs change for v12.2, or aseq v10.
+#include "../rmdl/rmdl_v54_v122_module_sequences.bt"
 
 
 // models

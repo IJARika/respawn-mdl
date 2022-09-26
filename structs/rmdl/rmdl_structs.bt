@@ -1153,13 +1153,11 @@ struct mstudioanimdesc_t_v54
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
 
-	//int numlocalhierarchy;
-	//int localhierarchyindex;
-
 	int sectionindex;
 	int sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
+// rseq v7.1
 struct mstudioanimdesc_t_v54_v121
 {
 	int baseptr;
@@ -1181,18 +1179,31 @@ struct mstudioanimdesc_t_v54_v121
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
 
-	//int numlocalhierarchy;
-	//int localhierarchyindex;
-
 	int sectionindex;
-	int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
-    int unk; // FrameMedianCount, looks like an offset
-             // 62, 63, 64, 65, 67
+    int unk; // what
+
+    int sectionframes; // number of frames used in each fast lookup section, zero if not used
+
+    
+
     int unk1; // Padding
     int unk2; // Padding
     int unk3; // SomeDataOffset
     int unk4; // SomeDataOffset
+
+    // it seems like there's another int here but I'm unsure
+};
+
+struct mstudioanimsections_t_v54_v121
+{
+	int animindex;
+    int isExternal; // 0 or 1, if 1 section is not in rseq (I think)
+};
+
+struct sectionindexes_t_v54_v121
+{
+    mstudioanimsections_t_v54_v121 sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
 };
 
 struct animflagarray_t_v54
@@ -1206,10 +1217,23 @@ struct animflagarray_t_v54
 
 struct boneflagarray_t
 {
+
     BitfieldDisablePadding();
-    for(i = 0; i < mdlHeader.numbones; i++)
-        animflagarray_t_v54 boneflag <bgcolor=0xaa8822>;
+    animflagarray_t_v54 boneflag[mdlHeader.numbones] <bgcolor=0xaa8822, optimize=false>;
     BitfieldEnablePadding();
+
+    byte padd[sizeof(boneflag) % 2] <bgcolor=0xaaaa22, optimize=false>;
+};
+
+// for rseq templates because no mdlHeader
+struct boneflagarray_t_loose
+{
+    BitfieldDisablePadding();
+    animflagarray_t_v54 boneflag[numbones] <bgcolor=0xaa8822, optimize=false>;
+    BitfieldEnablePadding();
+
+    // breaks sometimes
+    byte padd[sizeof(boneflag) % 2] <bgcolor=0xaaaa22>;
 };
 
 struct animflag_t_v54
@@ -1220,11 +1244,12 @@ struct animflag_t_v54
     byte STUDIO_ANIM_UNK_54 : 1;    
 };
 
+// not correct
 struct mstudioanim_valueptr_t_v54
 {
-    int x : 9;
-    int y : 9;
-    int z : 9; 
+    uint x : 10;
+    uint y : 11;
+    uint z : 11; 
 };
 
 struct mstudio_rle_anim_t_v54
@@ -1232,7 +1257,7 @@ struct mstudio_rle_anim_t_v54
 
 	int16 size : 12; // total size of all animation data
 
-    int16 STUDIO_ANIM_UNK_54 : 1;
+    int16 STUDIO_ANIM_UNK_54 : 1; // probably delta
     int16 STUDIO_ANIM_RAWSCALE_54 : 1;    
     int16 STUDIO_ANIM_RAWROT_54 : 1;
     int16 STUDIO_ANIM_RAWPOS_54 : 1;
@@ -1266,7 +1291,6 @@ struct mstudio_rle_anim_t_v54
     }
 };
 
-// unknown if this changes.
 struct mstudioikrule_t_v54
 {
     int index;
@@ -1281,8 +1305,48 @@ struct mstudioikrule_t_v54
     Vector3 pos;
     Quaternion q;
 
+    // in later versions this is scale, that also might apply here
+    int unk[7]; // might be before pos and q
+
+    int compressedikerrorindex;
+
+    int iStart;
+    int ikerrorindex;
+
+    float start; // beginning of influence
+    float peak; // start of full influence
+    float tail; // end of full influence
+    float end; // end of all influence
+
+    float contact; // frame footstep makes ground concact
+    float drop; // how far down the foot should drop when reaching for IK
+    float top; // top of the foot box
+
+    int szattachmentindex; // name of world attachment
+
+    int unk; // there is an int here in apex and 9 unused doesn't make sense.
+
+    
+};
+
+struct mstudioikrule_t_v54_new
+{
+    int index;
+    ikruletype type;
+    int chain;
+    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+
+    int slot; // iktarget slot. Usually same as chain.
+    float height;
+    float radius;
+    float floor;
+    Vector3 pos;
+    Quaternion q;
+
     float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	int16 offset[6];
+	//int16 offset[6];
+
+    int unk1[3];
 
     //int compressedikerrorindex;
 
@@ -1305,6 +1369,14 @@ struct mstudioikrule_t_v54
     //int unused[9];
 };
 
+
+struct mstudiocompressedikerror_t_v54
+{
+	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
+    // unknown how this works now
+	//int offset[9];
+};
+
 // seq descriptions
 struct mstudioseqdesc_t_v54
 {
@@ -1314,7 +1386,7 @@ struct mstudioseqdesc_t_v54
 
 	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
-	int flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int activity; // initialized at loadtime to game DLL values
 	int actweight;
@@ -1381,6 +1453,20 @@ struct mstudioseqdesc_t_v54
     int unk2;
 };
 
+struct mstudioautolayer_t_v54
+{
+    int64 guid; // hashed aseq guid asset
+
+	short iSequence;
+	short iPose;
+
+	int flags <read=ReadAutoLayerFlags(this)>;
+	float start;	// beginning of influence
+	float peak;	// start of full influence
+	float tail;	// end of full influence
+	float end;	// end of all influence
+};
+
 struct mstudioevent_t_v54
 {
 	float cycle;
@@ -1391,8 +1477,8 @@ struct mstudioevent_t_v54
 	int szeventindex <read=ReadString(startof(parentof(this)) + this)>;
 };
 
-// unknown when this changed
-struct mstudioevent_t_v54_new
+// rseq v10
+struct mstudioevent_t_v54_122
 {
 	float cycle;
 	int	event;

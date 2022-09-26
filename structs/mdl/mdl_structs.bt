@@ -1828,7 +1828,7 @@ struct mstudioanimsections_t
 	int animindex;
 };
 
-struct mstudioanimsections_t_53
+struct mstudioanimsections_t_v53
 {
 	int animindex;
 };
@@ -1838,9 +1838,9 @@ struct sectionindexes_t
     mstudioanimsections_t sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
 };
 
-struct sectionindexes_t_53
+struct sectionindexes_t_v53
 {
-    mstudioanimsections_t_53 sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
+    mstudioanimsections_t_v53 sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
 };
 
 // v48/49/52 flags
@@ -2182,7 +2182,7 @@ struct mstudioseqdescv48_t
 
 	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
-	int flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int activity; // initialized at loadtime to game DLL values
 	int actweight;
@@ -2251,7 +2251,7 @@ struct mstudioseqdescv49_t
 
 	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
-	int flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int activity; // initialized at loadtime to game DLL values
 	int actweight;
@@ -2321,7 +2321,7 @@ struct mstudioseqdesc_t_v53
 
 	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
-	int flags; // looping/non-looping flags
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
 	int activity; // initialized at loadtime to game DLL values
 	int actweight;

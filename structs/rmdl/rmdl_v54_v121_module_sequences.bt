@@ -78,7 +78,7 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
     for(k = 0; k < numanims; k++)
     {
         FSeek(startof(seqdesc[i]) + blendgroup[i].blends[k]);
-        mstudioanimdesc_t_v54 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+        mstudioanimdesc_t_v54_v121 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 
         if(animdesc[k].flags & STUDIO_ALLZEROS)
         {
@@ -90,13 +90,13 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
             if(animdesc[k + animdescindex].sectionindex)
             {
                 FSeek(startof(animdesc[k + animdescindex]) + animdesc[k + animdescindex].sectionindex);
-                sectionindexes_t_v53 sectionindexes;
+                sectionindexes_t_v54_v121 sectionindexes;
                 numsections++;
                 sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
 
                 for(x = 0; x < sectionlength; x++)
                 {
-                    if(!sectionindexes[numsections - 1].sectionoffsets[x].animindex)
+                    if(sectionindexes[numsections - 1].sectionoffsets[x].isExternal)
                     {
                         
                     }
@@ -137,7 +137,7 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
         FSeek(startof(animdesc[k]) + animdesc[k].ikruleindex);
         for (j = 0; j < animdesc[k].numikrules; j++)
         {
-            mstudioikrule_t_v54 animikrule <bgcolor=cGreen>;
+            mstudioikrule_t_v54_new animikrule <bgcolor=cGreen>;
             numikrule += 1;
         };
 
