@@ -29,7 +29,7 @@ struct studiohdr_t_v54
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -94,7 +94,7 @@ struct studiohdr_t_v54
 	int numflexdesc;
 	int flexdescindex;
  
-	int meshindex; // SubmeshLodsOffset, might just be a mess offset
+	int meshindex; // offset to model meshes
 
 	int numflexcontrollers;
 	int flexcontrollerindex;
@@ -112,7 +112,7 @@ struct studiohdr_t_v54
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
+	int surfacepropindex <read=ReadString(this)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -176,7 +176,7 @@ struct studiohdr_t_v54
 	int unk1_v54[6];
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
 
 	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.
@@ -217,7 +217,7 @@ struct studiohdr_t_v54_v121
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -293,7 +293,7 @@ struct studiohdr_t_v54_v121
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
+	int surfacepropindex <read=ReadString(this)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -312,21 +312,27 @@ struct studiohdr_t_v54_v121
 
 	int bonetablebynameindex;
 
-	int numunk1_v121;
-	int unkindex1_v121;
+    // stuff moved from vg in v12.1
+	int numvgmeshes;
+	int vgmeshindex;
 
     int boneremapindex;
     int numboneremaps;
 
-    int unk_v54_v121[4];
+    int unk_v54_v121;
 
-    // section before bone remaps
-    int unkindex2_v121;
-    int numunk2_v121;
+    int vgsize;
 
-    // section before above section
-	int unkindex3_v121;
-    int numunk3_v121;
+    int16 unk_vg; // same as padding in vg header
+    int16 vglodcount; // same as lod count in vg header
+
+    int unk1_vg; // same as unk1 in vg header
+
+    int vgloddataindex;
+    int numvgloddata;
+
+	int vgloddescindex;
+    int numvgloddesc;
 
     float fadedistance;
 	
@@ -349,7 +355,8 @@ struct studiohdr_t_v54_v121
 
     int unkindexflex;
 
-	int unk3_v54_a; // I think this section was split vs old v54
+	// always "" or "Titan"
+    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -382,7 +389,7 @@ struct studiohdr_t_v54_v122
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -458,7 +465,7 @@ struct studiohdr_t_v54_v122
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
+	int surfacepropindex <read=ReadString(this)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -477,21 +484,27 @@ struct studiohdr_t_v54_v122
 
 	int bonetablebynameindex;
 
-	int numunk1_v121;
-	int unkindex1_v121;
+	// stuff moved from vg in v12.1
+	int numvgmeshes;
+	int vgmeshindex;
 
     int boneremapindex;
     int numboneremaps;
 
-    int unk_v54_v121[4];
+    int unk_v54_v121;
 
-    // section before bone remaps
-    int unkindex2_v121;
-    int numunk2_v121;
+    int vgsize;
 
-    // section before above section
-	int unkindex3_v121;
-    int numunk3_v121;
+    int16 unk_vg; // same as padding in vg header
+    int16 vglodcount; // same as lod count in vg header
+
+    int unk1_vg; // same as unk1 in vg header
+
+    int vgloddataindex;
+    int numvgloddata;
+
+	int vgloddescindex;
+    int numvgloddesc;
 
     float fadedistance;
 	
@@ -516,7 +529,8 @@ struct studiohdr_t_v54_v122
 
 	int unkindexflex;
 
-	int unk3_v54_a; // I think this section was split vs old v54
+	// always "" or "Titan"
+    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -549,7 +563,7 @@ struct studiohdr_t_v54_v13
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -625,7 +639,7 @@ struct studiohdr_t_v54_v13
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
+	int surfacepropindex <read=ReadString(this)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -644,21 +658,27 @@ struct studiohdr_t_v54_v13
 
 	int bonetablebynameindex;
 
-	int numunk1_v121;
-	int unkindex1_v121;
+	// stuff moved from vg in v12.1
+	int numvgmeshes;
+	int vgmeshindex;
 
     int boneremapindex;
     int numboneremaps;
 
-    int unk_v54_v121[4];
+    int unk_v54_v121;
 
-    // section before bone remaps
-    int unkindex2_v121;
-    int numunk2_v121;
+    int vgsize;
 
-    // section before above section
-	int unkindex3_v121;
-    int numunk3_v121;
+    int16 unk_vg; // same as padding in vg header
+    int16 vglodcount; // same as lod count in vg header
+
+    int unk1_vg; // same as unk1 in vg header
+
+    int vgloddataindex;
+    int numvgloddata;
+
+	int vgloddescindex;
+    int numvgloddesc;
 
     float fadedistance;
 	
@@ -683,7 +703,8 @@ struct studiohdr_t_v54_v13
 
 	int unkindexflex;
 
-	int unk3_v54_a; // I think this section was split vs old v54
+	// always "" or "Titan"
+    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -718,7 +739,7 @@ struct studiohdr_t_v54_v14
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
 	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
 	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // No longer stored in string block, uses string in header.
+	int sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
 	char name[64]; // The internal name of the model, padding with null bytes.
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
@@ -796,7 +817,7 @@ struct studiohdr_t_v54_v14
 	int numlocalposeparameters;
 	int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(startof(mdlHeader) + mdlHeader.surfacepropindex)>;
+	int surfacepropindex <read=ReadString(this)>;
  
 	int keyvalueindex;
 	int keyvaluesize;
@@ -815,21 +836,27 @@ struct studiohdr_t_v54_v14
 
 	int bonetablebynameindex;
 
-	int numunk1_v121;
-	int unkindex1_v121;
+    // stuff moved from vg in v12.1
+	int numvgmeshes;
+	int vgmeshindex;
 
     int boneremapindex;
     int numboneremaps;
 
-    int unk_v54_v121[4];
+    int unk_v54_v121;
 
-    // section before bone remaps
-    int unkindex2_v121;
-    int numunk2_v121;
+    int vgsize;
 
-    // section before above section
-	int unkindex3_v121;
-    int numunk3_v121;
+    int16 unk_vg; // same as padding in vg header
+    int16 vglodcount; // same as lod count in vg header
+
+    int unk1_vg; // same as unk1 in vg header
+
+    int vgloddataindex;
+    int numvgloddata;
+
+	int vgloddescindex;
+    int numvgloddesc;
 
     float fadedistance;
 	
@@ -854,7 +881,8 @@ struct studiohdr_t_v54_v14
 
 	int unkindexflex;
 
-	int unk3_v54_a; // I think this section was split vs old v54
+	// always "" or "Titan"
+    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -1312,11 +1340,6 @@ struct mstudio_rle_anim_t_v54
 {
 
 	int16 size : 12; // total size of all animation data
-
-    //int16 STUDIO_ANIM_UNK_54 : 1; // probably delta
-    //int16 STUDIO_ANIM_ANIMSCALE_54 : 1;    
-    //int16 STUDIO_ANIM_ANIMROT_54 : 1;
-    //int16 STUDIO_ANIM_ANIMPOS_54 : 1;
 
     int16 flags : 4 <read=ReadAnimFlagsV54(this)>;
     
@@ -1935,28 +1958,42 @@ struct unkheaderdata_v54
     int unk2;
 };
 
-// for sections near bone remap in 12.1 plus
+
+//========
+// VG Data
+
 
 // lod related maybe
-struct unkindex3sect
+struct vgLoDdesc_t
 {
-    int16 unkid[4]; // always very clean numbers, mesh lod map?
+    // observed to both be the same.
+    // lod level?
+    int16 unklodlevel;
+    int16 unklodlevel1;
+
+    int16 meshindex; // index offset into meshes
+    int16 nummeshes; // number of meshes in this lod set
 
     float threshold;
 
     int unk;
 };
 
-struct unkindex2sect
+struct vgLoDdata_t
 {
-    // if we take this as an offset and size there is 13 bytes between each section.
-    int unkoffset; // offset?
-    int unksize; // size?
+    int vgoffset; // offset to this section in vg
+    int vgsize; // size of data in vg
 
-    int16 unk1[4]; // ids for something
+    // this could also be vg section index
+    int16 lodlevel; // 0, 1, 2, 3, etc
+
+    // ids for something
+    int16 unk1; // normally 1
+    int16 unk2; // powers of two
+    int16 unk3; // never filled, maybe this is int32 above should never exceed 128 so unsure
 };
 
-struct unkindex1sect
+struct vgmesh_t
 {
     int unk[2];
 

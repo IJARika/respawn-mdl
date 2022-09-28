@@ -14,18 +14,18 @@
 
 
 
-FSeek(startof(mdlHeader.unkindex3_v121) + mdlHeader.unkindex3_v121);
-unkindex3sect unkindex3section[mdlHeader.numunk3_v121];
+FSeek(startof(mdlHeader.vgloddescindex) + mdlHeader.vgloddescindex);
+vgLoDdesc_t vgloddesc[mdlHeader.numvgloddesc] <bgcolor=0x99CC44>;
 
 
-FSeek(startof(mdlHeader.unkindex2_v121) + mdlHeader.unkindex2_v121);
-unkindex2sect unkindex2section[mdlHeader.numunk2_v121];
+FSeek(startof(mdlHeader.vgloddataindex) + mdlHeader.vgloddataindex);
+vgLoDdata_t vgloddata[mdlHeader.numvgloddata] <bgcolor=0x229944>;
 
 
-if(mdlHeader.unkindex1_v121 > 0)
+if(mdlHeader.vgmeshindex > 0)
 {
-    FSeek(startof(mdlHeader.unkindex1_v121) + mdlHeader.unkindex1_v121);
-    unkindex1sect unkindex1section[mdlHeader.numunk1_v121];
+    FSeek(startof(mdlHeader.vgmeshindex) + mdlHeader.vgmeshindex);
+    vgmesh_t vgmesh[mdlHeader.numvgmeshes] <bgcolor=0x559922>;
 }
 
 

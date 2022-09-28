@@ -870,7 +870,7 @@ struct studiohdr_t_v53
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
     int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
     int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(startof(this) + this - 12)>; // This has been moved from studiohdr2 to the front of the main header.
+	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
     char name[64]; // The internal name of the model, padding with null bytes.
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
@@ -1026,7 +1026,7 @@ struct studiohdr_t_v53
     int numaabb2;
 
     // always "" or "Titan"
-    int unkstringindex <read=ReadString(startof(mdlHeader) + mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(this)>;
 
     // ANIs are no longer used and this is reflected in many structs
     // Start of interal file data
@@ -1069,7 +1069,7 @@ struct studiohdr2_t
 	
 	int linearboneindex;
 
-	int sznameindex <read=ReadString(startof(this) + this - 20)>;
+	int sznameindex <read=ReadString(startof(mdlSubHeader) + this)>;
 
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
@@ -1088,7 +1088,7 @@ struct studiohdr2_t_v52
 	
 	int linearboneindex;
 
-	int sznameindex <read=ReadString(startof(this) + this - 20)>;
+	int sznameindex <read=ReadString(startof(mdlSubHeader) + this)>;
 
 	int m_nBoneFlexDriverCount;
 	int m_nBoneFlexDriverIndex;
@@ -1556,9 +1556,9 @@ struct mstudiobbox_t_v53
 #define STUDIO_NOFORCELOOP 0x8000	// do not force the animation loop
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
-// v54 flags
-#define STUDIO_ANIMDESC_54_UNK 0x20000
-#define STUDIO_ANIMDESC_54_UNK1 0x40000
+// v53 flags
+#define STUDIO_ANIMDESC_53_UNK 0x20000
+#define STUDIO_ANIMDESC_53_UNK1 0x40000
 
 string ReadAnimDescFlags(int flags)
 {
@@ -1643,10 +1643,10 @@ string ReadAnimDescFlags(int flags)
             value += "STUDIO_EVENT_CLIENT";
             break;
         case 0x20000:
-            value += "STUDIO_ANIMDESC_54_UNK";
+            value += "STUDIO_ANIMDESC_53_UNK";
             break;
         case 0x40000:
-            value += "STUDIO_ANIMDESC_54_UNK1";
+            value += "STUDIO_ANIMDESC_53_UNK1";
             break;
         default:
             value += Str("UNK_%x", flag);

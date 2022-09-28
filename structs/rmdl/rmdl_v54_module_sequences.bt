@@ -25,7 +25,7 @@ local int numanims = 0;
 local int zeroanim = 0;
 local int localflags = 0;
 local int animheaderpos = 0;
-local int numbones = (seqdesc.animindexindex - seqdesc.weightlistindex) / 4;
+//local int mdlHeader.numbones = (seqdesc.animindexindex - seqdesc.weightlistindex) / 4;
 
 local int numanimboneheader = 0;
 local int numsectionanimboneheader = 0;
@@ -100,7 +100,7 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
                         FSeek(startof(animdesc[k + animdescindex]) + sectionindexes[numsections - 1].sectionoffsets[x].animindex);
                         boneflagarray_t flagarray;
                 
-                        for(j = 0; j < numbones; j++)
+                        for(j = 0; j < mdlHeader.numbones; j++)
                         {
                             if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                             {
@@ -117,7 +117,7 @@ for(i = 0; i < mdlHeader.numlocalseq; i++)
                 FSeek(startof(animdesc[k + animdescindex]) + animdesc[k + animdescindex].animindex);
                 boneflagarray_t flagarray;
         
-                for(j = 0; j < numbones; j++)
+                for(j = 0; j < mdlHeader.numbones; j++)
                 {
                     if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                     {
