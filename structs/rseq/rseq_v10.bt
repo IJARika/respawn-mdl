@@ -153,6 +153,8 @@ for(i = 0; i < 1; i++)
             FSeek(startof(animdesc[k]) + animdesc[k].compressedikerrorindex);
             mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cLtGreen>;
         }
+
+        int guh[30]; // from start of ikrule? unk1[1]
     }
 }
 

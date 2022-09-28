@@ -1222,7 +1222,7 @@ struct boneflagarray_t
     animflagarray_t_v54 boneflag[mdlHeader.numbones] <bgcolor=0xaa8822, optimize=false>;
     BitfieldEnablePadding();
 
-    byte padd[sizeof(boneflag) % 2] <bgcolor=0xaaaa22, optimize=false>;
+    byte padd[(4 - (mdlHeader.numbones % 4)) / 2] <bgcolor=0xaaaa22>;
 };
 
 // for rseq templates because no mdlHeader
@@ -1233,50 +1233,99 @@ struct boneflagarray_t_loose
     BitfieldEnablePadding();
 
     // breaks sometimes
-    byte padd[sizeof(boneflag) % 2] <bgcolor=0xaaaa22>;
-};
-
-struct animflag_t_v54
-{   
-    byte STUDIO_ANIM_RAWROT_54 : 1;
-    byte STUDIO_ANIM_RAWPOS_54 : 1;
-    byte STUDIO_ANIM_RAWSCALE_54 : 1;
-    byte STUDIO_ANIM_UNK_54 : 1;    
+    byte padd[(4 - (numbones % 4)) / 2] <bgcolor=0xaaaa22>;
 };
 
 // not correct
 struct mstudioanim_valueptr_t_v54
 {
-    uint x : 10;
-    uint y : 11;
-    uint z : 11; 
+    uint x : 8;
+    uint y : 8;
+    uint z : 8; 
+    uint unk : 8;
 };
+
+#define STUDIO_ANIM_DELTA_54	 0x01 // unverified
+#define STUDIO_ANIM_ANIMSCALE_54 0x02 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMROT_54	 0x04 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMPOS_54	 0x08 // mstudioanim_valueptr_t
+
+string ReadAnimFlagsV54(byte flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    int i = 0;
+    byte flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case STUDIO_ANIM_DELTA_54:
+            value += "STUDIO_ANIM_DELTA_54";
+            break;
+        case STUDIO_ANIM_ANIMSCALE_54:
+            value += "STUDIO_ANIM_ANIMSCALE_54";
+            break;
+        case STUDIO_ANIM_ANIMROT_54:
+            value += "STUDIO_ANIM_ANIMROT_54";
+            break;
+        case STUDIO_ANIM_ANIMPOS_54:
+            value += "STUDIO_ANIM_ANIMPOS_54";
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
 
 struct mstudio_rle_anim_t_v54
 {
 
 	int16 size : 12; // total size of all animation data
 
-    int16 STUDIO_ANIM_UNK_54 : 1; // probably delta
-    int16 STUDIO_ANIM_RAWSCALE_54 : 1;    
-    int16 STUDIO_ANIM_RAWROT_54 : 1;
-    int16 STUDIO_ANIM_RAWPOS_54 : 1;
+    //int16 STUDIO_ANIM_UNK_54 : 1; // probably delta
+    //int16 STUDIO_ANIM_ANIMSCALE_54 : 1;    
+    //int16 STUDIO_ANIM_ANIMROT_54 : 1;
+    //int16 STUDIO_ANIM_ANIMPOS_54 : 1;
+
+    int16 flags : 4 <read=ReadAnimFlagsV54(this)>;
     
-    if(STUDIO_ANIM_RAWPOS_54)
+    if(flags & STUDIO_ANIM_ANIMPOS_54)
         float posscale;
-
-    //float cool;
-
-    //mstudioanim_valueptr_t_v54 notcool;
-
-    /*if(flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
-    {
-        float posscale;
-    }*/
 
     if(flagarray.boneflag[j].STUDIO_ANIM_POS_54)
     {
-        if(STUDIO_ANIM_RAWPOS_54)
+        if(flags & STUDIO_ANIM_ANIMPOS_54)
             mstudioanim_valueptr_t_v54 animpos;
         else
             Vector48 rawpos;
@@ -1284,10 +1333,18 @@ struct mstudio_rle_anim_t_v54
 
     if(flagarray.boneflag[j].STUDIO_ANIM_ROT_54)
     {
-        if(STUDIO_ANIM_RAWROT_54)
+        if(flags & STUDIO_ANIM_ANIMROT_54)
             mstudioanim_valueptr_t_v54 animrot;
         else
             Quat64 rawrot;
+    }
+
+    if(flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+    {
+        if(flags & STUDIO_ANIM_ANIMSCALE_54)
+            mstudioanim_valueptr_t_v54 animscale;
+        else
+            Vector48 rawscale;
     }
 };
 
