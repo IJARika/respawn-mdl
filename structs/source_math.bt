@@ -102,8 +102,15 @@ struct matrix3x4_t
 		float m20; float m21; float m22; float m23; // r2
 };
 
+
+
 enum <int> boolean
 {
     False = 0,
     True = 1,
+};
+
+struct bool
+{
+    byte bool;
 };

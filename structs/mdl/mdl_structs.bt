@@ -228,6 +228,11 @@ struct rmdlflags_t
     int unused9 : 1;
 };
 
+// public contents flags
+// https://github.com/ValveSoftware/source-sdk-2013/blob/master/sp/src/public/bspflags.h
+// https://github.com/NicolasDe/AlienSwarm/blob/master/src/public/bspflags.h
+
+// source
 enum <int> contents_flags
 {
     CONTENTS_EMPTY = 0x0, // nonsolid
@@ -236,6 +241,76 @@ enum <int> contents_flags
     CONTENTS_MONSTER = 0x2000000, // monster
     CONTENTS_LADDER = 0x20000000 // ladder
 };
+
+// r2
+// no ladder
+/*enum <int> contents_flags_r2 {
+    CONTENTS_EMPTY = 0x0,
+    CONTENTS_SOLID = 0x1,
+    CONTENTS_WINDOW = 0x2,
+    CONTENTS_AUX = 0x4,
+    CONTENTS_GRATE = 0x8,
+    CONTENTS_SLIME = 0x10,
+    CONTENTS_WATER = 0x20,
+    CONTENTS_WINDOW_NOCOLLIDE = 0x40,
+    CONTENTS_OPAQUE = 0x80,
+    CONTENTS_TESTFOGVOLUME = 0x100,
+    CONTENTS_PHYSICSCLIP = 0x200,
+    CONTENTS_BLOCKLIGHT = 0x400,
+    CONTENTS_NOGRAPPLE = 0x800,
+    CONTENTS_UNUSED_03 = 0x1000,
+    CONTENTS_IGNORE_NODRAW_OPAQUE = 0x2000,
+    CONTENTS_MOVEABLE = 0x4000,
+    CONTENTS_TEST_SOLID_BODY_SHOT = 0x8000,
+    CONTENTS_PLAYERCLIP = 0x10000,
+    CONTENTS_MONSTERCLIP = 0x20000,
+    CONTENTS_OPERATOR_FLOOR = 0x40000,
+    CONTENTS_BLOCKLOS = 0x80000,
+    CONTENTS_NOCLIMB = 0x100000,
+    CONTENTS_TITANCLIP = 0x200000,
+    CONTENTS_BULLETCLIP = 0x400000,
+    CONTENTS_OPERATORCLIP = 0x800000,
+    CONTENTS_MONSTER = 0x2000000,
+    CONTENTS_DEBRIS = 0x4000000,
+    CONTENTS_DETAIL = 0x8000000,
+    CONTENTS_TRANSLUCENT = 0x10000000,
+    CONTENTS_HITBOX = 0x40000000,
+};
+
+// r5
+// ladder replaced by ping
+enum <int> contents_flags_r5 {
+    CONTENTS_EMPTY = 0x0,
+    CONTENTS_SOLID = 0x1,
+    CONTENTS_WINDOW = 0x2,
+    CONTENTS_AUX = 0x4,
+    CONTENTS_GRATE = 0x8,
+    CONTENTS_SLIME = 0x10,
+    CONTENTS_WATER = 0x20,
+    CONTENTS_WINDOW_NOCOLLIDE = 0x40,
+    CONTENTS_OPAQUE = 0x80,
+    CONTENTS_TESTFOGVOLUME = 0x100,
+    CONTENTS_PHYSICSCLIP = 0x200,
+    CONTENTS_NOGRAPPLE = 0x400,
+    CONTENTS_IGNORE_NODRAW_OPAQUE = 0x2000,
+    CONTENTS_MOVEABLE = 0x4000,
+    CONTENTS_TEST_SOLID_BODY_SHOT = 0x8000,
+    CONTENTS_PLAYERCLIP = 0x10000,
+    CONTENTS_MONSTERCLIP = 0x20000,
+    CONTENTS_OPERATOR_FLOOR = 0x40000,
+    CONTENTS_BLOCKLOS = 0x80000,
+    CONTENTS_NOCLIMB = 0x100000,
+    CONTENTS_TITANCLIP = 0x200000,
+    CONTENTS_BULLETCLIP = 0x400000,
+    CONTENTS_OPERATORCLIP = 0x800000,
+    CONTENTS_NOAIRDROP = 0x1000000,
+    CONTENTS_MONSTER = 0x2000000,
+    CONTENTS_DEBRIS = 0x4000000,
+    CONTENTS_DETAIL = 0x8000000,
+    CONTENTS_TRANSLUCENT = 0x10000000,
+    CONTENTS_BLOCK_PING = 0x20000000,
+    CONTENTS_HITBOX = 0x40000000,
+}*/
 
 string ReadContents(uint flags)
 {
@@ -1136,6 +1211,170 @@ enum boneprocflags
 // b m10; e m11; h m12; PosY m13; // r1
 // c m20; f m21; i m22; posZ m23; // r2
 
+// bone flags
+#define BONE_CALCULATE_MASK			0x1F
+#define BONE_PHYSICALLY_SIMULATED	0x01	// bone is physically simulated when physics are active
+#define BONE_PHYSICS_PROCEDURAL		0x02	// procedural when physics is active
+#define BONE_ALWAYS_PROCEDURAL		0x04	// bone is always procedurally animated
+#define BONE_SCREEN_ALIGN_SPHERE	0x08	// bone aligns to the screen, not constrained in motion.
+#define BONE_SCREEN_ALIGN_CYLINDER	0x10	// bone aligns to the screen, constrained by it's own axis.
+
+#define BONE_WORLD_ALIGN 0x20 // bone is rigidly aligned to the world (but can still translate)(added in CSGO)
+
+#define BONE_USED_BY_IKCHAIN 0x20 // bone is influenced by IK chains, added in V52 (Titanfall 1)
+
+#define BONE_USED_MASK				0x0007FF00
+#define BONE_USED_BY_ANYTHING		0x0007FF00
+#define BONE_USED_BY_HITBOX			0x00000100	// bone (or child) is used by a hit box
+#define BONE_USED_BY_ATTACHMENT		0x00000200	// bone (or child) is used by an attachment point
+#define BONE_USED_BY_VERTEX_MASK	0x0003FC00
+#define BONE_USED_BY_VERTEX_LOD0	0x00000400	// bone (or child) is used by the toplevel model via skinned vertex
+#define BONE_USED_BY_VERTEX_LOD1	0x00000800	
+#define BONE_USED_BY_VERTEX_LOD2	0x00001000  
+#define BONE_USED_BY_VERTEX_LOD3	0x00002000
+#define BONE_USED_BY_VERTEX_LOD4	0x00004000
+#define BONE_USED_BY_VERTEX_LOD5	0x00008000
+#define BONE_USED_BY_VERTEX_LOD6	0x00010000
+#define BONE_USED_BY_VERTEX_LOD7	0x00020000
+#define BONE_USED_BY_BONE_MERGE		0x00040000	// bone is available for bone merge to occur against it
+
+//#define BONE_USED_BY_VERTEX_AT_LOD(lod) ( BONE_USED_BY_VERTEX_LOD0 << (lod) )
+//#define BONE_USED_BY_ANYTHING_AT_LOD(lod) ( ( BONE_USED_BY_ANYTHING & ~BONE_USED_BY_VERTEX_MASK ) | BONE_USED_BY_VERTEX_AT_LOD(lod) )
+
+#define BONE_TYPE_MASK				0x00F00000
+#define BONE_FIXED_ALIGNMENT		0x00100000	// bone can't spin 360 degrees, all interpolation is normalized around a fixed orientation
+
+#define BONE_HAS_SAVEFRAME_POS		0x00200000	// Vector48
+#define BONE_HAS_SAVEFRAME_ROT64	0x00400000	// Quaternion64
+#define BONE_HAS_SAVEFRAME_ROT32	0x00800000	// Quaternion32
+
+string ReadBoneFlags(uint flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    int i = 0;
+    int flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case BONE_CALCULATE_MASK:
+            value += "BONE_CALCULATE_MASK";
+            break;
+        case BONE_PHYSICALLY_SIMULATED:
+            value += "BONE_PHYSICALLY_SIMULATED";
+            break;
+        case BONE_PHYSICS_PROCEDURAL:
+            value += "BONE_PHYSICS_PROCEDURAL";
+            break;
+        case BONE_ALWAYS_PROCEDURAL:
+            value += "BONE_ALWAYS_PROCEDURAL";
+            break;
+        case BONE_SCREEN_ALIGN_SPHERE:
+            value += "BONE_SCREEN_ALIGN_SPHERE";
+            break;
+        case BONE_SCREEN_ALIGN_CYLINDER:
+            value += "BONE_SCREEN_ALIGN_CYLINDER";
+            break;
+        case BONE_USED_BY_IKCHAIN:
+            value += "BONE_USED_BY_IKCHAIN";
+            break;
+        case BONE_USED_MASK:
+            value += "BONE_USED_MASK";
+            break;
+        case BONE_USED_BY_ANYTHING:
+            value += "BONE_USED_BY_ANYTHING";
+            break;
+        case BONE_USED_BY_HITBOX:
+            value += "BONE_USED_BY_HITBOX";
+            break;
+        case BONE_USED_BY_ATTACHMENT:
+            value += "BONE_USED_BY_ATTACHMENT";
+            break;
+        case BONE_USED_BY_VERTEX_MASK:
+            value += "BONE_USED_BY_VERTEX_MASK";
+            break;
+        case BONE_USED_BY_VERTEX_LOD0:
+            value += "BONE_USED_BY_VERTEX_LOD0";
+            break;
+        case BONE_USED_BY_VERTEX_LOD1:
+            value += "BONE_USED_BY_VERTEX_LOD1";
+            break;
+        case BONE_USED_BY_VERTEX_LOD2:
+            value += "BONE_USED_BY_VERTEX_LOD2";
+            break;
+        case BONE_USED_BY_VERTEX_LOD3:
+            value += "BONE_USED_BY_VERTEX_LOD3";
+            break;
+        case BONE_USED_BY_VERTEX_LOD4:
+            value += "BONE_USED_BY_VERTEX_LOD4";
+            break;
+        case BONE_USED_BY_VERTEX_LOD5:
+            value += "BONE_USED_BY_VERTEX_LOD5";
+            break;
+        case BONE_USED_BY_VERTEX_LOD4:
+            value += "BONE_USED_BY_VERTEX_LOD6";
+            break;
+        case BONE_USED_BY_VERTEX_LOD5:
+            value += "BONE_USED_BY_VERTEX_LOD7";
+            break;
+        case BONE_USED_BY_BONE_MERGE:
+            value += "BONE_USED_BY_BONE_MERGE";
+            break;
+        case BONE_TYPE_MASK:
+            value += "BONE_TYPE_MASK";
+            break;
+        case BONE_FIXED_ALIGNMENT:
+            value += "BONE_FIXED_ALIGNMENT";
+            break;
+        case BONE_HAS_SAVEFRAME_POS:
+            value += "BONE_HAS_SAVEFRAME_POS";
+            break;
+        case BONE_HAS_SAVEFRAME_ROT64:
+            value += "BONE_HAS_SAVEFRAME_ROT64";
+            break;
+        case BONE_HAS_SAVEFRAME_ROT32:
+            value += "BONE_HAS_SAVEFRAME_ROT32";
+            break;
+        default:
+            value += Str("UNK_%x", flag);
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
+
 // works good enough but might not be good for edge cases with unparented bones.
 int ReadParentBone(int bone)
 {
@@ -1149,6 +1388,7 @@ int ReadParentBone(int bone)
     return realbone;
 }
 
+// bone structs
 struct mstudiobone_t_v47
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
@@ -1168,7 +1408,7 @@ struct mstudiobone_t_v47
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	boneprocflags proctype;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
@@ -1199,7 +1439,7 @@ struct mstudiobone_t_v49
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	boneprocflags proctype;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
@@ -1232,7 +1472,7 @@ struct mstudiobone_t_v52
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	boneprocflags proctype;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
@@ -1274,7 +1514,7 @@ struct mstudiobone_t_v53
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	boneprocflags proctype;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
@@ -1438,6 +1678,61 @@ struct mstudioposeparamdesc_t
 	float start; // starting value
 	float end; // ending value
 	float loop;	// looping range, 0 for no looping, 360 for rotations, etc.
+};
+
+// flexes
+struct mstudioflexdesc_t
+{
+	int szFACSindex <read=ReadString(startof(this) + this)>;
+};
+
+
+
+struct mstudioflexcontroller_t
+{
+	int sztypeindex <read=ReadString(startof(this) + this)>;
+	int sznameindex <read=ReadString(startof(this) + this - 4)>;
+	int localToGlobal;	// remapped at load time to master list
+	float min;
+	float max;
+};
+
+struct mstudioflexrule_t
+{
+	int flex;
+	int numops;
+	int opindex;
+};
+
+struct mstudioflexop_t
+{
+	int op;
+	union 
+	{
+		int index;
+		float value;
+	} d;
+};
+
+struct mstudioflexcontrollerui_t
+{
+	int sznameindex <read=ReadString(startof(this) + this)>;
+
+	// These are used like a union to save space
+	// Here are the possible configurations for a UI controller
+	//
+	// SIMPLE NON-STEREO:	0: control	1: unused	2: unused
+	// STEREO:				0: left		1: right	2: unused
+	// NWAY NON-STEREO:		0: control	1: unused	2: value
+	// NWAY STEREO:			0: left		1: right	2: value
+
+	int szindex0;
+	int szindex1;
+	int szindex2;
+
+	unsigned char remaptype;	// See the FlexControllerRemapType_t enum
+	bool stereo;		// Is this a stereo control?
+	byte unused[2];
 };
 
 // source bone transform
@@ -2000,6 +2295,49 @@ struct mstudioanim_valueptr_t
     int16 offset[3];
 };
 
+/*
+void ExtractAnimValue( int frame, mstudioanimvalue_t *panimvalue, float scale, float &v1 )
+{
+	if ( !panimvalue )
+	{
+		v1 = 0;
+		return;
+	}
+
+	int k = frame;
+
+	while (panimvalue->num.total <= k)
+	{
+		k -= panimvalue->num.total;
+		panimvalue += panimvalue->num.valid + 1;
+		if ( panimvalue->num.total == 0 )
+		{
+			Assert( 0 ); // running off the end of the animation stream is bad
+			v1 = 0;
+			return;
+		}
+	}
+	if (panimvalue->num.valid > k)
+	{
+		v1 = panimvalue[k+1].value * scale;
+	}
+	else
+	{
+		// get last valid data block
+		v1 = panimvalue[panimvalue->num.valid].value * scale;
+	}
+}
+*/
+union mstudioanimvalue_t
+{
+	struct 
+	{
+		byte	valid; // number of valid frames, or how many frames of data this value has
+		byte	total; // total number of frames, aka "values"
+	} num;
+	short		value; // actual value, value*posscale
+};
+
 // 'mstudioanim_t' in 48
 struct mstudio_rle_anim_t
 {
@@ -2201,8 +2539,6 @@ struct mstudioseqdescv48_t
 	int movementindex; // [blend] float array for blended movement
 	int groupsize[2];
 	int paramindex[2]; // X, Y, Z, XR, YR, ZR
-	float paramstart[2]; // local (0..1) starting value
-	
 	float paramstart[2]; // local (0..1) starting value
 	float paramend[2]; // local (0..1) ending value
 	int paramparent;
@@ -2526,7 +2862,7 @@ struct seqweightlist_t
 
 struct blendgroup_t
 {
-    int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
+    int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]] <read=ReadString(startof(animdesc[this]) + animdesc[this].sznameindex)>;
 };
 
 // demand loaded sequence groups
@@ -2581,7 +2917,7 @@ struct mstudiomodel_t
     
     // sections of this are removed as needed.
 	int unused[10]; // remove as appropriate
-                    // first two get used in v47
+                    // first two get used in v47/48
 };
 
 struct mstudiomodel_t_v52

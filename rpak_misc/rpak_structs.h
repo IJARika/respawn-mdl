@@ -41,16 +41,16 @@ struct ASeqHeaderV7
 	RPakPtr szname; // pointer to debug name, placed before raw rseq normally.
 
 	// this can point to a group of guids and not one singular one.
-	RPakPtr modelhash; // hehe haha I love unverified assumptions
-	uint32_t modelcount; // to be verified on v7
+	RPakPtr modelGuid;
+	uint32_t modelCount;
 
-    uint32_t reserved; // haha surely because this is used later?
+    uint32_t reserved;
 
 	// this can point to a group of guids and not one singular one.
-	RPakPtr stgshash;
-	uint32_t stgscount;
+	RPakPtr settingsGuid;
+	uint32_t settingsCount;
 
-    uint32_t reserved1; // hehe assuming like above :DDD
+    uint32_t reserved1; // assumed
 };
 
 struct ASeqHeaderV71
@@ -59,20 +59,20 @@ struct ASeqHeaderV71
     RPakPtr szname; // pointer to debug name, placed before raw rseq normally.
 
 	// this can point to a group of guids and not one singular one.
-    RPakPtr modelhash; // hehe haha I love unverified assumptions
-    uint32_t modelcount; // to be verified on v7
+	RPakPtr modelGuid;
+	uint32_t modelCount; // to be verified on v7
 
-	// size of the external data.
-	uint32_t externaldatasize;
+	// size of data that is not locally in the rseq.
+	uint32_t externalDataSize;
 
 	// this can point to a group of guids and not one singular one.
-    RPakPtr stgshash;
-    uint32_t stgscount;
+	RPakPtr settingsGuid;
+	uint32_t settingsCount;
 
-    uint32_t reserved1; // hehe assuming like above :DDD
+    uint32_t reserved1; // assumed
 
-	// data that is stored outside of the raw rseq.
-    RPakPtr externaldata;
+	// pointer to data stored outside of the raw rseq.
+    RPakPtr externalData;
 };
 
 struct ASeqHeaderV10
@@ -83,19 +83,19 @@ struct ASeqHeaderV10
     uint64_t Unknown; // possible pointer, guid, or reserved space.
 
 	// counts for mdl_ and stgs assets, normally just one but can be multiples.
-    uint16_t modelcount;
-    uint16_t stgscount;
+    uint16_t modelCount;
+    uint16_t settingsCount;
 
 	// size of the external data.
-    uint32_t externaldatasize;
+    uint32_t externalDataSize;
 
 	// these can all point to a group of guids and not one singular one.
-    RPakPtr modelhash;
-	RPakPtr efcthash;
-    RPakPtr stgshash;
+    RPakPtr modelGuid;
+	RPakPtr effectGuid;
+    RPakPtr settingsGuid;
 
 	// data that is stored outside of the raw rseq.
-    RPakPtr externaldata;
+    RPakPtr externalData;
 };
 
 // rpak matl headers unk section
@@ -152,14 +152,14 @@ to get the equalivilent to 'nocull' both 'culling' and 'inverted faces' need to 
 // size of 208
 struct MaterialHeaderV12
 {
-	uint64_t reserved_vtbl; // Gets set to CMaterialGlue vtbl ptr
+	uint64_t reservedVtbl; // Gets set to CMaterialGlue vtbl ptr
 	uint8_t padding[8]; // unused
 
-	uint64_t guid = 0; // guid of this material asset
+	uint64_t guid ; // guid of this material asset
 
 	RPakPtr szname; // pointer to partial asset path
-	RPakPtr szsurfaceprop; // pointer to surfaceprop (as defined in surfaceproperties.txt)
-	RPakPtr szsurfaceprop2; // pointer to surfaceprop2 
+	RPakPtr szsurfaceProp; // pointer to surfaceprop (as defined in surfaceproperties.txt)
+	RPakPtr szsurfaceProp2; // pointer to surfaceprop2 
 
 	// IDX 1: DepthShadow
 	// IDX 2: DepthPrepass
@@ -171,13 +171,13 @@ struct MaterialHeaderV12
 	// these blocks relate to different render filters and flags. still not well understood.
 	UnknownMaterialSectionV12 unksections[2];
 
-	uint64_t shadersethash; // guid of the shaderset asset that this material uses
+	uint64_t shadersetGuid; // guid of the shaderset asset that this material uses
 
-	RPakPtr textures; // TextureGUID Map 1
+	RPakPtr texturesHandles; // TextureGUID Map
 
 	// both should be reserved - used to store the handles for any textures that have streaming mip levels and the number of textures that have streamed mips
-	RPakPtr streamedtextures;
-	int16_t streamedtexturescount; // Number of textures with streamed mip levels.
+	RPakPtr streamingTextureHandles;
+	int16_t streamingTextureCount; // Number of textures with streamed mip levels.
 
 	uint32_t flags = 0x0; // see ImageFlags in the apex struct.
 	int16_t unknown2; // name carried over from apex struct.

@@ -91,8 +91,8 @@ struct studiohdr_t_v54
 	int localnodeindex;
 	int localnodenameindex;
  
-	int numflexdesc;
-	int flexdescindex;
+	int numunknodes;
+	int unknodexindex;
  
 	int meshindex; // offset to model meshes
 
@@ -279,9 +279,8 @@ struct studiohdr_t_v54_v121
 	int localnodeindex;
 	int localnodenameindex;
  
-	// these are unknown since I don't know what they cut
-	int numunk_v121;
-	int unkindex_v121;
+	int numunknodes;
+	int unknodexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -451,9 +450,8 @@ struct studiohdr_t_v54_v122
 	int localnodeindex;
 	int localnodenameindex;
  
-	// these are unknown since I don't know what they cut
-	int numunk_v121;
-	int unkindex_v121;
+	int numunknodes;
+	int unknodexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -625,9 +623,8 @@ struct studiohdr_t_v54_v13
 	int localnodeindex;
 	int localnodenameindex;
  
-	// these are unknown since I don't know what they cut
-	int numunk_v121;
-	int unkindex_v121;
+	int numunknodes;
+	int unknodexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -803,9 +800,8 @@ struct studiohdr_t_v54_v14
 	int localnodeindex;
 	int localnodenameindex;
  
-	// these are unknown since I don't know what they cut
-	int numunk_v121;
-	int unkindex_v121;
+	int numunknodes;
+	int unknodexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -974,7 +970,7 @@ struct mstudiobone_t_v54
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	int proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
@@ -1007,7 +1003,7 @@ struct mstudiobone_t_v54_v121
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
 
-    int flags;
+    int flags <read=ReadBoneFlags(this)>;
 	int proctype;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
@@ -1249,8 +1245,9 @@ struct boneflagarray_t
     BitfieldDisablePadding();
     animflagarray_t_v54 boneflag[mdlHeader.numbones] <bgcolor=0xaa8822, optimize=false>;
     BitfieldEnablePadding();
-
-    byte padd[(4 - (mdlHeader.numbones % 4)) / 2] <bgcolor=0xaaaa22>;
+    
+    if(mdlHeader.numbones % 4)
+        byte padd[(4 - (mdlHeader.numbones % 4)) / 2] <bgcolor=0xaaaa22>;
 };
 
 // for rseq templates because no mdlHeader
@@ -1268,9 +1265,9 @@ struct boneflagarray_t_loose
 struct mstudioanim_valueptr_t_v54
 {
     uint x : 8;
+    uint unk : 8;
     uint y : 8;
     uint z : 8; 
-    uint unk : 8;
 };
 
 #define STUDIO_ANIM_DELTA_54	 0x01 // unverified
@@ -1339,7 +1336,7 @@ string ReadAnimFlagsV54(byte flags)
 struct mstudio_rle_anim_t_v54
 {
 
-	int16 size : 12; // total size of all animation data
+	int16 size : 12; // total size of all animation data, not next offset because even the last one has it
 
     int16 flags : 4 <read=ReadAnimFlagsV54(this)>;
     
@@ -1976,6 +1973,7 @@ struct vgLoDdesc_t
 
     float threshold;
 
+    // alignment?
     int unk;
 };
 
@@ -1990,6 +1988,7 @@ struct vgLoDdata_t
     // ids for something
     int16 unk1; // normally 1
     int16 unk2; // powers of two
+    // alignment?
     int16 unk3; // never filled, maybe this is int32 above should never exceed 128 so unsure
 };
 
@@ -2005,11 +2004,3 @@ struct vgmesh_t
 
 //=====
 // Misc
-
-
-struct mstudionode_t_v54
-{
-    int sznameindex[mdlHeader.numlocalnodes];
-
-    int nodeindex[mdlHeader.numlocalnodes];
-};

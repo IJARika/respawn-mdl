@@ -22,6 +22,7 @@ local int i = 0;
 local int j = 0;
 local int k = 1;
 local int x = 0;
+local int g = 0;
 
 
 // headers
@@ -105,7 +106,44 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
             {   
                 mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
                 numsectionanimboneheader += 1;
-                FSkip(sectionanimheader[numsectionanimboneheader - 1].nextoffset - 32);
+
+                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
+                {
+                    for(g = 0; g < 3; g++)
+                    {
+                        if(sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g])
+                        {
+                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animrot) + sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g]);
+                            mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
+                        }
+                    }
+                }
+                
+                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
+                {
+                    for(g = 0; g < 3; g++)
+                    {
+                        if(sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g])
+                        {
+                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animpos) + sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g]);
+                            mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
+                        }
+                    }
+                }
+                
+                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
+                {
+                    for(g = 0; g < 3; g++)
+                    {
+                        if(sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g])
+                        {
+                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animscale) + sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g]);
+                            mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
+                        }
+                    }
+                }
+
+                FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]) + sectionanimheader[numsectionanimboneheader - 1].nextoffset);
 
                 if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
 		        {
@@ -123,7 +161,44 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
             
 		    mstudio_rle_anim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
 		    numanimboneheader += 1;
-            FSkip(animheader[numanimboneheader - 1].nextoffset - 32);
+
+            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
+            {
+                for(g = 0; g < 3; g++)
+                {
+                    if(animheader[numanimboneheader - 1].animrot.offset[g])
+                    {
+                        FSeek(startof(animheader[numanimboneheader - 1].animrot) + animheader[numanimboneheader - 1].animrot.offset[g]);
+                        mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
+                    }
+                }
+            }
+            
+            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
+            {
+                for(g = 0; g < 3; g++)
+                {
+                    if(animheader[numanimboneheader - 1].animpos.offset[g])
+                    {
+                        FSeek(startof(animheader[numanimboneheader - 1].animpos) + animheader[numanimboneheader - 1].animpos.offset[g]);
+                        mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
+                    }
+                }
+            }
+            
+            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
+            {
+                for(g = 0; g < 3; g++)
+                {
+                    if(animheader[numanimboneheader - 1].animscale.offset[g])
+                    {
+                        FSeek(startof(animheader[numanimboneheader - 1].animscale) + animheader[numanimboneheader - 1].animscale.offset[g]);
+                        mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
+                    }
+                }
+            }
+
+            FSeek(startof(animheader[numanimboneheader - 1]) + animheader[numanimboneheader - 1].nextoffset);
             
 		    if (animheader[numanimboneheader - 1].nextoffset <= 0) 
 		    {

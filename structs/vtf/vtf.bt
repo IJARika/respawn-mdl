@@ -1,0 +1,167 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: VTF
+//   Authors: 
+//   Version: 7.*
+//   Purpose: Valve Texture Files
+//  Category: Image
+// File Mask: *.vtf
+//  ID Bytes: 56 54 46
+//   History: 
+//------------------------------------------------
+
+#include "../source_math.bt"
+
+local int i = 0;
+
+enum ImageFormat 
+{
+	IMAGE_FORMAT_UNKNOWN  = -1,
+	IMAGE_FORMAT_RGBA8888 = 0, 
+	IMAGE_FORMAT_ABGR8888, 
+	IMAGE_FORMAT_RGB888, 
+	IMAGE_FORMAT_BGR888,
+	IMAGE_FORMAT_RGB565, 
+	IMAGE_FORMAT_I8,
+	IMAGE_FORMAT_IA88,
+	IMAGE_FORMAT_P8,
+	IMAGE_FORMAT_A8,
+	IMAGE_FORMAT_RGB888_BLUESCREEN,
+	IMAGE_FORMAT_BGR888_BLUESCREEN,
+	IMAGE_FORMAT_ARGB8888,
+	IMAGE_FORMAT_BGRA8888,
+	IMAGE_FORMAT_DXT1,
+	IMAGE_FORMAT_DXT3,
+	IMAGE_FORMAT_DXT5,
+	IMAGE_FORMAT_BGRX8888,
+	IMAGE_FORMAT_BGR565,
+	IMAGE_FORMAT_BGRX5551,
+	IMAGE_FORMAT_BGRA4444,
+	IMAGE_FORMAT_DXT1_ONEBITALPHA,
+	IMAGE_FORMAT_BGRA5551,
+	IMAGE_FORMAT_UV88,
+	IMAGE_FORMAT_UVWQ8888,
+	IMAGE_FORMAT_RGBA16161616F,
+	IMAGE_FORMAT_RGBA16161616,
+	IMAGE_FORMAT_UVLX8888,
+	IMAGE_FORMAT_R32F,			// Single-channel 32-bit floating point
+	IMAGE_FORMAT_RGB323232F,	// NOTE: D3D9 does not have this format
+	IMAGE_FORMAT_RGBA32323232F,
+	IMAGE_FORMAT_RG1616F,
+	IMAGE_FORMAT_RG3232F,
+	IMAGE_FORMAT_RGBX8888,
+
+	IMAGE_FORMAT_NULL,			// Dummy format which takes no video memory
+
+	// Compressed normal map formats
+	IMAGE_FORMAT_ATI2N,			// One-surface ATI2N / DXN format
+	IMAGE_FORMAT_ATI1N,			// Two-surface ATI1N format
+
+	IMAGE_FORMAT_RGBA1010102,	// 10 bit-per component render targets
+	IMAGE_FORMAT_BGRA1010102,
+	IMAGE_FORMAT_R16F,			// 16 bit FP format
+
+	// Depth-stencil texture formats
+	IMAGE_FORMAT_D16,
+	IMAGE_FORMAT_D15S1,
+	IMAGE_FORMAT_D32,
+	IMAGE_FORMAT_D24S8,
+	IMAGE_FORMAT_LINEAR_D24S8,
+	IMAGE_FORMAT_D24X8,
+	IMAGE_FORMAT_D24X4S4,
+	IMAGE_FORMAT_D24FS8,
+	IMAGE_FORMAT_D16_SHADOW,	// Specific formats for shadow mapping
+	IMAGE_FORMAT_D24X8_SHADOW,	// Specific formats for shadow mapping
+
+	// supporting these specific formats as non-tiled for procedural cpu access (360-specific)
+	IMAGE_FORMAT_LINEAR_BGRX8888,
+	IMAGE_FORMAT_LINEAR_RGBA8888,
+	IMAGE_FORMAT_LINEAR_ABGR8888,
+	IMAGE_FORMAT_LINEAR_ARGB8888,
+	IMAGE_FORMAT_LINEAR_BGRA8888,
+	IMAGE_FORMAT_LINEAR_RGB888,
+	IMAGE_FORMAT_LINEAR_BGR888,
+	IMAGE_FORMAT_LINEAR_BGRX5551,
+	IMAGE_FORMAT_LINEAR_I8,
+	IMAGE_FORMAT_LINEAR_RGBA16161616,
+
+	IMAGE_FORMAT_LE_BGRX8888,
+	IMAGE_FORMAT_LE_BGRA8888,
+
+	NUM_IMAGE_FORMATS
+};
+
+
+
+struct VTFFileBaseHeader_t
+{
+	char fileTypeString[4]; // "VTF" Valve texture file
+	int version[2]; 		// version[0].version[1]
+	int headerSize;
+};
+
+struct VTFFileHeaderV7_1_t
+{
+	uint16	width;
+	uint16	height;
+	uint32	flags;
+	uint16	numFrames;
+	uint16	startFrame;
+
+	// must manually align in order to maintain pack(1) expected layout with existing binaries
+	char			pad1[4];
+	Vector3			reflectivity;
+	char			pad2[4];
+
+	float			bumpScale;
+	ImageFormat		imageFormat;
+	ubyte	        numMipLevels;
+	ImageFormat		lowResImageFormat;
+	ubyte	        lowResImageWidth;
+	ubyte	        lowResImageHeight;	
+};
+
+struct VTFFileHeaderV7_2_t
+{
+	uint16 depth;
+};
+
+struct VTFFileHeaderV7_3_t
+{
+
+	char    pad4[3];
+	uint32	numResources;
+
+    int padding[2];
+};
+
+struct ResourceEntryInfo
+{
+	union
+	{ 
+		uint32	eType;		// Use MK_VTF_??? macros to be endian compliant with the type
+		ubyte	chTypeBytes[4];
+	} type;
+	uint32		resData;	// Resource data or offset from the beginning of the file
+};
+
+local int magic = ReadInt(0);
+
+// check for ps4 vtf
+if(magic != 0x465456)
+    FSeek(FileSize() - 236);
+
+VTFFileBaseHeader_t header <bgcolor=0x53DD22>;
+
+if(header.version[1] >= 1)
+    VTFFileHeaderV7_1_t header71 <bgcolor=0x53FF77>;
+if(header.version[1] >= 2)
+    VTFFileHeaderV7_2_t header72 <bgcolor=0x53FF00>;
+if(header.version[1] >= 3)
+{
+    VTFFileHeaderV7_3_t header73 <bgcolor=0x5399AA>;
+
+    for(i = 0; i < header73.numResources; i++)
+        ResourceEntryInfo resourceentryinfo <fgcolor=0x5399AA>;
+}
