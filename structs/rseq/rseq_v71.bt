@@ -29,7 +29,8 @@ local int numanims = 0;
 local int zeroanim = 0;
 local int localflags = 0;
 local int animheaderpos = 0;
-local int numbones = (seqdesc.animindexindex - seqdesc.weightlistindex) / 4;
+local int sectionanimheaderpos = 0;
+local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
 
 local int numanimboneheader = 0;
 local int numsectionanimboneheader = 0;
@@ -68,6 +69,12 @@ for(i = 0; i < 1; i++)
     //seqweightlist_t weightlist <bgcolor=0xe1f27a>;
     float weightlist[numbones] <bgcolor=0xe1f27a>;
     
+    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
+    {
+        mstudioactivitymodifier_t_v53 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
+    }
+
     FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
     blendgroup_t_v54 blendgroup <bgcolor=0xffff00>;
 
@@ -108,8 +115,8 @@ for(i = 0; i < 1; i++)
                             if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                             {
                                 mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
-                                FSeek(startof(sectionanimheader[animheaderpos]) + sectionanimheader[animheaderpos].size);
-                                animheaderpos++;
+                                FSeek(startof(sectionanimheader[sectionanimheaderpos]) + sectionanimheader[sectionanimheaderpos].size);
+                                sectionanimheaderpos++;
                             }
                         }
                     }
