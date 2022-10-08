@@ -1172,18 +1172,23 @@ struct mstudioanimdesc_t_v54_v121
 
 	int sectionindex;
 
-    int unk; // what
+    int unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
 
     int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
-    
+    int unk1[4];
 
-    int unk1; // Padding
-    int unk2; // Padding
-    int unk3; // SomeDataOffset
-    int unk4; // SomeDataOffset
+    //int unk1; // Padding
+    //int unk2; // Padding
+    //int unk3; // SomeDataOffset
+    //int unk4; // SomeDataOffset
 
     // it seems like there's another int here but I'm unsure
+};
+
+struct sectionindexes_t_v54
+{
+    mstudioanimsections_t_v53 sectionoffsets[((animdesc[i].numframes - 1) / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
 };
 
 struct mstudioanimsections_t_v54_v121
@@ -1492,14 +1497,15 @@ struct mstudioseqdesc_t_v54
 	int unk;
     int unk1;
 
-    int unkindex <read=ReadString(this)>;
+    int unkindex; // string block but that doesn't work for actual model anims, maybe anim size without strings?
+                  // from the start of the seq so this doesn't work for mdl
 
     int unk2;
 };
 
 struct mstudioautolayer_t_v54
 {
-    int64 guid; // hashed aseq guid asset
+    int64 guid <read=Str("%s - %LX", "rseq", this)>; // hashed aseq guid asset
 
 	short iSequence;
 	short iPose;
@@ -1515,29 +1521,30 @@ struct mstudioevent_t_v54
 {
 	float cycle;
 	int	event;
-	eventtype type; // this will be 0 if old style I'd imagine
+	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 	char options[256];
 
-	int szeventindex <read=ReadString(startof(parentof(this)) + this)>;
+	int szeventindex <read=ReadString(startof(this) + this - 268)>;
 };
 
 // rseq v10
-struct mstudioevent_t_v54_122
+struct mstudioevent_t_v54_v122
 {
 	float cycle;
 	int	event;
-	eventtype type; // this will be 0 if old style I'd imagine
-	char options[256]; // this is the only difference compared to normal v54
+	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 
     int unk;
 
-	int szeventindex <read=ReadString(startof(parentof(this)) + this)>;
+	char options[256]; // this is the only difference compared to normal v54
+
+	int szeventindex <read=ReadString(startof(this) + this - 272)>;
 };
 
 struct blendgroup_t_v54
 {
     // this is an offset now
-    int blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]];
+    int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
 };
 
 
@@ -1810,7 +1817,7 @@ struct mstudiotexture_t_v54
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int64 guid;
+	int64 guid <read=Str("%s - %LX", "matl", this)>;
 };
 
 // texture types, new in v54
@@ -1833,27 +1840,19 @@ enum <byte> MaterialShaderType_t
 // RUI
 
 
-struct mstudioruivertmapv54_t
-{
-    // not sure of the order on these
-    int16 vertid1;
-    int16 vertid2;
-    int16 vertid3;
-};
-
 struct mstudioruifourthvertv54_t
 {
-    // not sure of the order on these
-    int16 vertid4;
+    // -1 if unused, dedicated slot for fourth vert
+    int16 vertextra;
 };
 
-struct mstudioruimeshv54_t
+struct mstudioruimesh_t_v54
 {
     int16 numparents; // apparently you can have meshes parented to more than one bone(?)
     int16 numvertices; // number of verts
     int16 numfaces; // number of faces (quads)
 
-    int16 unk;
+    int16 unk; // num uvs? or this is num faces and current num faces is num uvs
 
     int parentindex; // this gets padding out front of it to even off the struct
 
@@ -1861,16 +1860,6 @@ struct mstudioruimeshv54_t
     int fourthvertmapindex; // they now fully map the vertices for each quad
     int vertmapindex; // offsets into a vertex map for each quad
     int facedataindex; // offset into uv section
-
-    char szruimeshname[parentindex - 28]; // have to subtract header to get actual size (padding included)
-
-    int16 parent[numparents] <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent(s) bone of mesh
-
-    mstudioruivertmapv54_t vertexmap[numfaces]; // vertex map for each face
-    mstudioruifourthvertv54_t fourthvertmap[numfaces];
-    mstudioruivert_t vertex[numvertices];
-
-    mstudioruimesface_t facedata[numfaces];
 };
 
 

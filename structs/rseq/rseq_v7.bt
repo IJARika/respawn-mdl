@@ -18,153 +18,132 @@
 local int i = 0;
 local int j = 0;
 local int k = 1;
-local int x = 0;
-
+local int si = 0;
 
 
 mstudioseqdesc_t_v54 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
-local int numanims = 0;
-
-local int zeroanim = 0;
-local int localflags = 0;
-local int animheaderpos = 0;
-local int sectionanimheaderpos = 0;
+local int numanims = seqdesc.groupsize[0] * seqdesc.groupsize[1];
 local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
 
-local int numanimboneheader = 0;
-local int numsectionanimboneheader = 0;
-local int numikrule = 0;
-local int numsections = 0;
-local int sectionlength = 0;
 
-// loop through all sequences to do it's data structures.
-for(i = 0; i < 1; i++)
+// generate all the sequences data structures
+if(seqdesc.posekeyindex)
 {
-    if(seqdesc[i].posekeyindex > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
-        posekey_t posekey <bgcolor=0x55ee00>;
-    }
+    FSeek(startof(seqdesc) + seqdesc.posekeyindex);
+    float posekey[seqdesc.groupsize[0] + seqdesc.groupsize[1]] <bgcolor=0x55ee00>;
+}
 
-    if(seqdesc[i].numevents > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
-        for(j = 0; j < seqdesc[i].numevents; j++)
-        {
-            mstudioevent_t_v54 seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
-        }
-    }
+if(seqdesc.numevents)
+{
+    FSeek(startof(seqdesc) + seqdesc.eventindex);
+    mstudioevent_t_v54 seqevent[seqdesc.numevents] <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+}
 
-    if(seqdesc[i].numautolayers > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
-        for(j = 0; j < seqdesc[i].numautolayers; j++)
-        {
-            mstudioautolayer_t_v54 autolayers <bgcolor=0x226600>;
-        }
-    }
-    
-    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
-    //seqweightlist_t weightlist <bgcolor=0xe1f27a>;
-    float weightlist[numbones] <bgcolor=0xe1f27a>;
-    
-    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
-    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
-    {
-        mstudioactivitymodifier_t_v53 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
-    }
+if(seqdesc.numautolayers)
+{
+    FSeek(startof(seqdesc) + seqdesc.autolayerindex);
+    mstudioautolayer_t_v54 autolayers[seqdesc.numautolayers] <bgcolor=0x226600>;
+}
 
-    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
-    blendgroup_t_v54 blendgroup <bgcolor=0xffff00>;
+FSeek(startof(seqdesc) + seqdesc.weightlistindex);
+float weightlist[numbones] <bgcolor=0xe1f27a>;
 
-    numanims = seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1];
+FSeek(startof(seqdesc) + seqdesc.activitymodifierindex);
+mstudioactivitymodifier_t_v53 activitymodifier[seqdesc.numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
 
-    for(k = 0; k < seqdesc[i].numblends; k++)
-    {
-        FSeek(startof(seqdesc[i]) + blendgroup[i].blends[k]);
-        mstudioanimdesc_t_v54 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(startof(seqdesc) + seqdesc.animindexindex);
+blendgroup_t_v54 blendgroup <bgcolor=0xffff00>;
 
+for(k = 0; k < numanims; k++)
+{
+    FSeek(startof(seqdesc) + blendgroup.blends[k]);
+    mstudioanimdesc_t_v54 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+
+    struct {
         if(animdesc[k].flags & STUDIO_ALLZEROS)
         {
+            // there is no actual flag array I just do this so the flag array index will line up with the animdesc.
             byte flagarray;
-            byte ALLZEROSPLACEHOLDER;
+            byte ALLZEROSFLAGPLACEHOLDER;
         }
         else
         {
             if(animdesc[k].sectionindex)
             {
-                FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
-                sectionindexes_t_v53 sectionindexes;
-                numsections++;
-                sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
+                struct {
+                    local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
 
-                for(x = 0; x < sectionlength; x++)
-                {
-                    if(!sectionindexes[numsections - 1].sectionoffsets[x].animindex)
+                    FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
+                    mstudioanimsections_t_v53 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
+        
+                    for(i = 0; i < sectionlength; i++)
                     {
-                        
-                    }
-                    else
-                    {
-                        FSeek(startof(animdesc[k]) + sectionindexes[numsections - 1].sectionoffsets[x].animindex);
-                        boneflagarray_t_loose flagarray;
-                
-                        for(j = 0; j < numbones; j++)
+                        if(sectionindexes[i].animindex)
                         {
-                            if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
-                            {
-                                mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
-                                FSeek(startof(sectionanimheader[sectionanimheaderpos]) + sectionanimheader[sectionanimheaderpos].size);
-                                sectionanimheaderpos++;
-                            }
+                            struct {
+                                FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
+                                boneflagarray_t_loose flagarray;
+                        
+                                for(j = 0; j < numbones; j++)
+                                {
+                                    if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+                                    {
+                                        mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
+                                        FSeek(startof(sectionanimheader) + sectionanimheader.size);
+                                    }
+                                }
+                            } section;
                         }
                     }
-                }
+                } sectionanimation;
             }
             else
             {
-                FSeek(startof(animdesc[k]) + animdesc[k].animindex);
-                boneflagarray_t_loose flagarray;
-        
-                for(j = 0; j < numbones; j++)
-                {
-                    if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+                struct {
+                    FSeek(startof(animdesc[k]) + animdesc[k].animindex);
+                    boneflagarray_t_loose flagarray;
+
+                    for(j = 0; j < numbones; j++)
                     {
-                        mstudio_rle_anim_t_v54 animheader <bgcolor=cBlue>;
-                        FSeek(startof(animheader[animheaderpos]) + animheader[animheaderpos].size);
-                        animheaderpos++;
+                        if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+                        {
+                            mstudio_rle_anim_t_v54 animheader <bgcolor=cBlue>;
+                            FSeek(startof(animheader) + animheader.size);
+                        }
                     }
-                }
+                } animation;
             }
         }
         
-        FSeek(startof(animdesc[k]) + animdesc[k].ikruleindex);
-        for (j = 0; j < animdesc[k].numikrules; j++)
+        if(animdesc[k].numikrules)
         {
-            mstudioikrule_t_v54 animikrule <bgcolor=cGreen>;
-            numikrule += 1;
-        };
-
-        /*for(j = -animdesc[i].numikrules; j < 0; j++)
+            FSeek(startof(animdesc[k]) + animdesc[k].ikruleindex);
+            mstudioikrule_t_v54 animikrule[animdesc[k].numikrules] <bgcolor=cGreen>;
+        }
+    
+        /*for(j = -animdesc.numikrules; j < 0; j++)
         {
-            if(animikrule[numikrule + j].compressedikerrorindex > 0)
+            if(animikrule[numikrule + j].compressedikerrorindex)
             {
                 FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
                 mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cDkGreen>;
             }
         }*/
-
-        if(animdesc[k].compressedikerrorindex > 0)
+    
+        if(animdesc[k].compressedikerrorindex)
         {
             FSeek(startof(animdesc[k]) + animdesc[k].compressedikerrorindex);
             mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cLtGreen>;
         }
-    }
+    } animdesc_data;
 }
 
-FSeek(seqdesc.szlabelindex);
-string seqlabel <fgcolor=0x11111AA>;
 
-FSeek(seqdesc.szactivitynameindex);
-string seqactivity <fgcolor=0x0011FF>;
+Assert(!seqdesc.unk, "unknown seq value used");
+Assert(!seqdesc.unk1, "unknown seq value used");
+Assert(!seqdesc.unk2, "unknown seq value used");
+
+
+// create nice looking strings you can view
+#include "../rseq/rseq_module_strings.bt"

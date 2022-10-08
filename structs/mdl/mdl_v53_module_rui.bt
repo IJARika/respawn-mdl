@@ -1,0 +1,52 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 53/54
+// Increment: 8/9/10/11/12/12.1/12.2/13/14/15
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*RUI MESH MODULE*/
+
+
+if (mdlHeader.numruimeshes)
+{
+    FSeek(mdlHeader.ruimeshindex);
+    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
+    
+    struct {
+        for(i = 0; i < mdlHeader.numruimeshes; i++)
+        {
+            FSeek(startof(ruiheader[i]) + ruiheader[i].ruimeshindex);
+            struct {
+                if(mdlHeader.version == 53)
+                    mstudioruimesh_t ruimeshheader;
+                else if(mdlHeader.version == 54)
+                    mstudioruimesh_t_v54 ruimeshheader;
+
+                string szmeshname;
+
+                // pad out so verts are aligned to 16 bytes
+                char padding[ruimeshheader.parentindex - (sizeof(szmeshname) + sizeof(ruimeshheader))] <fgcolor=cLtGray>;
+
+                int16 parent[ruimeshheader.numparents] <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent(s) bone of mesh
+
+                mstudioruivertmap_t vertexmap[ruimeshheader.numfaces]; // vertex map for each face  
+                
+                if(mdlHeader.version == 54)
+                    mstudioruifourthvertv54_t fourthvertmap[ruimeshheader.numfaces];
+                
+                mstudioruivert_t vertex[ruimeshheader.numvertices];
+            
+                mstudioruimeshface_t facedata[ruimeshheader.numfaces];
+            } ruimesh;
+        }
+    } ruimeshes <fgcolor=cGreen>;
+};

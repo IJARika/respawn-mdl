@@ -1704,7 +1704,7 @@ struct mstudioikchain_t
 	int linkindex;
 };
 
-struct mstudioikchainv53_t
+struct mstudioikchain_t_v53
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
@@ -1920,8 +1920,11 @@ struct mstudiobbox_t_v53
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
 // v53 flags
-#define STUDIO_ANIMDESC_53_UNK 0x20000
+#define STUDIO_ANIMDESC_53_UNK 0x20000 // haven't seen in v53 yet
 #define STUDIO_ANIMDESC_53_UNK1 0x40000
+
+// flags that have only been seen in v54
+#define STUDIO_ANIMDESC_54_UNK 0x80000
 
 string ReadAnimDescFlags(int flags)
 {
@@ -2010,6 +2013,9 @@ string ReadAnimDescFlags(int flags)
             break;
         case 0x40000:
             value += "STUDIO_ANIMDESC_53_UNK1";
+            break;
+        case STUDIO_ANIMDESC_54_UNK:
+            value += "STUDIO_ANIMDESC_54_UNK";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -2794,16 +2800,70 @@ struct posekey_t
     float unk[seqdesc[i].groupsize[0] + seqdesc[i].groupsize[1]];
 };
 
-enum eventtype
-{
-    NEW_EVENT_STYLE = ( 1 << 10 ),
-};
+#define OLD_EVENT_STYLE 0x0
+#define NEW_EVENT_STYLE 0x400
 
+string ReadEventFlags(int flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "OLD_EVENT_STYLE";
+
+    int i = 0;
+    int flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 32; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case 0x400:
+            value += "NEW_EVENT_STYLE";
+            break;
+        default:
+            value += Str("UNK_%x", flag);
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
+
+// for 'int event'
+// https://github.com/NicolasDe/AlienSwarm/blob/master/src/game/shared/scriptevent.h
+// https://github.com/NicolasDe/AlienSwarm/blob/master/src/game/shared/eventlist.h
+// https://github.com/NicolasDe/AlienSwarm/blob/master/src/game/shared/eventlist.h
 struct mstudioevent_t
 {
 	float cycle;
 	int	event;
-	eventtype type; // this will be 0 if old style I'd imagine
+	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 	char options[64];
 
 	int szeventindex <read=ReadString(startof(this) + this - 76)>;
@@ -2823,7 +2883,7 @@ struct mstudioevent_t
 //							0x0400
 //							0x0800
 #define STUDIO_AL_LOCAL		0x1000		// layer is a local context sequence
-//							0x2000
+#define STUDIO_AL_UNK1_53	0x2000
 #define STUDIO_AL_POSE		0x4000		// layer blends using a pose parameter instead of parent cycle
 #define STUDIO_AL_UNK_53	0x8000		// added in v53 (probably)
                                         // I love this game I love this game I love this game I love this game I love this game I love this game
@@ -2873,6 +2933,9 @@ string ReadAutoLayerFlags(int flags)
             break;
         case 0x1000:
             value += "STUDIO_AL_LOCAL";
+            break;
+        case 0x2000:
+            value += "STUDIO_AL_UNK1_53";
             break;
         case 0x4000:
             value += "STUDIO_AL_POSE";
@@ -3118,9 +3181,8 @@ struct mstudiotexture_t_v53
 
 	int flags;
 	int used;
-    int unused1;
-	
-	int unused[7];
+
+	int unused[8];
 };
 
 // skin groups
@@ -3148,15 +3210,15 @@ struct mstudioruivertmap_t
     // 1st tri: 1-3-2
     // 2nd tri: 4-2-3
 
-    // three vertex set for base triangle
-    // 1-3
-    // sometimes this is just for tris and only has three verts.
-    int16 vertstartid;
-    int16 vertendid;
+    // sometimes these are for a triangle instead of a quad, if that's the case then:
+    // tri: 1-4-2
+    // in this case the vert map will only cover 3 verts.
 
-    // fourth vert for second triangle
-    // 4
-    int16 vertextraid;
+    
+    // in v53 the first two are an array like such:
+    // 1-3
+    // while the third is the fourth vert.
+    int16 vertid[3];
 };
 
 struct mstudioruivert_t
@@ -3166,8 +3228,10 @@ struct mstudioruivert_t
     Vector3 vertexpos; // position of vertex relative to bone
 };
 
-struct mstudioruimesface_t
+struct mstudioruimeshface_t
 {
+    // this might be the same as the RPak UIMG UV struct.
+
     // these values are for the two vertices that are not shared
     // for the other do as such:
     // vertex 2: take x from vextex 1 and y from vextex 4
@@ -3196,15 +3260,6 @@ struct mstudioruimesh_t
     int facedataindex; // offset into uv section
 
     byte unk[4]; // zero sometimes, others not. has to do with face clipping.
-
-    char szruimeshname[parentindex - 32]; // have to subtract header to get actual size (padding included)
-
-    int16 parent[numparents] <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent(s) bone of mesh
-
-    mstudioruivertmap_t vertexmap[numfaces]; // vertex map for each face  
-    mstudioruivert_t vertex[numvertices];
-
-    mstudioruimesface_t facedata[numfaces];
 };
 
 

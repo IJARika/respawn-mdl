@@ -87,7 +87,7 @@ mstudiomesh_t_v54_v121 meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // unchanged between subversions
-#include "../rmdl/rmdl_v54_module_ruimesh.bt"
+#include "../mdl/mdl_v53_module_rui.bt"
 
 
 // various includes, materials, and groups

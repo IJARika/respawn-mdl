@@ -295,7 +295,7 @@ mstudiomodel_t_v52 models[modelCount] <bgcolor=cDkGray>;
 
 // ik
 FSeek(mdlHeader.ikchainindex);
-mstudioikchainv53_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+mstudioikchain_t_v53 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int linkCount = 0;
 
@@ -326,14 +326,7 @@ mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui
-if (mdlHeader.numruimeshes > 0)
-{
-    FSeek(mdlHeader.ruimeshindex);
-    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
-    
-    FSeek(mdlHeader.ruimeshindex + ruiheader[0].ruimeshindex);
-    mstudioruimesh_t ruimesh[mdlHeader.numruimeshes] <fgcolor=cGreen, optimize=false>;
-};
+#include "../mdl/mdl_v53_module_rui.bt"
 
 
 // I do an include file because these are mostly the same across all mdl versions,
