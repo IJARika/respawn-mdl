@@ -142,9 +142,4 @@ for(si = 0; si < mdlHeader.numlocalseq; si++)
 
         } animdesc_data;
     }
-    
-    
-    Assert(!seqdesc[si].unk, "unknown seq value used");
-    Assert(!seqdesc[si].unk1, "unknown seq value used");
-    Assert(!seqdesc[si].unk2, "unknown seq value used");
 }

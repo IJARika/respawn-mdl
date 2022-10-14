@@ -26,6 +26,9 @@ mstudioseqdesc_t_v54 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(s
 local int numanims = seqdesc.groupsize[0] * seqdesc.groupsize[1];
 local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
 
+if((seqdesc.unkindex - seqdesc.animindexindex) < sizeof(mstudioanimdesc_t_v54))
+    numanims = 0;
+
 
 // generate all the sequences data structures
 if(seqdesc.posekeyindex)
@@ -142,6 +145,12 @@ for(k = 0; k < numanims; k++)
     } animdesc_data;
 }
 
+if(seqdesc.unkcount)
+{
+    FSeek(startof(seqdesc) + seqdesc.unkindex);
+    unkseqdata_t unkseqdata[seqdesc.unkcount] <bgcolor=0x9900BB>;
+}
+
 
 // if this throws let me know, I have yet to find anything here
 for(i = 0; i < numanims; i++)
@@ -149,10 +158,6 @@ for(i = 0; i < numanims; i++)
     for(j = 0; j < 4; j++)
         Assert(!animdesc[i].unk1[j], "unknown animdesc value used");
 }
-
-Assert(!seqdesc.unk, "unknown seq value used");
-Assert(!seqdesc.unk1, "unknown seq value used");
-Assert(!seqdesc.unk2, "unknown seq value used");
 
 
 // create nice looking strings you can view

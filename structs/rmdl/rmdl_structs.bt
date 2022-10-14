@@ -24,6 +24,7 @@
 
 
 // main headers
+// note: rrigs do not have a checksum
 struct studiohdr_t_v54
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
@@ -1236,10 +1237,13 @@ struct boneflagarray_t_loose
 // not correct
 struct mstudioanim_valueptr_t_v54
 {
-    uint x : 8;
-    uint unk : 8;
-    uint y : 8;
-    uint z : 8; 
+    //int ok;
+
+    int test : 8;
+    int test3 : 3;
+    int test1 : 8;
+    int test5 : 3;
+    int test4 : 8;
 };
 
 #define STUDIO_ANIM_DELTA_54	 0x01 // unverified
@@ -1497,17 +1501,16 @@ struct mstudioseqdesc_t_v54
 	int unk;
     int unk1;
 
-    int unkindex; // string block but that doesn't work for actual model anims, maybe anim size without strings?
-                  // from the start of the seq so this doesn't work for mdl
-
-    int unk2;
+    int unkindex;
+    int unkcount;
 };
 
 struct mstudioautolayer_t_v54
 {
-    int64 guid <read=Str("%s - %LX", "rseq", this)>; // hashed aseq guid asset
+    // this needs to have a guid descriptor in rpak
+    int64 guidSequence <read=Str("%s - %LX", "aseq", this)>; // hashed aseq guid asset
 
-	short iSequence;
+	short iSequence; // only used within an rmdl I would imagine
 	short iPose;
 
 	int flags <read=ReadAutoLayerFlags(this)>;
@@ -1547,6 +1550,22 @@ struct blendgroup_t_v54
     int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
 };
 
+// wraith_menu_select.rseq
+// caustic_gladcard_animated_hunting.rseq
+// caustic_gladcard_animated_coffee.rseq
+struct unkseqdata_t
+{
+    // generally 0-1
+    float unkfloat;
+
+    int unk;
+
+    // quaternion mayhaps
+    float unkfloat1;
+    float unkfloat2;
+    float unkfloat3;
+    float unkfloat4;
+};
 
 //===================
 // Model/Mesh Structs
@@ -1571,9 +1590,7 @@ struct mstudiomodel_t_v54
 
 	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes
 
-    // it looks like they write the entire name
-    // then write over it with other values where needed
-    // why.
+    // in v11 they start to overwrite this if it is just the default
     int type;
 
 	float boundingradius;
@@ -1626,17 +1643,8 @@ struct mstudiomodel_t_v54_v121
 	int numattachments;
 	int attachmentindex;
 
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
-
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
-	//int unk;
-
-    //int unkindex;
-    //int unkindex1;
+    int unkindex;
+    int unkindex1;
 };
 
 struct mstudiomodel_t_v54_v13
@@ -1663,17 +1671,10 @@ struct mstudiomodel_t_v54_v13
 	int numattachments;
 	int attachmentindex;
 
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
+    int unkindex;
+    int unkindex1;
 
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
 	int unk;
-
-    //int unkindex;
-    //int unkindex1;
 };
 
 struct mstudiomodel_t_v54_v14
@@ -1682,77 +1683,31 @@ struct mstudiomodel_t_v54_v14
 
 	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
-    // it looks like they write the entire name
-    // then write over it with other values where needed
-    // why.
+    // they write over these two when it's the default
     int type;
 
 	float boundingradius;
 
 	int nummeshes;	
-	int meshindex;
+
+	// first is the same as nummeshes?
+    int unk_v14;
+    int unk1_v14;
+
+    int meshindex;
 
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
+	int vertexindex; // vertex Vector, not written in v14.1 (s14 v14)
+	int tangentsindex; // tangents Vector, not written v14.1 (s14 v14)
 
 	int numattachments;
 	int attachmentindex;
 
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
+    int unkindex; // not written in v14.1 (s14 v14)
+    int unkindex1; // not written in v14.1 (s14 v14)
 
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
-	int unk[3]; // bruh
-
-    //int unkindex;
-    //int unkindex1;
-};
-
-struct mstudiomodel_t_v54_v15
-{
-	char name[64];
-
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
-
-    // it looks like they write the entire name
-    // then write over it with other values where needed
-    // why.
-    int type;
-
-	float boundingradius;
-
-	int nummeshes;
-
-    // first is the same as nummeshes?
-    int unk_v15;
-    int unk1_v15;
-
-	int meshindex;
-
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
-
-	int numattachments;
-	int attachmentindex;
-
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
-
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
-	int unk; // bruh
-
-    //int unkindex;
-    //int unkindex1;
+	int unk;
 };
 
 // meshes
@@ -1872,7 +1827,7 @@ struct unkheader_v54
     int dataindex2;
     int dataindex3;
 
-    int numsection;
+    int numsections;
 };
 
 struct unksectionheader_v54
@@ -1885,7 +1840,7 @@ struct unksectionheader_v54
 
     float unkfloat[3]; // unsure if this is a vector
 
-    int unk1;
+    ubyte unk1[4];
 };
 
 // v12
@@ -1913,6 +1868,19 @@ struct unkheaderdata_v54
     int unk2;
 };
 
+struct unkdata_t
+{
+    short unk[4]; // min?
+    short unk1[4]; // max?
+
+    short unk2[4]; // min
+    short unk3[4]; // max
+
+    short unk4[4]; // min
+    short unk5[4]; // max
+
+    int unk6[4];
+};
 
 //========
 // VG Data

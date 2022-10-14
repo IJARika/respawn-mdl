@@ -20,12 +20,13 @@ local int j = 0;
 local int k = 1;
 local int si = 0;
 
-
 mstudioseqdesc_t_v54 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 local int numanims = seqdesc.groupsize[0] * seqdesc.groupsize[1];
 local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
 
+if((seqdesc.unkindex - seqdesc.animindexindex) < sizeof(mstudioanimdesc_t_v54_v121))
+    numanims = 0;
 
 // generate all the sequences data structures
 if(seqdesc.posekeyindex)
@@ -59,7 +60,7 @@ for(k = 0; k < numanims; k++)
 {
     FSeek(startof(seqdesc) + blendgroup.blends[k]);
     mstudioanimdesc_t_v54_v121 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
-
+    
     struct {
         if(animdesc[k].flags & STUDIO_ALLZEROS)
         {
@@ -76,7 +77,7 @@ for(k = 0; k < numanims; k++)
                     // however I have not found a case where that would give another result than what's seen below.
                     // infact, there have been anims that would actually break if using the above equation.
                     local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
-
+    
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v54_v121 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
         
@@ -106,7 +107,7 @@ for(k = 0; k < numanims; k++)
                 struct {
                     FSeek(startof(animdesc[k]) + animdesc[k].animindex);
                     boneflagarray_t_loose flagarray;
-
+    
                     for(j = 0; j < numbones; j++)
                     {
                         if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
@@ -141,12 +142,21 @@ for(k = 0; k < numanims; k++)
     } animdesc_data;
 }
 
+if(seqdesc.unkcount)
+{
+    FSeek(startof(seqdesc) + seqdesc.unkindex);
+    unkseqdata_t unkseqdata[seqdesc.unkcount] <bgcolor=0x9900BB>;
+}
+
 
 // if this throws let me know, I have yet to find anything here
-for(i = 0; i < numanims; i++)
+if(numanims)
 {
-    for(j = 0; j < 4; j++)
-        Assert(!animdesc[i].unk1[j], "unknown animdesc value used");
+    for(i = 0; i < numanims; i++)
+    {
+        for(j = 0; j < 4; j++)
+            Assert(!animdesc[i].unk1[j], "unknown animdesc value used");
+    }
 }
 
 

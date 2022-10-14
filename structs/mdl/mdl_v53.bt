@@ -14,6 +14,7 @@
 
 #include "../source_math.bt"
 #include "../mdl/mdl_structs.bt"
+#include "../rmdl/rmdl_structs.bt"
 #include "../phy/vphy.bt"
 #include "../vtx/vtx.bt"
 #include "../vv/vv.bt"
@@ -75,205 +76,332 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 // animation
 FSeek(mdlHeader.localanimindex);
 mstudioanimdesc_t_v53 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
-//NOTE: Using this loop instead of above array so that the "offset" variables are calculated correctly.
-/*for (i = 0; i < ; ++i)
+
+if(mdlHeader.numlocalanim)
 {
-	mstudioanimdescv53_t animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
-}*/
-
-
-// Animation Data
-local int numanimboneheader = 0;
-local int numsectionanimboneheader = 0;
-local int numikrule = 0;
-local int numsections = 0;
-local int sectionlength = 0;
-
-for (i = 0; i < mdlHeader.numlocalanim; ++i)
-{
-    if(animdesc[i].sectionframes > 0)
-    {
-        FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
-        sectionindexes_t_v53 sectionindexes;
-        numsections++;
-        sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
-
-        for(j = 0; j < sectionlength; j++)
+    struct {
+        for (i = 0; i < mdlHeader.numlocalanim; ++i)
         {
-            FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].animindex);
-
-            for (k = 0; k < mdlHeader.numbones; ++k)
-            {   
-                mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
-                numsectionanimboneheader += 1;
-
-                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
+            struct {
+                if(animdesc[i].sectionindex)
                 {
-                    for(g = 0; g < 3; g++)
-                    {
-                        if(sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g])
-                        {
-                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animrot) + sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g]);
-                            mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
-                        }
-                    }
-                }
-                
-                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
-                {
-                    for(g = 0; g < 3; g++)
-                    {
-                        if(sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g])
-                        {
-                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animpos) + sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g]);
-                            mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
-                        }
-                    }
-                }
-                
-                if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
-                {
-                    for(g = 0; g < 3; g++)
-                    {
-                        if(sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g])
-                        {
-                            FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animscale) + sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g]);
-                            mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
-                        }
-                    }
-                }
-
-                FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]) + sectionanimheader[numsectionanimboneheader - 1].nextoffset);
-
-                if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
-		        {
-			        break;
-		        }
-            };
-        };
-    }
-
-	if(animdesc[i].sectionframes == 0)
-    {
-        FSeek(animdesc[i].animindex - animdesc[i].baseptr);
-	    for (j = 0; j < mdlHeader.numbones; ++j)
-	    {
-            
-		    mstudio_rle_anim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
-		    numanimboneheader += 1;
-
-            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
-            {
-                for(g = 0; g < 3; g++)
-                {
-                    if(animheader[numanimboneheader - 1].animrot.offset[g])
-                    {
-                        FSeek(startof(animheader[numanimboneheader - 1].animrot) + animheader[numanimboneheader - 1].animrot.offset[g]);
-                        mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
-                    }
-                }
-            }
-            
-            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
-            {
-                for(g = 0; g < 3; g++)
-                {
-                    if(animheader[numanimboneheader - 1].animpos.offset[g])
-                    {
-                        FSeek(startof(animheader[numanimboneheader - 1].animpos) + animheader[numanimboneheader - 1].animpos.offset[g]);
-                        mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
-                    }
-                }
-            }
-            
-            if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
-            {
-                for(g = 0; g < 3; g++)
-                {
-                    if(animheader[numanimboneheader - 1].animscale.offset[g])
-                    {
-                        FSeek(startof(animheader[numanimboneheader - 1].animscale) + animheader[numanimboneheader - 1].animscale.offset[g]);
-                        mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
-                    }
-                }
-            }
-
-            FSeek(startof(animheader[numanimboneheader - 1]) + animheader[numanimboneheader - 1].nextoffset);
-            
-		    if (animheader[numanimboneheader - 1].nextoffset <= 0) 
-		    {
-			    // Read in unused empty data structure at the end of the list.
-			    //RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
-			    break;
-		    }
-	    };
-    }
-
-	// Animation IK Rules
-	FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
-	for (j = 0; j < animdesc[i].numikrules; ++j)
-	{
-		mstudioikrule_t_v53 animikrule <bgcolor=cGreen>;
-		numikrule += 1;
-	};
-
-    for(j = -animdesc[i].numikrules; j < 0; j++)
-    {
-        if(animikrule[numikrule + j].compressedikerrorindex > 0)
-        {
-            FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
-            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
-        }
-    }
-
-    if(animdesc[i].compressedikerrorindex > 0)
-    {
-        FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
-        mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
-    }
-
+                    struct {
+                        local int sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
     
-};
+                        FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
+                        mstudioanimsections_t_v53 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
+    
+                        for(k = 0; k < sectionlength; k++)
+                        {
+                            if(sectionindexes[k].animindex)
+                            {
+                                struct {
+                                    FSeek(startof(animdesc[i]) + sectionindexes[k].animindex);
+                            
+                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                    {
+                                        struct {
+                                            mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=0x771122>;
+    
+                                            if(!(sectionanimheader.flags & STUDIO_ANIM_RAWROT_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animrot.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animrot) + sectionanimheader.animrot.offset[g]);
+                                                        mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if(!(sectionanimheader.flags & STUDIO_ANIM_RAWPOS_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animpos.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animpos) + sectionanimheader.animpos.offset[g]);
+                                                        mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if(!(sectionanimheader.flags & STUDIO_ANIM_RAWSCALE_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animscale.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animscale) + sectionanimheader.animscale.offset[g]);
+                                                        mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }
+    
+                                            FSeek(startof(sectionanimheader) + sectionanimheader.nextoffset);
+        
+                                            if(sectionanimheader.nextoffset <= 0)
+                                                break;
+                                        } section_anim_header;
+                                    }
+                                } section;
+                            }
+                        }
+                    } sectionanimation;
+                }
+                else
+                {
+                    struct {
+                        FSeek(startof(animdesc[i]) + animdesc[i].animindex);
+    
+                        for(j = 0; j < mdlHeader.numbones; j++)
+                        {
+                            struct {
+                                mstudio_rle_anim_t_v53 animheader <bgcolor=cBlue>;
+    
+                                if(!(animheader.flags & STUDIO_ANIM_RAWROT_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animrot.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animrot) + animheader.animrot.offset[g]);
+                                            mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }
+                                
+                                if(!(animheader.flags & STUDIO_ANIM_RAWPOS_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animpos.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animpos) + animheader.animpos.offset[g]);
+                                            mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }
+                                
+                                if(!(animheader.flags & STUDIO_ANIM_RAWSCALE_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animscale.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animscale) + animheader.animscale.offset[g]);
+                                            mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }
+    
+                                FSeek(startof(animheader) + animheader.nextoffset);
+        
+                                if(animheader.nextoffset <= 0)
+                                    break;
+                            } animheader;
+                        }
+                    } animation;
+                }
+    
+                if(animdesc[i].numikrules)
+                {
+                    FSeek(startof(animdesc[i]) + animdesc[i].ikruleindex);
+                    mstudioikrule_t_v53 animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
 
+                    for(j = 0; j < animdesc[i].numikrules; j++)
+                    {
+                        if(animikrule[j].compressedikerrorindex)
+                        {
+                            FSeek(startof(animikrule[j]) + animikrule[j].compressedikerrorindex);
+                            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
 
-FSeek(mdlHeader.localseqindex);
-mstudioseqdesc_t_v53 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                            struct {
+                                for(g = 0; g < 6; g++)
+                                {
+                                    if(ikcompressederror.offset[g])
+                                    {
+                                        FSeek(startof(ikcompressederror) + ikcompressederror.offset[g]);
+                                        mstudioanimvalue_t animvalueik <bgcolor=0x228822>;
+                                    }
+                                }
+                            } compressed_ik_values;
+                        }
 
-for(i = 0; i < mdlHeader.numlocalseq; i++)
-{
-    if(seqdesc[i].posekeyindex > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
-        posekey_t posekey <bgcolor=0x55ee00>;
-    }
+                        if(animikrule[j].szattachmentindex)
+                        {
+                            FSeek(startof(animikrule[j]) + animikrule[j].szattachmentindex);
+                            struct {
+                                string ikattachment <fgcolor=cGreen>;
+                            } attachemntstring;
+                        }
+                    }
+                }
+            
+                if(animdesc[i].compressedikerrorindex)
+                {
+                    FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+                    mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
 
-    if(seqdesc[i].numevents > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
-        for(j = 0; j < seqdesc[i].numevents; j++)
-        {
-            mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
-        }
-    }
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
-    for(j = 0; j < seqdesc[i].numautolayers; j++)
-    {
-        mstudioautolayer_t autolayers <bgcolor=0x226600>;
-    }
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
-    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
-    blendgroup_t blendgroup <bgcolor=0xffff00>;
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
-    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
-    {
-        mstudioactivitymodifier_t_v53 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
-    }
+                    struct {
+                        for(g = 0; g < 4; g++)
+                        {
+                            if(ikcompressederror_v52.offset[g])
+                            {
+                                FSeek(startof(ikcompressederror_v52) + ikcompressederror_v52.offset[g]);
+                                mstudioanimvalue_t animvalueik <bgcolor=0x99CC99>;
+                            }
+                        }
+                    } compressed_ik_values;
+                }
+            } animdesc_data;
+        }      
+    } animation_data;
 }
+
+            /*if(animdesc[i].sectionframes > 0)
+            {
+                FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
+                sectionindexes_t_v53 sectionindexes;
+                numsections++;
+                sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
+        
+                for(j = 0; j < sectionlength; j++)
+                {
+                    FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].animindex);
+        
+                    for (k = 0; k < mdlHeader.numbones; ++k)
+                    {   
+                        mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
+                        numsectionanimboneheader += 1;
+        
+                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
+                        {
+                            for(g = 0; g < 3; g++)
+                            {
+                                if(sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g])
+                                {
+                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animrot) + sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g]);
+                                    mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
+                                }
+                            }
+                        }
+                        
+                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
+                        {
+                            for(g = 0; g < 3; g++)
+                            {
+                                if(sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g])
+                                {
+                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animpos) + sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g]);
+                                    mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
+                                }
+                            }
+                        }
+                        
+                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
+                        {
+                            for(g = 0; g < 3; g++)
+                            {
+                                if(sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g])
+                                {
+                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animscale) + sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g]);
+                                    mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
+                                }
+                            }
+                        }
+        
+                        FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]) + sectionanimheader[numsectionanimboneheader - 1].nextoffset);
+        
+                        if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
+		                {
+			                break;
+		                }
+                    };
+                };
+            }      
+	        if(animdesc[i].sectionframes == 0)
+            {
+                FSeek(animdesc[i].animindex - animdesc[i].baseptr);
+	            for (j = 0; j < mdlHeader.numbones; ++j)
+	            {
+                    
+		            mstudio_rle_anim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
+		            numanimboneheader += 1;
+        
+                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
+                    {
+                        for(g = 0; g < 3; g++)
+                        {
+                            if(animheader[numanimboneheader - 1].animrot.offset[g])
+                            {
+                                FSeek(startof(animheader[numanimboneheader - 1].animrot) + animheader[numanimboneheader - 1].animrot.offset[g]);
+                                mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
+                            }
+                        }
+                    }
+                    
+                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
+                    {
+                        for(g = 0; g < 3; g++)
+                        {
+                            if(animheader[numanimboneheader - 1].animpos.offset[g])
+                            {
+                                FSeek(startof(animheader[numanimboneheader - 1].animpos) + animheader[numanimboneheader - 1].animpos.offset[g]);
+                                mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
+                            }
+                        }
+                    }
+                    
+                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
+                    {
+                        for(g = 0; g < 3; g++)
+                        {
+                            if(animheader[numanimboneheader - 1].animscale.offset[g])
+                            {
+                                FSeek(startof(animheader[numanimboneheader - 1].animscale) + animheader[numanimboneheader - 1].animscale.offset[g]);
+                                mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
+                            }
+                        }
+                    }
+        
+                    FSeek(startof(animheader[numanimboneheader - 1]) + animheader[numanimboneheader - 1].nextoffset);
+                    
+		            if (animheader[numanimboneheader - 1].nextoffset <= 0) 
+		            {
+			            // Read in unused empty data structure at the end of the list.
+			            //RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
+			            break;
+		            }
+	            };
+            }
+        
+	        // Animation IK Rules
+	        FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
+	        for (j = 0; j < animdesc[i].numikrules; ++j)
+	        {
+		        mstudioikrule_t_v53 animikrule <bgcolor=cGreen>;
+		        numikrule += 1;
+	        };
+        
+            for(j = -animdesc[i].numikrules; j < 0; j++)
+            {
+                if(animikrule[numikrule + j].compressedikerrorindex > 0)
+                {
+                    FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
+                    mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+                }
+            }
+        
+            if(animdesc[i].compressedikerrorindex > 0)
+            {
+                FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+                mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
+            }*/
+
+// sequence stuff
+#include "../mdl/mdl_module_sequences.bt"
 
 
 // unchanged until v54

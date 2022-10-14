@@ -59,7 +59,7 @@ for (i = 0; i < mdlHeader.numbodyparts; ++i)
    modelCount += bodyparts[i].nummodels;
 }
 
-mstudiomodel_t_v54_v15 models[modelCount] <bgcolor=cDkGray>;
+mstudiomodel_t_v54_v14 models[modelCount] <bgcolor=cDkGray>;
 
 
 // v54 node

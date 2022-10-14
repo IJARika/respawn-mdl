@@ -185,52 +185,12 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
 };
 
 
-FSeek(mdlHeader.localseqindex);
-if (mdlHeader.version < 49)
-    mstudioseqdescv48_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-else
-    mstudioseqdescv49_t seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+// sequence stuff
+#include "../mdl/mdl_module_sequences.bt"
 
-
-for(i = 0; i < mdlHeader.numlocalseq; i++)
-{
-    if(seqdesc[i].posekeyindex > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
-        posekey_t posekey <bgcolor=0x55ee00>;
-    }
-
-    if(seqdesc[i].numevents > 0)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
-        for(j = 0; j < seqdesc[i].numevents; j++)
-        {
-            mstudioevent_t seqevent <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
-        }
-    }
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
-    for(j = 0; j < seqdesc[i].numautolayers; j++)
-    {
-        mstudioautolayer_t autolayers <bgcolor=0x226600>;
-    }
-
-    FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
-    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
-    
-    FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
-    blendgroup_t blendgroup <bgcolor=0xffff00>;
-
-    if(mdlHeader.version > 48)
-    {
-        FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
-        for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
-        {
-            mstudioactivitymodifier_t activitymodifier <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
-        }
-    }
-}
-
+// the funny animblocks
+FSeek(mdlHeader.animblockindex);
+mstudioanimblock_t animblocks[mdlHeader.numanimblocks] <bgcolor=0xdc7633>;
 
 // unchanged until v54
 #include "../mdl/mdl_module_nodes.bt"

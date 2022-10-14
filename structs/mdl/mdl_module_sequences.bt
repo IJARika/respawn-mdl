@@ -1,0 +1,56 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl
+//   Authors: Rika
+//   Version: 48/49/52/53
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*SEQUENCE MODULE*/
+
+
+FSeek(mdlHeader.localseqindex);
+if(mdlHeader.version == 53)
+    mstudioseqdesc_t_v53 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+else if (mdlHeader.version <= 48)
+    mstudioseqdesc_t_v48 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+else
+    mstudioseqdesc_t_v49 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+
+if(mdlHeader.numlocalseq)
+{
+    struct {
+        for(i = 0; i < mdlHeader.numlocalseq; i++)
+        {
+            struct {
+                FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
+                if(seqdesc[i].posekeyindex)
+                    float posekey[seqdesc[i].groupsize[0] + seqdesc[i].groupsize[1]] <bgcolor=0x55ee00>;
+                
+                FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
+                mstudioevent_t seqevent[seqdesc[i].numevents] <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+                
+                FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
+                mstudioautolayer_t autolayers[seqdesc[i].numautolayers] <bgcolor=0x226600>;
+            
+                FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
+                seqweightlist_t weightlist <bgcolor=0xe1f27a>;
+            
+                FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
+                blendgroup_t blendgroup <bgcolor=0xffff00>;
+            
+                FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+                if(mdlHeader.version == 53)
+                    mstudioactivitymodifier_t_v53 activitymodifier[seqdesc[i].numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
+                else
+                    mstudioactivitymodifier_t activitymodifier[seqdesc[i].numactivitymodifiers] <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
+            } sequence;
+        }
+    } seq_data;
+}

@@ -1921,7 +1921,7 @@ struct mstudiobbox_t_v53
 
 // v53 flags
 #define STUDIO_ANIMDESC_53_UNK 0x20000 // haven't seen in v53 yet
-#define STUDIO_ANIMDESC_53_UNK1 0x40000
+#define STUDIO_ANIMDESC_52_UNK 0x40000
 
 // flags that have only been seen in v54
 #define STUDIO_ANIMDESC_54_UNK 0x80000
@@ -2012,7 +2012,7 @@ string ReadAnimDescFlags(int flags)
             value += "STUDIO_ANIMDESC_53_UNK";
             break;
         case 0x40000:
-            value += "STUDIO_ANIMDESC_53_UNK1";
+            value += "STUDIO_ANIMDESC_52_UNK";
             break;
         case STUDIO_ANIMDESC_54_UNK:
             value += "STUDIO_ANIMDESC_54_UNK";
@@ -2193,8 +2193,15 @@ struct mstudioanimdesc_t_v53
 
 struct mstudioanimsections_t
 {
-	int animblock;
+	int animblock; // index of animblock
 	int animindex;
+};
+
+// used for piecewise loading of animation data
+struct mstudioanimblock_t
+{
+	int datastart;
+	int dataend;
 };
 
 struct mstudioanimsections_t_v53
@@ -2205,11 +2212,6 @@ struct mstudioanimsections_t_v53
 struct sectionindexes_t
 {
     mstudioanimsections_t sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
-};
-
-struct sectionindexes_t_v53
-{
-    mstudioanimsections_t_v53 sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
 };
 
 // v48/49/52 flags
@@ -2586,7 +2588,7 @@ struct mstudioikrulezeroframe_t
 };
 
 // sequence descriptions
-struct mstudioseqdescv48_t
+struct mstudioseqdesc_t_v48
 {
 	int baseptr;
 
@@ -2653,7 +2655,7 @@ struct mstudioseqdescv48_t
 	int unused[7];
 };
 
-struct mstudioseqdescv49_t
+struct mstudioseqdesc_t_v49
 {
 	int baseptr;
 
@@ -2883,7 +2885,7 @@ struct mstudioevent_t
 //							0x0400
 //							0x0800
 #define STUDIO_AL_LOCAL		0x1000		// layer is a local context sequence
-#define STUDIO_AL_UNK1_53	0x2000
+#define STUDIO_AL_UNK_52	0x2000
 #define STUDIO_AL_POSE		0x4000		// layer blends using a pose parameter instead of parent cycle
 #define STUDIO_AL_UNK_53	0x8000		// added in v53 (probably)
                                         // I love this game I love this game I love this game I love this game I love this game I love this game
@@ -2935,7 +2937,7 @@ string ReadAutoLayerFlags(int flags)
             value += "STUDIO_AL_LOCAL";
             break;
         case 0x2000:
-            value += "STUDIO_AL_UNK1_53";
+            value += "STUDIO_AL_UNK_52";
             break;
         case 0x4000:
             value += "STUDIO_AL_POSE";
@@ -2964,7 +2966,7 @@ string ReadAutoLayerFlags(int flags)
 
 struct mstudioautolayer_t
 {
-	short iSequence;
+	short iSequence <read=ReadString(startof(seqdesc[this]) + seqdesc[this].szlabelindex)>;
 	short iPose;
 
 	int flags <read=ReadAutoLayerFlags(this)>;
@@ -3251,7 +3253,7 @@ struct mstudioruimesh_t
 {
     int numparents; // apparently you can have meshes parented to more than one bone(?)    
     int numvertices; // number of verts
-    int numfaces; // number of faces (quads)
+    int numfaces; // number of faces
 
     int parentindex; // this gets padding out front of it to even off the struct
 
