@@ -18,27 +18,21 @@
 
 
 // do linear bone table
-if (mdlHeader.linearboneindex > 0)
+if (mdlHeader.linearboneindex)
 {
     FSeek(mdlHeader.linearboneindex);
     mstudiolinearbone_t_v54 linearbone <bgcolor=cGreen>;
     
     struct mstudiolinearbonedata_t
     {
-        if(linearbone.flagsindex > 0)
-            int bone_flags[linearbone.numbones];
-        if(linearbone.parentindex > 0)
-            int bone_parents[linearbone.numbones];
+        int bone_flags[linearbone.numbones] <read=ReadBoneFlags(this)>;
+        int bone_parents[linearbone.numbones];
         
-        if(linearbone.posindex > 0)
-            Vector3 bone_pos[linearbone.numbones];
-        if(linearbone.quatindex > 0)
-	        Quaternion bone_quat[linearbone.numbones];
-        if(linearbone.rotindex > 0)
-	        RadianEuler bone_rot[linearbone.numbones];
+        Vector3 bone_pos[linearbone.numbones];
+        Quaternion bone_quat[linearbone.numbones];
+        RadianEuler bone_rot[linearbone.numbones];
         
-        if(linearbone.posetoboneindex > 0)
-            matrix3x4_t bone_poseToBone[linearbone.numbones];
+        matrix3x4_t bone_poseToBone[linearbone.numbones];
     };
 
     mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;

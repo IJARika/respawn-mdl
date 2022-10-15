@@ -1,0 +1,23 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 53/54
+// Increment: 8/9/10/11/12/12.1/12.2/13/14/15
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*UNK3 MODULE*/
+
+
+if(mdlHeader.unkcount3)
+{
+    FSeek(mdlHeader.unkindex3);
+    int unk3[mdlHeader.unkcount3] <bgcolor=cLtYellow>;
+}

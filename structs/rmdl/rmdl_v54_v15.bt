@@ -120,5 +120,8 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 #include "../rmdl/rmdl_v54_v12_module_unkdata.bt"
 
 
+// unsure what this is for, same as v53
+#include "../mdl/mdl_v53_module_unk3.bt"
+
 // third set of core parts, done like this for spacing.
-#include "../rmdl/rmdl_v54_v121_core3.bt"
+#include "../rmdl/rmdl_v54_v121_vg.bt"

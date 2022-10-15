@@ -36,7 +36,7 @@ studiohdr_t_v53 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this
 
 // bones
 FSeek(mdlHeader.boneindex);
-mstudiobone_t_v53 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unkid)>;
+mstudiobone_t_v53 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=Str("%s : %i : %i", ReadString(startof(this) + this.sznameindex), this.unkindex, this.unkcount)>;
 
 local int jigglebonecount = 0;
 
@@ -260,146 +260,6 @@ if(mdlHeader.numlocalanim)
     } animation_data;
 }
 
-            /*if(animdesc[i].sectionframes > 0)
-            {
-                FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
-                sectionindexes_t_v53 sectionindexes;
-                numsections++;
-                sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
-        
-                for(j = 0; j < sectionlength; j++)
-                {
-                    FSeek(startof(animdesc[i]) + sectionindexes[numsections - 1].sectionoffsets[j].animindex);
-        
-                    for (k = 0; k < mdlHeader.numbones; ++k)
-                    {   
-                        mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=(this.nextoffset == 0 ? 0xFF1122 : 0x771122 )>;
-                        numsectionanimboneheader += 1;
-        
-                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
-                        {
-                            for(g = 0; g < 3; g++)
-                            {
-                                if(sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g])
-                                {
-                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animrot) + sectionanimheader[numsectionanimboneheader - 1].animrot.offset[g]);
-                                    mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
-                                }
-                            }
-                        }
-                        
-                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
-                        {
-                            for(g = 0; g < 3; g++)
-                            {
-                                if(sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g])
-                                {
-                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animpos) + sectionanimheader[numsectionanimboneheader - 1].animpos.offset[g]);
-                                    mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
-                                }
-                            }
-                        }
-                        
-                        if(!(sectionanimheader[numsectionanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
-                        {
-                            for(g = 0; g < 3; g++)
-                            {
-                                if(sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g])
-                                {
-                                    FSeek(startof(sectionanimheader[numsectionanimboneheader - 1].animscale) + sectionanimheader[numsectionanimboneheader - 1].animscale.offset[g]);
-                                    mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
-                                }
-                            }
-                        }
-        
-                        FSeek(startof(sectionanimheader[numsectionanimboneheader - 1]) + sectionanimheader[numsectionanimboneheader - 1].nextoffset);
-        
-                        if (sectionanimheader[numsectionanimboneheader - 1].nextoffset <= 0) 
-		                {
-			                break;
-		                }
-                    };
-                };
-            }      
-	        if(animdesc[i].sectionframes == 0)
-            {
-                FSeek(animdesc[i].animindex - animdesc[i].baseptr);
-	            for (j = 0; j < mdlHeader.numbones; ++j)
-	            {
-                    
-		            mstudio_rle_anim_t_v53 animheader <bgcolor=(this.nextoffset == 0 ? cDkBlue : cBlue )>;
-		            numanimboneheader += 1;
-        
-                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWROT_53))
-                    {
-                        for(g = 0; g < 3; g++)
-                        {
-                            if(animheader[numanimboneheader - 1].animrot.offset[g])
-                            {
-                                FSeek(startof(animheader[numanimboneheader - 1].animrot) + animheader[numanimboneheader - 1].animrot.offset[g]);
-                                mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
-                            }
-                        }
-                    }
-                    
-                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWPOS_53))
-                    {
-                        for(g = 0; g < 3; g++)
-                        {
-                            if(animheader[numanimboneheader - 1].animpos.offset[g])
-                            {
-                                FSeek(startof(animheader[numanimboneheader - 1].animpos) + animheader[numanimboneheader - 1].animpos.offset[g]);
-                                mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
-                            }
-                        }
-                    }
-                    
-                    if(!(animheader[numanimboneheader - 1].flags & STUDIO_ANIM_RAWSCALE_53))
-                    {
-                        for(g = 0; g < 3; g++)
-                        {
-                            if(animheader[numanimboneheader - 1].animscale.offset[g])
-                            {
-                                FSeek(startof(animheader[numanimboneheader - 1].animscale) + animheader[numanimboneheader - 1].animscale.offset[g]);
-                                mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
-                            }
-                        }
-                    }
-        
-                    FSeek(startof(animheader[numanimboneheader - 1]) + animheader[numanimboneheader - 1].nextoffset);
-                    
-		            if (animheader[numanimboneheader - 1].nextoffset <= 0) 
-		            {
-			            // Read in unused empty data structure at the end of the list.
-			            //RAnimBoneHeader animBoneHeaders <bgcolor=cDkBlue>;
-			            break;
-		            }
-	            };
-            }
-        
-	        // Animation IK Rules
-	        FSeek(animdesc[i].ikruleindex - animdesc[i].baseptr);
-	        for (j = 0; j < animdesc[i].numikrules; ++j)
-	        {
-		        mstudioikrule_t_v53 animikrule <bgcolor=cGreen>;
-		        numikrule += 1;
-	        };
-        
-            for(j = -animdesc[i].numikrules; j < 0; j++)
-            {
-                if(animikrule[numikrule + j].compressedikerrorindex > 0)
-                {
-                    FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
-                    mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
-                }
-            }
-        
-            if(animdesc[i].compressedikerrorindex > 0)
-            {
-                FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
-                mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
-            }*/
-
 // sequence stuff
 #include "../mdl/mdl_module_sequences.bt"
 
@@ -470,53 +330,16 @@ char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 FSeek(mdlHeader.srcbonetransformindex);
 mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-if (mdlHeader.linearboneindex > 0)
-{
-    FSeek(mdlHeader.linearboneindex);
-    mstudiolinearbone_t linearbone <bgcolor=cGreen>;
-    
-    struct mstudiolinearbonedata_t
-    {
-        if(linearbone.flagsindex > 0)
-            int bone_flags[linearbone.numbones];
-        if(linearbone.parentindex > 0)
-            int bone_parents[linearbone.numbones];
-        
-        if(linearbone.posindex > 0)
-            Vector3 bone_pos[linearbone.numbones];
-        if(linearbone.quatindex > 0)
-	        Quaternion bone_quat[linearbone.numbones];
-        if(linearbone.rotindex > 0)
-	        RadianEuler bone_rot[linearbone.numbones];
-        
-        if(linearbone.posetoboneindex > 0)
-            matrix3x4_t bone_poseToBone[linearbone.numbones];
 
-        if(linearbone.posscaleindex > 0)
-            Vector3 bone_posscale[linearbone.numbones];
-        if(linearbone.rotscaleindex > 0)
-	        Vector3 bone_rotscale[linearbone.numbones];
-	
-        if(linearbone.qalignmentindex > 0)
-	        Quaternion bone_qAlignment[linearbone.numbones];
-    };
+// linear bone table
+#include "../mdl/mdl_module_linearbone.bt"
 
-    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
-
-};
-
-
-struct unksectiondata
-{
-    
-
-};
 
 // per tri aabb data
 FSeek(mdlHeader.aabbindex);
 pertriheader_t pertrihdr <fgcolor=cDkRed>; // header completely nulled out if unused.
 
-if (mdlHeader.numaabb != 0 || mdlHeader.numaabb1 != 0 || mdlHeader.numaabb2 != 0)
+if (mdlHeader.numaabb || mdlHeader.numaabb1 || mdlHeader.numaabb2)
 {
     aabbsection1 unk_bytes1[mdlHeader.numaabb] <fgcolor=cRed>;
     aabbsection2 unk_bytes2[mdlHeader.numaabb1] <fgcolor=cRed>;
@@ -524,49 +347,36 @@ if (mdlHeader.numaabb != 0 || mdlHeader.numaabb1 != 0 || mdlHeader.numaabb2 != 0
 };
 
 
-// unk_index1 always follows this, and always seems to be one byte in front of the string table.
-
-
 // string table
-FSeek(mdlHeader.sznameindex - 1);
-
 local int stringtable_size;
 
-// todo: fix this breaking on anim models
-if(mdlHeader.vphysize > 0 || mdlHeader.vtxsize > 0)
+if(mdlHeader.vphysize || mdlHeader.vtxsize)
 {
-    if(mdlHeader.vtxsize >= 0 && mdlHeader.vphysize == 0)
-    {
+    if(!mdlHeader.vphysize)
         stringtable_size = mdlHeader.vtxindex - (mdlHeader.sznameindex - 1);
-    }
     else
-    {
         stringtable_size = mdlHeader.vphyindex - (mdlHeader.sznameindex - 1);
-    }
 }
 else
-{
     stringtable_size = mdlHeader.unkmemberindex1 - (mdlHeader.sznameindex - 1);
-}
 
+FSeek(mdlHeader.sznameindex - 1);
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
 
 
-// vphy
-FSeek(mdlHeader.vphyindex);
+//=====
+// VPHY
+
 
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    // no difference in this and normal section besides reading bones
-    physection_t_v53 vphy_section[vphy_header.numsolids] <optimize=false>;
+    physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
     
-    local int64 charSize = mdlHeader.vphysize;
+    local int64 charSize = mdlHeader.vphysize; // have to do this locally here because we can't use FileSize()
     
     for (i = 0; i < vphy_header.numsolids; i++)
-    {
         charSize -= vphy_section[i].surfaceheader.size + 4;
-    };
     
     charSize -= 16;
     
@@ -574,47 +384,58 @@ struct vphygroup_t
     char vphy_stringdata[charSize] <fgcolor=cRed>;
 };
 
-
-if (mdlHeader.vphyindex > 0)
+if (mdlHeader.vphyindex || mdlHeader.vphysize)
 {
+    FSeek(mdlHeader.vphyindex);
     vphygroup_t vphy;
-};
+}
 
-
-// can't get it working outside here :/
-i = 0;
-
-struct unkphysectiondatachunk_t
-{
-    Quaternion unkquat[unksechdr[i].numunk1] <bgcolor=cLtBlue>;
-    
-    unkphysectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
-
-    Vector3 vertex[unksechdr[i].numvertices] <bgcolor=cBlue>; // vertices
-
-    i++;
-};
-
+// phy related thing that is merged into phy in apex
 if (mdlHeader.vphysize > 0)
 {
     local int numunk1 = 0;
 
-    if(mdlHeader.numunkmember1 > 0)
-    {
+    if(mdlHeader.numunkmember1)
         numunk1 = mdlHeader.numunkmember1;
-    }
     else
     {
-        numunk1 = vphy.vphy_header.numsolids;
+        // we have to do a loop here for some edge case models with weird phys, and by weird I mean
+        // more than one section while also having more than one tri header per section
+        // examples found to date like this:
+        // models\s2s\s2s_malta_gun_animated.mdl
+        for(i = 0; i < mdlHeader.numbones; i++)
+            numunk1 += bones[i].unkcount;
     }
 
     FSeek(mdlHeader.unkmemberindex1);
     unkphysectionhdr_t unksechdr[numunk1] <bgcolor=cBlue>;
-    unkphysectiondatachunk_t unksecdatachunk[numunk1] <fgcolor=cLtYellow, optimize=false>;
-};
+    struct {
+        for(i = 0; i < numunk1; i++)
+        {
+            struct
+            {
+                Quaternion unkquat[unksechdr[i].numunk1] <bgcolor=cLtBlue>;
+                
+                unkphysectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
+            
+                Vector3 vertex[unksechdr[i].numvertices] <bgcolor=cBlue>; // vertices
+            } unksecdatachunk <fgcolor=cLtYellow>;
+        }
+    } unksecdata;
+}
 
-// vtx
-FSeek(mdlHeader.vtxindex);
+
+//====
+// MDL
+
+
+// this is mdl related (I think) but comes after everything else
+#include "../mdl/mdl_v53_module_unk3.bt"
+
+
+//====
+// VTX
+
 
 struct vtxgroup
 {
@@ -712,60 +533,63 @@ struct vtxgroup
     MaterialReplacementListHeader_t materiallist[vtx_header.numLODs] <bgcolor=cDkPurple>;
 };
 
-if (mdlHeader.vtxsize > 0)
-    vtxgroup vtx <fgcolor=0xe8daef>;
+FSeek(mdlHeader.vtxindex);
+vtxgroup vtx <fgcolor=0xe8daef>;
 
+
+//===
+// VV
+
+
+// vv
+struct unkfloatsection
+{
+    float a;
+    float b;
+};
+
+struct vvgroup
+{
+    vertexFileHeader_t vv_header <bgcolor=cYellow>;
+
+    if(vv_header.id == 1447248969)
+    {
+        FSeek(startof(vv_header) + vv_header.numFixups);
+        int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    
+        // uv fixup?
+        FSeek(startof(vv_header) + vv_header.fixupTableStart);
+        unkfloatsection unkfloats[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
+    }
+    else
+    {  
+        if(vv_header.fixupTableStart)
+        {
+            FSeek(startof(vv_header) + vv_header.fixupTableStart);
+            vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
+        }
+        
+        if(vv_header.vertexDataStart)
+        {
+            FSeek(startof(vv_header) + vv_header.vertexDataStart);
+            mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+        }
+        
+        if(vv_header.tangentDataStart)
+        {
+            FSeek(startof(vv_header) + vv_header.tangentDataStart);
+            Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
+        }
+    }
+};
 
 // vvd
-struct vvdgroup
-{
-    FSeek(mdlHeader.vvdindex);
-    vertexFileHeader_t vv_header <bgcolor=cYellow>;
-
-    if(vv_header.fixupTableStart > 0)
-    {
-        FSeek(startof(vv_header) + vv_header.fixupTableStart);
-        vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
-    }
-    
-    if(vv_header.vertexDataStart > 0)
-    {
-        FSeek(startof(vv_header) + vv_header.vertexDataStart);
-        mstudiovertex_t vv_vert[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
-    }
-    
-    if(vv_header.tangentDataStart > 0)
-    {
-        FSeek(startof(vv_header) + vv_header.tangentDataStart);
-        Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
-    }
-};
-
-if (mdlHeader.vvdsize > 0)
-{
-    FSeek(mdlHeader.vvdindex);
-    vvdgroup vvd;
-}
+FSeek(mdlHeader.vvdindex);
+vvgroup vvd;
 
 // vvc
-struct vvcgroup
-{
-    // in total the vvc has three ints per vert, not sure what each and everything is for.
-    FSeek(mdlHeader.vvcindex);
-    vertexFileHeader_t vv_header <bgcolor=cYellow>;
-
-    int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;\
-
-    // leaving this here however the rest of the data has two ints per vert
-    if(vv_header.fixupTableStart > 0)
-    {
-        FSeek(startof(vv_header) + vv_header.fixupTableStart);
-        vertexFileFixup_t vv_fixup[vv_header.numFixups] <bgcolor=cDkYellow>;
-    }
-};
-
-if (mdlHeader.vvcsize > 0)
+if (mdlHeader.vvcsize)
 {
     FSeek(mdlHeader.vvcindex);
-    vvcgroup vvc;
+    vvgroup vvc;
 }

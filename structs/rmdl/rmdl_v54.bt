@@ -132,6 +132,11 @@ if(mdlHeader.unkindex4 > 0)
     }
 }
 
+
+// unsure what this is for, same as v53
+#include "../mdl/mdl_v53_module_unk3.bt"
+
+
 // related data chunks here
 
 //unksectiondata unksectdata1[unkhdr.numsection] <bgcolor=cBlue>;

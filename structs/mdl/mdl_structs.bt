@@ -1122,9 +1122,9 @@ struct studiohdr_t_v53
     int unkmemberindex1; // section between vphy and vtx.?
     int numunkmember1; // only seems to be used when phy has one solid
 
-    int unk; // might be count for index below
-
-    int unkindex3; // goes to the same spot as vtx normally.
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     int unused1[60];
 
@@ -1240,6 +1240,8 @@ enum boneprocflags
 #define BONE_USED_BY_VERTEX_LOD7	0x00020000
 #define BONE_USED_BY_BONE_MERGE		0x00040000	// bone is available for bone merge to occur against it
 
+#define BONE_FLAG_UNK_53            0x00080000
+
 //#define BONE_USED_BY_VERTEX_AT_LOD(lod) ( BONE_USED_BY_VERTEX_LOD0 << (lod) )
 //#define BONE_USED_BY_ANYTHING_AT_LOD(lod) ( ( BONE_USED_BY_ANYTHING & ~BONE_USED_BY_VERTEX_MASK ) | BONE_USED_BY_VERTEX_AT_LOD(lod) )
 
@@ -1343,6 +1345,9 @@ string ReadBoneFlags(uint flags)
             break;
         case BONE_USED_BY_BONE_MERGE:
             value += "BONE_USED_BY_BONE_MERGE";
+            break;
+        case BONE_FLAG_UNK_53:
+            value += "BONE_FLAG_UNK_53";
             break;
         case BONE_TYPE_MASK:
             value += "BONE_TYPE_MASK";
@@ -1527,9 +1532,9 @@ struct mstudiobone_t_v53
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-    // these two are related
-	int16 unkid; // id is for unk section after phy
-    int16 unktoggle; // gets set to '1' when id is not -1
+    // unknown phy related section
+	int16 unkindex; // index into this section
+    int16 unkcount; // number of sections for this bone?? see: models\s2s\s2s_malta_gun_animated.mdl
 	
 	int unused[7]; // remove as appropriate
 };

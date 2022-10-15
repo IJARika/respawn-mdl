@@ -25,6 +25,7 @@
 
 // main headers
 // note: rrigs do not have a checksum
+// note: surfaceproplookup seems to be written in later versions?
 struct studiohdr_t_v54
 {
 	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
@@ -193,10 +194,13 @@ struct studiohdr_t_v54
 	int vvcsize;
 	int vphysize; // still used in models using vg
 
-	// unk2_v54[3] is the chunk after following unkindex2's chunk
-	int unk2_v54[3]; // the same four unks in v53 I think, the first index being unused now probably
+    // unused in apex
+    int unkmemberindex1;
+    int numunkmember1;
 
-    int unkindex3; // index to chunk after string block
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     // Per Tri Collision AABB size
     Vector3 mins;
@@ -373,9 +377,9 @@ struct studiohdr_t_v54_v121
 	int vvcsize;
 	int vphysize;
 
-    int unk3_v54_b; // second part of above
-
-    int unkindex3; // index to chunk after string block
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     // Per Tri Collision AABB size
     Vector3 mins;
@@ -547,9 +551,9 @@ struct studiohdr_t_v54_v122
 	int vvcsize;
 	int vphysize;
 
-    int unk3_v54_b; // second part of above
-
-    int unkindex3; // index to chunk after string block
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     // Per Tri Collision AABB size
     Vector3 mins;
@@ -721,9 +725,9 @@ struct studiohdr_t_v54_v13
 	int vvcsize;
 	int vphysize;
 
-    int unk3_v54_b; // second part of above
-
-    int unkindex3; // index to chunk after string block
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     // Per Tri Collision AABB size
     Vector3 mins;
@@ -899,9 +903,9 @@ struct studiohdr_t_v54_v14
 	int vvcsize;
 	int vphysize;
 
-    int unk3_v54_b; // second part of above
-
-    int unkindex3; // index to chunk after string block
+    // only seen on '_animated' suffixed models so far
+    int unkcount3;
+    int unkindex3;
 
     // Per Tri Collision AABB size
     Vector3 mins;
