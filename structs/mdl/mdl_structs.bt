@@ -1924,12 +1924,11 @@ struct mstudiobbox_t_v53
 #define STUDIO_NOFORCELOOP 0x8000	// do not force the animation loop
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
-// v53 flags
 #define STUDIO_ANIMDESC_53_UNK 0x20000 // haven't seen in v53 yet
 #define STUDIO_ANIMDESC_52_UNK 0x40000
 
-// flags that have only been seen in v54
-#define STUDIO_ANIMDESC_54_UNK 0x80000
+
+#define STUDIO_ANIMDESC_53_UNK1 0x80000 // cherry blossom v53, levi in v54
 
 string ReadAnimDescFlags(int flags)
 {
@@ -2019,8 +2018,8 @@ string ReadAnimDescFlags(int flags)
         case 0x40000:
             value += "STUDIO_ANIMDESC_52_UNK";
             break;
-        case STUDIO_ANIMDESC_54_UNK:
-            value += "STUDIO_ANIMDESC_54_UNK";
+        case STUDIO_ANIMDESC_53_UNK1:
+            value += "STUDIO_ANIMDESC_53_UNK1";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -2730,6 +2729,79 @@ struct mstudioseqdesc_t_v49
 	int unused[5];
 };
 
+struct mstudioseqdesc_t_v52
+{
+	int baseptr;
+
+	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
+
+	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
+
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+
+	int activity; // initialized at loadtime to game DLL values
+	int actweight;
+
+	int numevents;
+	int eventindex;
+	
+	Vector3 bbmin; // per sequence bounding box
+	Vector3 bbmax;		
+
+	int numblends;
+
+	// Index into array of shorts which is groupsize[0] x groupsize[1groupsize[1] in length
+	int animindexindex;
+
+	int movementindex; // [blend] float array for blended movement
+	int groupsize[2];
+	int paramindex[2]; // X, Y, Z, XR, YR, ZR
+	float paramstart[2]; // local (0..1) starting value
+	float paramend[2]; // local (0..1) ending value
+	int paramparent;
+
+	float fadeintime; // ideal cross fate in time (0.2 default)
+	float fadeouttime; // ideal cross fade out time (0.2 default)
+
+	int localentrynode; // transition node at entry
+	int localexitnode; // transition node at exit
+	int nodeflags; // transition rules
+
+	float entryphase; // used to match entry gait
+	float exitphase; // used to match exit gait
+	
+	float lastframe; // frame that should generation EndOfSequence
+
+	int nextseq; // auto advancing sequences
+	int pose; // index of delta animation between end and nextseq
+
+	int numikrules;
+
+	int numautolayers;
+	int autolayerindex;
+
+	int weightlistindex;
+
+	int posekeyindex;
+
+	int numiklocks;
+	int iklockindex;
+
+	// Key values
+	int	keyvalueindex;
+	int keyvaluesize;
+
+	int cycleposeindex; // index of pose parameter to use as cycle index
+
+    int activitymodifierindex;
+	int numactivitymodifiers;
+
+    int unk; // not seen yet
+    int unk1; // count? STUDIO_ANIMDESC_52_UNK??
+
+	int unused[3];
+};
+
 struct mstudioseqdesc_t_v53
 {
 	int baseptr;
@@ -2797,9 +2869,10 @@ struct mstudioseqdesc_t_v53
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-    // likely two unks here because you're supposed to grow back to 8 ints and not 10
+    int unk; // not seen yet
+    int unk1; // count? STUDIO_ANIMDESC_52_UNK??
 
-	int unused[10]; // some might be used or they might've just been reseting space like on bones.
+	int unused[8];
 };
 
 struct posekey_t

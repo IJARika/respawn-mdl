@@ -14,8 +14,8 @@
 
 
 
-FSeek(startof(mdlHeader.vgloddescindex) + mdlHeader.vgloddescindex);
-vgLoDdesc_t vgloddesc[mdlHeader.numvgloddesc] <bgcolor=0x99CC44>;
+FSeek(startof(mdlHeader.vglodheaderindex) + mdlHeader.vglodheaderindex);
+ModelLODHeader_t_RMDL vgLODHeader[mdlHeader.numvglodheader] <bgcolor=0x99CC44>;
 
 
 FSeek(startof(mdlHeader.vgloddataindex) + mdlHeader.vgloddataindex);

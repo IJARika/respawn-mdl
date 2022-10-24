@@ -176,6 +176,7 @@ struct studiohdr_t_v54
 	
     int unkindexflex;
 
+    // aabb tree in here maybe? definitely unused
 	int unk1_v54[6];
 
 	// always "" or "Titan"
@@ -336,8 +337,8 @@ struct studiohdr_t_v54_v121
     int vgloddataindex;
     int numvgloddata;
 
-	int vgloddescindex;
-    int numvgloddesc;
+	int vglodheaderindex;
+    int numvglodheader;
 
     float fadedistance;
 	
@@ -356,9 +357,9 @@ struct studiohdr_t_v54_v121
 
 	int linearboneindex;
 
-    int numboneflexdrivers; // unsure if that's what it is in apex
-	int boneflexdriverindex;
-
+    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	int m_nBoneFlexDriverIndex;
+	
     int unkindexflex;
 
 	// always "" or "Titan"
@@ -508,8 +509,8 @@ struct studiohdr_t_v54_v122
     int vgloddataindex;
     int numvgloddata;
 
-	int vgloddescindex;
-    int numvgloddesc;
+	int vglodheaderindex;
+    int numvglodheader;
 
     float fadedistance;
 	
@@ -530,10 +531,10 @@ struct studiohdr_t_v54_v122
 
 	int linearboneindex;
 
-    int numboneflexdrivers; // unsure if that's what it is in apex
-	int boneflexdriverindex;
-
-	int unkindexflex;
+    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	int m_nBoneFlexDriverIndex;
+	
+    int unkindexflex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -682,8 +683,8 @@ struct studiohdr_t_v54_v13
     int vgloddataindex;
     int numvgloddata;
 
-	int vgloddescindex;
-    int numvgloddesc;
+	int vglodheaderindex;
+    int numvglodheader;
 
     float fadedistance;
 	
@@ -704,10 +705,10 @@ struct studiohdr_t_v54_v13
 
 	int linearboneindex;
 
-    int numboneflexdrivers; // unsure if that's what it is in apex
-	int boneflexdriverindex;
-
-	int unkindexflex;
+    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	int m_nBoneFlexDriverIndex;
+	
+    int unkindexflex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -860,8 +861,8 @@ struct studiohdr_t_v54_v14
     int vgloddataindex;
     int numvgloddata;
 
-	int vgloddescindex;
-    int numvgloddesc;
+	int vglodheaderindex;
+    int numvglodheader;
 
     float fadedistance;
 	
@@ -882,10 +883,10 @@ struct studiohdr_t_v54_v14
 
 	int linearboneindex;
 
-    int numboneflexdrivers; // unsure if that's what it is in apex
-	int boneflexdriverindex;
-
-	int unkindexflex;
+    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	int m_nBoneFlexDriverIndex;
+	
+    int unkindexflex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -986,7 +987,9 @@ struct mstudiobone_t_v54_v121
 	
 	int unk; // similar value in studiohdr
 
-    int unkid; // id is for unk section after stringblock, lacks toggle
+    byte unkid; // this is separate because it's set to 0xFF when unused (-1)
+
+    byte unk1[3];
 };
 
 // jigglebone
@@ -1241,13 +1244,9 @@ struct boneflagarray_t_loose
 // not correct
 struct mstudioanim_valueptr_t_v54
 {
-    //int ok;
-
-    int test : 8;
-    int test3 : 3;
-    int test1 : 8;
-    int test5 : 3;
-    int test4 : 8;
+    int offset : 10;
+    int offset : 5;
+    int offset : 5;
 };
 
 #define STUDIO_ANIM_DELTA_54	 0x01 // unverified
@@ -1891,6 +1890,23 @@ struct unkdata_t
 
 
 // lod related maybe
+struct ModelLODHeader_t_RMDL
+{
+    // observed to both be the same.
+    // lod level?
+    int16 unklodlevel;
+    int16 unklodlevel1;
+
+    //Mesh array
+    int16 meshOffset;
+	int16 numMeshes;
+
+	float switchPoint;
+
+    int padding; // meshOffset from vglod probably
+};
+
+// same as above but before renaming
 struct vgLoDdesc_t
 {
     // observed to both be the same.
@@ -1904,7 +1920,7 @@ struct vgLoDdesc_t
     float threshold;
 
     // alignment?
-    int unk;
+    int unk; 
 };
 
 struct vgLoDdata_t
@@ -1914,9 +1930,9 @@ struct vgLoDdata_t
 
     // this could also be vg section index
     int16 lodlevel; // 0, 1, 2, 3, etc
+    int16 numlods; // normally 1, stolen from vg structs
 
     // ids for something
-    int16 unk1; // normally 1
     int16 unk2; // powers of two
     // alignment?
     int16 unk3; // never filled, maybe this is int32 above should never exceed 128 so unsure

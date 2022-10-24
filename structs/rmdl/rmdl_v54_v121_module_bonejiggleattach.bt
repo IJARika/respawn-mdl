@@ -34,6 +34,15 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 // do jigglebones
 mstudiojigglebone_t_v54 jigglebones[jigglebonecount] <bgcolor=cGreen, read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex)>;
 
+// related to physics bones?
+if(jigglebonecount)
+{
+    FSeek(mdlHeader.m_nBoneFlexDriverIndex);
+    byte unkboneindex[mdlHeader.m_nBoneFlexDriverCount] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
+    
+    FSeek(mdlHeader.unkindexflex);
+    byte unkbonearray[mdlHeader.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
+}
 
 // do attachements
 FSeek(mdlHeader.localattachmentindex);

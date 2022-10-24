@@ -153,6 +153,7 @@ for(k = 0; k < numanims; k++)
     } animdesc_data;
 }
 
+// anir thing?
 if(seqdesc.unkcount)
 {
     FSeek(startof(seqdesc) + seqdesc.unkindex);

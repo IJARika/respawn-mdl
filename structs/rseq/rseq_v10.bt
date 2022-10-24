@@ -18,6 +18,7 @@
 local int i = 0;
 local int j = 0;
 local int k = 1;
+local int g = 0;
 local int si = 0;
 
 mstudioseqdesc_t_v54 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
@@ -94,6 +95,43 @@ for(k = 0; k < numanims; k++)
                                     if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                                     {
                                         mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
+                                        
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMPOS_54)
+                                        {
+                                            for(g = 0; g < 3; g++)
+                                            {
+                                                if(sectionanimheader.animpos.offset[g])
+                                                {
+                                                    FSeek(startof(sectionanimheader.animpos) + sectionanimheader.animpos.offset[g]);
+                                                    mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
+                                                }
+                                            }
+                                        }
+
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMROT_54)
+                                        {
+                                            for(g = 0; g < 3; g++)
+                                            {
+                                                if(sectionanimheader.animrot.offset[g])
+                                                {
+                                                    FSeek(startof(sectionanimheader.animrot) + sectionanimheader.animrot.offset[g]);
+                                                    mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
+                                                }
+                                            }
+                                        }
+                                        
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMSCALE_54)
+                                        {
+                                            for(g = 0; g < 3; g++)
+                                            {
+                                                if(sectionanimheader.animscale.offset[g])
+                                                {
+                                                    FSeek(startof(sectionanimheader.animscale) + sectionanimheader.animscale.offset[g]);
+                                                    mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
+                                                }
+                                            }
+                                        }
+
                                         FSeek(startof(sectionanimheader) + sectionanimheader.size);
                                     }
                                 }
@@ -165,10 +203,6 @@ if(seqdesc.numevents)
     for(i = 0; i < seqdesc.numevents; i++)
         Assert(!seqevent.unk, "unknown event value used");
 }
-
-Assert(!seqdesc.unk, "unknown seq value used");
-Assert(!seqdesc.unk1, "unknown seq value used");
-Assert(!seqdesc.unk2, "unknown seq value used");
 
 
 // create nice looking strings you can view

@@ -140,10 +140,10 @@ if(mdlHeader.numlocalanim)
                                             }
     
                                             FSeek(startof(sectionanimheader) + sectionanimheader.nextoffset);
-        
-                                            if(sectionanimheader.nextoffset <= 0)
+                                        } section_anim_header_data;
+
+                                        if(section_anim_header_data.sectionanimheader.nextoffset <= 0)
                                                 break;
-                                        } section_anim_header;
                                     }
                                 } section;
                             }
@@ -196,11 +196,11 @@ if(mdlHeader.numlocalanim)
                                     }
                                 }
     
-                                FSeek(startof(animheader) + animheader.nextoffset);
-        
-                                if(animheader.nextoffset <= 0)
+                                FSeek(startof(animheader) + animheader.nextoffset);     
+                            } anim_header_data;
+
+                            if(anim_header_data.animheader.nextoffset <= 0)
                                     break;
-                            } animheader;
                         }
                     } animation;
                 }
@@ -358,7 +358,7 @@ if(mdlHeader.vphysize || mdlHeader.vtxsize)
         stringtable_size = mdlHeader.vphyindex - (mdlHeader.sznameindex - 1);
 }
 else
-    stringtable_size = mdlHeader.unkmemberindex1 - (mdlHeader.sznameindex - 1);
+    stringtable_size = mdlHeader.length - (mdlHeader.sznameindex - 1);
 
 FSeek(mdlHeader.sznameindex - 1);
 char stringtable[stringtable_size] <fgcolor=cLtRed>;
@@ -533,8 +533,11 @@ struct vtxgroup
     MaterialReplacementListHeader_t materiallist[vtx_header.numLODs] <bgcolor=cDkPurple>;
 };
 
-FSeek(mdlHeader.vtxindex);
-vtxgroup vtx <fgcolor=0xe8daef>;
+if(mdlHeader.vtxsize)
+{
+    FSeek(mdlHeader.vtxindex);
+    vtxgroup vtx <fgcolor=0xe8daef>;
+}
 
 
 //===
@@ -584,8 +587,11 @@ struct vvgroup
 };
 
 // vvd
-FSeek(mdlHeader.vvdindex);
-vvgroup vvd;
+if (mdlHeader.vvdsize)
+{
+    FSeek(mdlHeader.vvdindex);
+    vvgroup vvd;
+}
 
 // vvc
 if (mdlHeader.vvcsize)
