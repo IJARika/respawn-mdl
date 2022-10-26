@@ -46,7 +46,7 @@ if (mdlHeader.numruimeshes)
                 mstudioruivert_t vertex[ruimeshheader.numvertices];
             
                 mstudioruimeshface_t facedata[ruimeshheader.numfaces];
-            } ruimesh;
+            } ruimesh <read=this.szmeshname>;
         }
     } ruimeshes <fgcolor=cGreen>;
 };

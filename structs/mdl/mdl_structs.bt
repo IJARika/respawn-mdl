@@ -984,7 +984,7 @@ struct studiohdr_t_v53
     int numlocalseq; // sequences
 	int	localseqindex;
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int activitylistversion; // initialization flag - have the sequences been indexed? set on load
 	int eventsindexed;
  
     // mstudiotexture_t
@@ -3200,8 +3200,39 @@ struct mstudiomesh_t
 	Vector3 center;
 
 	mstudio_meshvertexdata_t vertexdata;
-    
+
 	int unused[8]; // remove as appropriate
+};
+
+struct mstudiomesh_t_v53
+{
+	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+
+	int modelindex;
+
+	int numvertices; // number of unique vertices/normals/texcoords
+	int vertexoffset; // vertex mstudiovertex_t
+                      // offset by vertexoffset number of verts into vvd vertexes, relative to the models offset
+
+	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
+	
+	int numflexes; // vertex animation
+	int flexindex;
+
+	// special codes for material operations
+	int materialtype;
+	int materialparam;
+
+	// a unique ordinal for this mesh
+	int meshid;
+
+	Vector3 center;
+
+	mstudio_meshvertexdata_t vertexdata;
+    
+    int unk[2]; // set on load
+
+	int unused[6]; // remove as appropriate
 };
 
 struct mstudioboneweight_t

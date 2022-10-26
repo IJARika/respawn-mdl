@@ -310,7 +310,7 @@ for (i = 0; i < modelCount; ++i)
    meshCount += models[i].nummeshes;
 };
 
-mstudiomesh_t meshes[meshCount] <bgcolor=cLtGray>;
+mstudiomesh_t_v53 meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui

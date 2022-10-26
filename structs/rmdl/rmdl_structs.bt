@@ -159,7 +159,7 @@ struct studiohdr_t_v54
     int unkindex_v54_early;
 
 	float flVertAnimFixedPointScale; // to be verified
-    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // saved in the file
 
 	// this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
 	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
@@ -345,7 +345,7 @@ struct studiohdr_t_v54_v121
 	float gathersize; // what. from r5r struct
 	
 	float flVertAnimFixedPointScale; // to be verified
-    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // saved in the file
 
     // asset bakery strings if it has any
 	int mayaindex;
@@ -517,9 +517,9 @@ struct studiohdr_t_v54_v122
 	float gathersize; // what. from r5r struct
 	
 	float flVertAnimFixedPointScale; // to be verified
-    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // saved in the file
 
-    int unk_v122;
+    int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
 	int mayaindex;
@@ -691,7 +691,7 @@ struct studiohdr_t_v54_v13
 	float gathersize; // what. from r5r struct
 	
 	float flVertAnimFixedPointScale; // to be verified
-    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // saved in the file
 
     int unk_v54_v122; // added in transition version
 
@@ -869,7 +869,7 @@ struct studiohdr_t_v54_v14
 	float gathersize; // what. from r5r struct
 	
 	float flVertAnimFixedPointScale; // to be verified
-    int surfacepropLookup; // this index must be cached by the loader, not saved in the file
+    int surfacepropLookup; // saved in the file
 
     int unk_v54_v122; // added in transition version
 
@@ -951,10 +951,10 @@ struct mstudiobone_t_v54
     int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
 	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
-
-    int unk; // similar value in studiohdr
 	
-	int surfacepropLookup; // unsure, the normal spot has data though
+	int surfacepropLookup; // written on compile in v54
+
+    int unk;
 	
 	int unkid; // id is for unk section after stringblock, lacks toggle
 };
@@ -985,11 +985,11 @@ struct mstudiobone_t_v54_v121
 
 	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
 	
-	int unk; // similar value in studiohdr
+	int surfacepropLookup; // written on compile in v54
 
     byte unkid; // this is separate because it's set to 0xFF when unused (-1)
 
-    byte unk1[3];
+    byte unk1[3]; // maybe this is 'unk'?
 };
 
 // jigglebone
@@ -1740,7 +1740,7 @@ struct mstudiomesh_t_v54
 
 	mstudio_meshvertexdata_t vertexdata;
     
-	int unused[2];
+	int unk[2]; // these are suposed to be filled on load, however this isn't true??
 };
 
 struct mstudiomesh_t_v54_v121
@@ -1762,7 +1762,7 @@ struct mstudiomesh_t_v54_v121
 
 	mstudio_meshvertexdata_t vertexdata;
     
-	int unused[2];
+	int unk[2]; // these are suposed to be filled on load, however this isn't true??
 };
 
 
