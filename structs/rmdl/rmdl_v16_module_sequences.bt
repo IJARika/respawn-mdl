@@ -1,0 +1,144 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl, rrig
+//   Authors: Rika
+//   Version: 16
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 SEQUENCE MODULE*/
+
+
+// do sequences.
+FSeek(mdlHeader.localseqindex);
+mstudioseqdesc_t_v16 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+
+local int si = 0;
+local int numanims = 0;
+local int animsDone = 0;
+
+// generate all the sequences data structures
+for(si = 0; si < mdlHeader.numlocalseq; si++)
+{
+    numanims = seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1];
+
+    if(seqdesc[si].posekeyindex)
+    {
+        FSeek(startof(seqdesc[si]) + seqdesc[si].posekeyindex);
+        float posekey[seqdesc[si].groupsize[0] + seqdesc[si].groupsize[1]] <bgcolor=0x55ee00>;
+    }
+    
+    if(seqdesc[si].numevents)
+    {
+        FSeek(startof(seqdesc[si]) + seqdesc[si].eventindex);
+        mstudioevent_t_v16 seqevent[seqdesc[si].numevents] <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+    }
+    
+    if(seqdesc[si].numautolayers)
+    {
+        FSeek(startof(seqdesc[si]) + seqdesc[si].autolayerindex);
+        mstudioautolayer_t_v54 autolayers[seqdesc[si].numautolayers] <bgcolor=0x226600>;
+    }
+    
+    FSeek(startof(seqdesc[si]) + seqdesc[si].weightlistindex);
+    seqweightlist_t weightlist <bgcolor=0xe1f27a>;
+    
+    FSeek(startof(seqdesc[si]) + seqdesc[si].activitymodifierindex);
+    mstudioactivitymodifier_t_v16 activitymodifier[seqdesc[si].numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
+    
+    FSeek(startof(seqdesc[si]) + seqdesc[si].animindexindex);
+    blendgroup_t_v16 blendgroup <bgcolor=0xffff00>;
+    
+    for(k = 0; k < numanims; k++)
+    {
+        FSeek(startof(seqdesc[si]) + blendgroup.blends[k]);
+        mstudioanimdesc_t_v16 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+    
+        struct {
+            if(animdesc[k + animsDone].flags & STUDIO_ALLZEROS)
+            {
+                // there is no actual flag array I just do this so the flag array index will line up with the animdesc.
+                byte flagarray;
+                byte ALLZEROSFLAGPLACEHOLDER;
+            }
+            else
+            {
+                if(animdesc[k + animsDone].sectionindex)
+                {
+                    struct {
+                        local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
+    
+                        FSeek(startof(animdesc[k + animsDone]) + animdesc[k + animsDone].sectionindex);
+                        mstudioanimsections_t_v16 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
+            
+                        for(i = 0; i < sectionlength; i++)
+                        {
+                            if(sectionindexes[i].animindex && !sectionindexes[i].isExternal)
+                            {
+                                struct {
+                                    FSeek(startof(animdesc[k + animsDone]) + sectionindexes[i].animindex);
+                                    boneflagarray_t flagarray;
+                            
+                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                    {
+                                        if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+                                        {
+                                            mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
+                                            FSeek(startof(sectionanimheader) + sectionanimheader.size);
+                                        }
+                                    }
+                                } section;
+                            }
+                        }
+                    } sectionanimation;
+                }
+                else
+                {
+                    struct {
+                        FSeek(startof(animdesc[k + animsDone]) + animdesc[k + animsDone].animindex);
+                        boneflagarray_t flagarray;
+    
+                        for(j = 0; j < mdlHeader.numbones; j++)
+                        {
+                            if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
+                            {
+                                mstudio_rle_anim_t_v54 animheader <bgcolor=cBlue>;
+                                FSeek(startof(animheader) + animheader.size);
+                            }
+                        }
+                    } animation;
+                }
+            }
+            
+            if(animdesc[k + animsDone].numikrules)
+            {
+                FSeek(startof(animdesc[k + animsDone]) + animdesc[k + animsDone].ikruleindex);
+                mstudioikrule_t_v16 animikrule[animdesc[k + animsDone].numikrules] <bgcolor=cGreen>;
+            }
+        
+            /*for(j = -animdesc.numikrules; j < 0; j++)
+            {
+                if(animikrule[numikrule + j].compressedikerrorindex)
+                {
+                    FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
+                    mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cDkGreen>;
+                }
+            }*/
+        
+            if(animdesc[k + animsDone].compressedikerrorindex)
+            {
+                FSeek(startof(animdesc[k + animsDone]) + animdesc[k + animsDone].compressedikerrorindex);
+                mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cLtGreen>;
+            }
+
+            animsDone++;
+
+        } animdesc_data;
+    }    
+}

@@ -26,7 +26,7 @@ if (mdlHeader.linearboneindex)
     struct mstudiolinearbonedata_t
     {
         int bone_flags[linearbone.numbones] <read=ReadBoneFlags(this)>;
-        int bone_parents[linearbone.numbones];
+        int bone_parents[linearbone.numbones]  <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>;
         
         Vector3 bone_pos[linearbone.numbones];
         Quaternion bone_quat[linearbone.numbones];

@@ -19,97 +19,73 @@
 #include "../vtx/vtx.bt"
 
 local int i;
+local int j;
+local int k;
+local int l;
+local int m;
+local int n;
+local int o;
+local int p;
 
 
 FileHeader_t vtx_header <bgcolor=cLtPurple>;
 
-FSeek(startof(vtx_header) + vtx_header.bodyPartOffset);
-BodyPartHeader_t vtx_partheader[vtx_header.numBodyParts] <bgcolor=cPurple>;
-
-
-// gets the total amount of parts.
-local int vtxPartCount = 0;
-
 for (i = 0; i < vtx_header.numBodyParts; ++i)
 {
-   vtxPartCount += vtx_partheader[i].numModels;
-};
-
-FSeek(startof(vtx_partheader[0]) + vtx_partheader[0].modelOffset);
-ModelHeader_t vtx_modelheader[vtxPartCount] <bgcolor=cDkPurple>;
-
-
-// gets the total amount of LODs.
-local int vtxLodCount = 0;
-
-for (i = 0; i < vtxPartCount; ++i)
-{
-   vtxLodCount += vtx_modelheader[i].numLODs;
-};
-
-FSeek(startof(vtx_modelheader[0]) + vtx_modelheader[0].lodOffset);
-ModelLODHeader_t vtx_lodheader[vtxLodCount] <bgcolor=cLtPurple>;
-
-
-// gets the total amount of LODs.
-local int vtxMeshCount = 0;
-
-for (i = 0; i < vtxLodCount; ++i)
-{
-   vtxMeshCount += vtx_lodheader[i].numMeshes;
-};
-
-FSeek(startof(vtx_lodheader[0]) + vtx_lodheader[0].meshOffset);
-MeshHeader_t vtx_meshheader[vtxMeshCount] <bgcolor=cPurple>;
-
-
-// gets the total amount of strip groups.
-local int vtxStripGrpCount = 0;
-
-for (i = 0; i < vtxMeshCount; ++i)
-{
-   vtxStripGrpCount += vtx_meshheader[i].numStripGroups;
-};
-
-FSeek(startof(vtx_meshheader[0]) + vtx_meshheader[0].stripGroupHeaderOffset);
-StripGroupHeader_t vtx_stripgrphdr[vtxStripGrpCount] <bgcolor=cDkPurple>;
-
-
-// gets the total amount of strips.
-local int vtxStripCount = 0;
-
-for (i = 0; i < vtxStripGrpCount; ++i)
-{
-   vtxStripCount += vtx_stripgrphdr[i].numStrips;
-}
-
-FSeek(startof(vtx_stripgrphdr[0]) + vtx_stripgrphdr[0].stripOffset);
-StripHeader_t vtx_strips[vtxStripCount] <bgcolor=cLtPurple>;
-
-
-for (i = 0; i < vtxStripGrpCount; ++i)
-{
-   FSeek(startof(vtx_stripgrphdr[i]) + vtx_stripgrphdr[i].vertOffset);
-   vertgroup vtx_vertgroup <optimize=false>;
-};
-
-
-for (i = 0; i < vtxStripGrpCount; ++i)
-{
-   FSeek(startof(vtx_stripgrphdr[i]) + vtx_stripgrphdr[i].indexOffset);
-   indicegroup vtx_indicegroup <optimize=false>;
-};
-
-
-for (i = 0; i < vtxStripCount; ++i)
-{
-   if(vtx_strips[i].boneStateChangeOffset > 0)
-    {
-        FSeek(startof(vtx_strips[i]) + vtx_strips[i].boneStateChangeOffset);
-        bonestategroup vtx_bonestategroup <optimize=false>;
-    }
+    FSeek(startof(vtx_header) + vtx_header.bodyPartOffset + (sizeof(BodyPartHeader_t) * i));
+    struct {
+        BodyPartHeader_t vtx_partheader <bgcolor=cPurple>;
+    
+        for(j = 0; j < vtx_partheader.numModels; j++)
+        {
+            FSeek(startof(vtx_partheader) + vtx_partheader.modelOffset + (sizeof(ModelHeader_t) * j));
+            ModelHeader_t vtx_modelheader <bgcolor=cDkPurple>;
+    
+            for(k = 0; k < vtx_modelheader.numLODs; k++)
+            {
+                FSeek(startof(vtx_modelheader) + vtx_modelheader.lodOffset + (sizeof(ModelLODHeader_t) * k));
+                ModelLODHeader_t vtx_lodheader <bgcolor=cLtPurple>;
+            
+                for(l = 0; l < vtx_lodheader.numMeshes; l++)
+                {
+                    FSeek(startof(vtx_lodheader) + vtx_lodheader.meshOffset + (sizeof(MeshHeader_t) * l));
+                    MeshHeader_t vtx_meshheader <bgcolor=cPurple>;
+    
+                    for(m = 0; m < vtx_meshheader.numStripGroups; m++)
+                    {
+                        FSeek(startof(vtx_meshheader) + vtx_meshheader.stripGroupHeaderOffset);
+                        StripGroupHeader_t vtx_stripgrphdr <bgcolor=cDkPurple>;
+        
+                        for(n = 0; n < vtx_stripgrphdr.numStrips; n++)
+                        {
+                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.stripOffset + (sizeof(StripHeader_t) * n));
+                            StripHeader_t vtx_strip <bgcolor=cLtPurple>;
+        
+                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.vertOffset);
+                            struct {
+                                Vertex_t vtx_stripverts[vtx_stripgrphdr.numVerts] <bgcolor=cPurple>;
+                            } vert_group;
+    
+                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.indexOffset);
+                            struct {
+                                 int16 indice[vtx_stripgrphdr.numIndices] <bgcolor=cDkPurple>;
+                            } indice_group;
+    
+                            if(vtx_strip.boneStateChangeOffset)
+                            {
+                                FSeek(startof(vtx_strip) + vtx_strip.boneStateChangeOffset);
+                                struct {
+                                     BoneStateChangeHeader_t bonestate[vtx_strip.numBoneStateChanges] <bgcolor=cLtPurple, optimize=false>;
+                                } bonestate_group;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } bodypart;
 };
 
 
 FSeek(startof(vtx_header) + vtx_header.materialReplacementListOffset);
-MaterialReplacementListHeader_t materiallist[vtx_header.numLODs] <bgcolor=cDkPurple>;
+MaterialReplacementListHeader_t materiallist[vtx_header.numLODs] <bgcolor=0xDD00AA>;

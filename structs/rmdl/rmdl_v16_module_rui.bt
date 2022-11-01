@@ -1,0 +1,47 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl
+//   Authors: Rika
+//   Version: 16
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*RUI MESH MODULE*/
+
+
+if (mdlHeader.numruimeshes)
+{
+    FSeek(mdlHeader.ruimeshindex);
+    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
+    
+    struct {
+        for(i = 0; i < mdlHeader.numruimeshes; i++)
+        {
+            FSeek(startof(ruiheader[i]) + ruiheader[i].ruimeshindex);
+            struct {
+                mstudioruimesh_t_v54 ruimeshheader; // might be able to merge this back into the normal one if version var exists like I think
+
+                string szmeshname;
+
+                // pad out so verts are aligned to 16 bytes
+                char padding[ruimeshheader.parentindex - (sizeof(szmeshname) + sizeof(ruimeshheader))] <fgcolor=cLtGray>;
+
+                int16 parent[ruimeshheader.numparents] <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent(s) bone of mesh
+
+                mstudioruivertmap_t vertexmap[ruimeshheader.numfaces]; // vertex map for each face  
+                
+                mstudioruifourthvertv54_t fourthvertmap[ruimeshheader.numfaces];
+                
+                mstudioruivert_t vertex[ruimeshheader.numvertices];
+            
+                mstudioruimeshface_t facedata[ruimeshheader.numfaces];
+            } ruimesh <read=this.szmeshname>;
+        }
+    } ruimeshes <fgcolor=cGreen>;
+};

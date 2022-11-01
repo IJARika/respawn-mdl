@@ -127,8 +127,14 @@ if(mdlHeader.unkindex4 > 0)
 
     for(i = 0; i < unkhdr.numsections; i++)
     {
+        FSeek(startof(unkhdr) + unksecthdr[i].dataindex2);
+        unkdata2_t guh2 <bgcolor=0xFF9600>;
+    }
+
+    for(i = 0; i < unkhdr.numsections; i++)
+    {
         FSeek(startof(unkhdr) + unksecthdr[i].dataindex1);
-        unkdata_t guh;
+        unkdata_t guh <bgcolor=0xAA9600>;
     }
 }
 

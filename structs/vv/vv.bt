@@ -25,10 +25,10 @@ struct vertexFileHeader_t
 	int numLODs; // num of valid lods
 	int numLODVertexes[MAX_NUM_LODS]; // num verts for desired root lod
 
-    // in vvc this is an offset
+    // in vvc this is the offset to vertex color
 	int numFixups; // num of vertexFileFixup_t
 
-    // in vvc this is an offset
+    // in vvc this is the offset into a second uv layer
 	int fixupTableStart; // offset from base to fixup table
 	int vertexDataStart; // offset from base to vertex block
 	int tangentDataStart; // offset from base to tangent block

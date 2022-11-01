@@ -11,6 +11,8 @@
 //   History: 
 //------------------------------------------------
 
+typedef ubyte uint8;
+
 // math stuff used by all structs.
 
 // vector
@@ -113,4 +115,36 @@ enum <int> boolean
 struct bool
 {
     byte bool;
+};
+
+struct VertexColor_t
+{
+/*	// NOTE: This constructor is explicitly here to disallow initializers
+	// with initializer lists i.e. 
+	//     VertexColor_t color = { 255,   0,   0, 255 };
+	// which will totally fail on the 360.
+	VertexColor_t() {};
+	VertexColor_t( const VertexColor_t &src );
+	VertexColor_t( uint8 ir, uint8 ig, uint8 ib, uint8 ia );
+
+	// assign and copy by using the whole register rather than byte-by-byte copy. 
+	// (No, the compiler is not smart enough to do this for you. /FAcs if you 
+	// don't believe me.)
+	uint32 AsUint32() const; 
+	uint32 *AsUint32Ptr();
+	const uint32 *AsUint32Ptr() const; 
+
+	// assignment
+	VertexColor_t &operator=( const VertexColor_t &src );
+	VertexColor_t &operator=( const color32 &src );
+
+	// comparison
+	bool operator==( const VertexColor_t &src ) const;
+	bool operator!=( const VertexColor_t &src ) const;
+
+#ifdef PLATFORM_X360
+	// 360 is little endian
+	uint8 a, b, g, r;
+#else*/
+	uint8 r, g, b, a;
 };

@@ -55,21 +55,15 @@ FSeek(startof(seqdesc) + seqdesc.activitymodifierindex);
 mstudioactivitymodifier_t_v53 activitymodifier[seqdesc.numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
 
 FSeek(startof(seqdesc) + seqdesc.animindexindex);
-blendgroup_t_v54 blendgroup <bgcolor=0xffff00>;
+int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]] <bgcolor=0xffff00>;
 
 for(k = 0; k < numanims; k++)
 {
-    FSeek(startof(seqdesc) + blendgroup.blends[k]);
+    FSeek(startof(seqdesc) + blends[k]);
     mstudioanimdesc_t_v54_v121 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
     
     struct {
-        if(animdesc[k].flags & STUDIO_ALLZEROS)
-        {
-            // there is no actual flag array I just do this so the flag array index will line up with the animdesc.
-            byte flagarray <bgcolor=cPurple>;
-            byte ALLZEROSFLAGPLACEHOLDER <bgcolor=cPurple>;
-        }
-        else
+        if (!(animdesc[k].flags & STUDIO_ALLZEROS))
         {
             if(animdesc[k].sectionindex)
             {
@@ -82,9 +76,20 @@ for(k = 0; k < numanims; k++)
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v54_v121 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
         
+                    local int nullsections = 0;
+
+                    // respawn really needs to cut this out
+                    if(numanims > 1 && numanims > (k + 1))
+                    {
+                        if((blends[k] + sectionindexes[0].animindex) >= blends[k + 1])
+                        {
+                            nullsections = 1;
+                        }
+                    }
+
                     for(i = 0; i < sectionlength; i++)
                     {
-                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal)
+                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && (blends[k] + sectionindexes[i].animindex) < seqdesc.szlabelindex && !nullsections)
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
@@ -200,8 +205,8 @@ if(numanims)
 
 if(seqdesc.numevents)
 {
-    for(i = 0; i < seqdesc.numevents; i++)
-        Assert(!seqevent.unk, "unknown event value used");
+    //for(i = 0; i < seqdesc.numevents; i++)
+        //Assert(!seqevent.unk, "unknown event value used");
 }
 
 

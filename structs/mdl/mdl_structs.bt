@@ -108,8 +108,9 @@
 
 #define STUDIOHDR_FLAGS_RESPAWN_UNK                 0x800000
 // "unkindex is only shifted if 0x1000000 flag is set on the studiohdr" talking about unkindex in mstudiomodel struct
-#define STUDIOHDR_FLAGS_RESPAWN_UNK1                0x1000000
-#define STUDIOHDR_FLAGS_RESPAWN_UNK2                0x2000000
+// unkindex is now colorindex
+#define STUDIOHDR_FLAGS_RESPAWN_UNK1                0x1000000 // maybe related to vvc
+#define STUDIOHDR_FLAGS_RESPAWN_UNK2                0x2000000 // might be related to 2nd uv layer?
 
 string ReadHeaderFlags(int flags)
 {
@@ -1189,16 +1190,53 @@ struct studiohdr2_t_v52
 
 
 // bones
-enum boneprocflags
+#define STUDIO_PROC_AXISINTERP	1
+#define STUDIO_PROC_QUATINTERP	2
+#define STUDIO_PROC_AIMATBONE	3
+#define STUDIO_PROC_AIMATATTACH 4
+#define STUDIO_PROC_JIGGLE		5
+#define STUDIO_PROC_TWIST_MASTER 6
+#define STUDIO_PROC_TWIST_SLAVE 7	// Multiple twist bones are computed at once for the same parent/child combo so TWIST_NULL do nothing
+
+string ReadProcFlags(uint flags)
 {
-    STUDIO_PROC_AXISINTERP = 1,
-    STUDIO_PROC_QUATINTERP = 2,
-    STUDIO_PROC_AIMATBONE = 3,
-    STUDIO_PROC_AIMATATTACH = 4,
-    STUDIO_PROC_JIGGLE = 5,
-    STUDIO_PROC_TWIST_MASTER = 6,
-    STUDIO_PROC_TWIST_SLAVE = 7
-};
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    switch(flags)
+    {
+    case 0:
+        break;
+    case STUDIO_PROC_AXISINTERP:
+        value += "STUDIO_PROC_AXISINTERP";
+        break;
+    case STUDIO_PROC_QUATINTERP:
+        value += "STUDIO_PROC_QUATINTERP";
+        break;
+    case STUDIO_PROC_AIMATBONE:
+        value += "STUDIO_PROC_AIMATBONE";
+        break;
+    case STUDIO_PROC_AIMATATTACH:
+        value += "STUDIO_PROC_AIMATATTACH";
+        break;
+    case STUDIO_PROC_JIGGLE:
+        value += "STUDIO_PROC_JIGGLE";
+        break;
+    case STUDIO_PROC_TWIST_MASTER:
+        value += "STUDIO_PROC_TWIST_MASTER";
+        break;
+    case STUDIO_PROC_TWIST_SLAVE:
+        value += "STUDIO_PROC_TWIST_SLAVE";
+        break;
+    default:
+        value += Str("UNK_%x", flag);
+        break;
+    }
+
+    return value;
+}
 
 // for poseToBone:
 
@@ -1416,7 +1454,7 @@ struct mstudiobone_t_v47
 	Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	boneprocflags proctype;
+	int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 	
@@ -1447,7 +1485,7 @@ struct mstudiobone_t_v49
 	Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	boneprocflags proctype;
+	int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
@@ -1480,7 +1518,7 @@ struct mstudiobone_t_v52
 	Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	boneprocflags proctype;
+	int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
@@ -1522,7 +1560,7 @@ struct mstudiobone_t_v53
 	Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	boneprocflags proctype;
+	int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule offset
 	int physicsbone; // index into physically simulated bone
 
@@ -3063,7 +3101,7 @@ struct mstudioactivitymodifier_t_v53
 {	
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-    boolean unk; // 0 or 1 observed.
+    int unk; // 0 or 1 observed.
 };
 
 struct seqweightlist_t
@@ -3160,8 +3198,10 @@ struct mstudiomodel_t_v52
 
 	int unk[4];
 
-    int unkindex;
-    int unkindex1;
+    int colorindex; // vertex color
+                    // offset by colorindex number of bytes into vvc vertex colors
+    int uv2index; // vertex second uv map
+                  // offset by uv2index number of bytes into vvc secondary uv map
 
     int unused[4];
 };

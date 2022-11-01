@@ -1,0 +1,33 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl, rrig
+//   Authors: Rika
+//   Version: 16
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+FSeek(startof(mdlHeader.vglodheaderindex) + GetRMDLOffset(mdlHeader.vglodheaderindex));
+float switchPoint[mdlHeader.numvglodheader] <bgcolor=0x99CC44>;
+
+
+FSeek(startof(mdlHeader.vgloddataindex) + GetRMDLOffset(mdlHeader.vgloddataindex));
+vgLoDdata_t_v16 vgloddata[mdlHeader.numvgloddata] <bgcolor=0x229944>;
+
+
+if(mdlHeader.vgmeshindex > 0)
+{
+    FSeek(startof(mdlHeader.vgmeshindex) + GetRMDLOffset(mdlHeader.vgmeshindex));
+    vgmesh_t vgmesh[mdlHeader.numvgmeshes] <bgcolor=0x559922>;
+}
+
+if(mdlHeader.boneremapindex > 0 && mdlHeader.numboneremaps > 0)
+{
+    FSeek(startof(mdlHeader.boneremapindex) + GetRMDLOffset(mdlHeader.boneremapindex));
+    mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;
+}

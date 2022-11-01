@@ -1,0 +1,29 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 52/53/54
+// Increment: 14.1/15
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*NODE MODULE*/
+
+
+// separate one because they changed the way the name index offsets into the string block
+
+// setup nodes, not fully understood
+// nodes have names
+if(mdlHeader.numlocalnodes > 0)
+{
+    FSeek(mdlHeader.localnodenameindex);
+    int nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(mdlHeader.localnodenameindex + this)>;
+    
+    int nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
+}

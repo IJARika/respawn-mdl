@@ -1,0 +1,82 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rseq
+//   Authors: Rika
+//   Version: 11
+//   Purpose: rseq animations
+//  Category: Animation
+// File Mask: *.rseq
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*RSEQ STRING MODULE*/
+
+
+FSeek(seqdesc.szlabelindex);
+string seqlabel <fgcolor=0x11111AA>;
+
+FSeek(seqdesc.szactivitynameindex);
+string seqactivity <fgcolor=0x0011FF>;
+
+
+if(seqdesc.numevents)
+{
+    FSeek(startof(seqevent) + seqevent.szeventindex);
+
+    struct {
+        for(i = 0; i < seqdesc.numevents; i++)
+        {
+            if(seqevent[i].szeventindex)
+            {
+                FSeek(startof(seqevent[i]) + seqevent[i].szeventindex);
+                struct
+                {
+                    string event;
+                } eventstring <fgcolor=0x21fe7a>;
+
+                if(seqevent[i].szoptionsindex)
+                {
+                    FSeek(startof(seqevent[i]) + seqevent[i].szoptionsindex);
+                    struct
+                    {
+                        string eventoption;
+                    } eventoptionstring <fgcolor=0x21be7a>;
+                }
+            }
+        }
+    } eventstrings;
+}
+
+if(seqdesc.numactivitymodifiers)
+{
+    FSeek(startof(activitymodifier) + activitymodifier.sznameindex);
+
+    struct {
+        for(i = 0; i < seqdesc.numactivitymodifiers; i++)
+        {
+            FSeek(startof(activitymodifier[i]) + activitymodifier[i].sznameindex);
+            struct
+            {
+                string activitymodifier;
+            } activitymodstring <fgcolor=0x119900>;
+        }
+    } activitymodstrings;
+}
+
+if(numanims)
+{
+    FSeek(startof(animdesc) + animdesc.sznameindex);
+    struct {
+        for(i = 0; i < numanims; i++)
+        {
+            FSeek(startof(animdesc[i]) + animdesc[i].sznameindex);
+            struct
+            {
+                string szanimname;
+            } animname <fgcolor=0xdc7633>;
+        }
+    } animnames;
+}

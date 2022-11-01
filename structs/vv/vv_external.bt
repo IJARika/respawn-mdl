@@ -19,22 +19,27 @@
 
 vertexFileHeader_t vv_header <bgcolor=cYellow>;
 
-struct unkfloatsection
-{
-    float a;
-    float b;
-};
-
 if(vv_header.id == 1447248969)
 {
+    /*===========
+    from r1 vmts:
+
+    "$vertexcolor" "1"
+    "$vertcoloristint" "1"
+    "$vertexalpha" "1"
+
+    "$cockpitlightmap0" "models\titans\stryder\stryder_cockpit\stryder_cockpit_console_pov_lightmap_01"
+	"$cockpitlightmap1" "models\weapons\arms\titan_atlas_screen_lightmap_02"
+	"$cockpitscreenlight" "_rt_TinyFB0"
+	"$seconduvset" "1"
+    ===========*/
+
     FSeek(vv_header.numFixups);
-    int unkpervertdata[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    VertexColor_t m_color[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
 
-    //char padding[sizeof(unkpervertdata) % 8];
-
-    // uv fixup?
+    
     FSeek(vv_header.fixupTableStart);
-    unkfloatsection unkfloats[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
+    Vector2 m_vecTexCoord2[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
 }
 else
 {  

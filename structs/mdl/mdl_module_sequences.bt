@@ -19,7 +19,7 @@ FSeek(mdlHeader.localseqindex);
 if(mdlHeader.version == 53)
     mstudioseqdesc_t_v53 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 else if(mdlHeader.version == 52)
-    mstudioseqdesc_t_v49 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+    mstudioseqdesc_t_v52 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 else if(mdlHeader.version == 49)
     mstudioseqdesc_t_v49 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 else

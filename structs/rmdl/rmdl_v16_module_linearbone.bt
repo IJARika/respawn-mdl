@@ -1,0 +1,47 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl
+//   Authors: Rika
+//   Version: 16
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*V54 LINEARBONE MODULE*/
+
+
+
+// do linear bone table
+if (mdlHeader.linearboneindex)
+{
+    FSeek(mdlHeader.linearboneindex);
+    mstudiolinearbone_t_v16 linearbone <bgcolor=cGreen>;
+    
+    struct mstudiolinearbonedata_t
+    {
+        FSeek(startof(linearbone) + linearbone.flagsindex);
+        int bone_flags[linearbone.numbones] <read=ReadBoneFlags(this), bgcolor=cLtGreen>;
+
+        FSeek(startof(linearbone) + linearbone.parentindex);
+        short bone_parents[linearbone.numbones]  <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex), bgcolor=cLtGreen>;
+        
+        FSeek(startof(linearbone) + linearbone.posindex);
+        Vector3 bone_pos[linearbone.numbones] <bgcolor=cLtGreen>;
+
+        FSeek(startof(linearbone) + linearbone.quatindex);
+        Quaternion bone_quat[linearbone.numbones] <bgcolor=cLtGreen>;
+
+        FSeek(startof(linearbone) + linearbone.rotindex);
+        RadianEuler bone_rot[linearbone.numbones] <bgcolor=cLtGreen>;
+        
+        FSeek(startof(linearbone) + linearbone.posetoboneindex);
+        matrix3x4_t bone_poseToBone[linearbone.numbones] <bgcolor=cLtGreen>;
+    };
+
+    mstudiolinearbonedata_t linearbonedata;
+};

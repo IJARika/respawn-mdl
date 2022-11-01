@@ -1,0 +1,234 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: rmdl, rrig
+//   Authors: Rika
+//   Version: 16
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.rmdl, *.rrig
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "../source_math.bt"
+#include "../mdl/mdl_structs.bt"
+#include "../rmdl/rmdl_structs.bt"
+
+local int i = 0;
+local int j = 0;
+local int k = 1;
+local int x = 0;
+
+
+// header
+rstudiohdr_t_v16 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+
+
+// funny strings that work the same always
+#include "../mdl/mdl_v52_module_mayastrings.bt"
+
+
+// do bones
+FSeek(mdlHeader.boneindex);
+mstudiobone_t_v16 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+
+// do attachements
+FSeek(mdlHeader.localattachmentindex);
+mstudioattachment_t_v16 attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
+
+
+// global hitbox for v54 since it doesn't change
+#include "../rmdl/rmdl_v16_module_hitbox.bt"
+
+
+FSeek(mdlHeader.bonetablebynameindex);
+mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
+
+
+// seqs change for v12.2, or aseq v10.
+#include "../rmdl/rmdl_v16_module_sequences.bt"
+
+
+
+// models
+// these change between v12.1/v13/v14 because Respawn.
+FSeek(mdlHeader.bodypartindex);
+mstudiobodyparts_t_v16 bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
+
+if(mdlHeader.numbodyparts)
+{
+    local int modelCount = 0;
+    
+    for (i = 0; i < mdlHeader.numbodyparts; ++i)
+    {
+       modelCount += bodyparts[i].nummodels;
+    }
+    
+    FSeek(startof(bodyparts) + bodyparts.modelindex);
+    mstudiomodel_t_v16 models[modelCount] <bgcolor=cDkGray>;
+}
+
+
+// setup nodes, not fully understood
+// nodes have names
+if(mdlHeader.numlocalnodes > 0)
+{
+    FSeek(mdlHeader.localnodenameindex);
+    uint16 nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(mdlHeader.localnodenameindex + this)>;
+    
+    uint16 nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
+}
+
+
+FSeek(mdlHeader.localposeparamindex);
+mstudioposeparamdesc_t_v16 poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
+
+
+// do ikchains
+FSeek(mdlHeader.ikchainindex);
+mstudioikchain_t_v16 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+
+local int linkCount = 0;
+
+// get link count
+for (i = 0; i < mdlHeader.numikchains; ++i)
+{
+   linkCount += ikchains[i].numlinks;
+}
+
+// do links
+mstudioiklink_t_v54 iklinks[linkCount] <bgcolor=0x7d3c98>;
+
+
+if(mdlHeader.numbodyparts)
+{  
+    // meshes
+    // can't find an offset for this so it goes here.
+    local int meshCount = 0;
+    
+    for (i = 0; i < modelCount; ++i)
+    {
+       meshCount += models[i].nummeshes;
+    }
+    
+    FSeek(startof(bodyparts) + bodyparts.meshindex);
+    mstudiomesh_t_v16 meshes[meshCount] <bgcolor=cLtGray>;
+}
+
+
+// various includes, materials, and groups
+
+// we no longer do include model because that's handled in the rpak header.
+
+
+// do textures
+FSeek(mdlHeader.textureindex);
+mstudiotexture_t_v16 textures[mdlHeader.numtextures] <bgcolor=cGreen>;
+
+// do material types if they exist
+/*(mdlHeader.materialtypesindex > 0)
+{
+    FSeek(mdlHeader.materialtypesindex);
+    MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
+}*/
+
+// do skingroups
+FSeek(mdlHeader.skinindex);
+mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+
+// do skingroup names if they exist
+if(mdlHeader.numskinfamilies > 1)
+{
+    short skingroupnames[mdlHeader.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
+}
+
+// do keyvalues, this remains unchanged in all models since it's just char data.
+if(mdlHeader.keyvalueindex)
+{
+    FSeek(mdlHeader.keyvalueindex);
+    string keyvalues_char <fgcolor=cLtBlue>;
+}
+
+// basically if the name is small enough to fit into 32 bytes it isn't stored in the string block
+if(mdlHeader.sznameindex > sizeof(rstudiohdr_t_v16))
+{
+    FSeek(mdlHeader.sznameindex);
+    char stringtable[mdlHeader.bonedataindex - mdlHeader.sznameindex] <fgcolor=cLtRed>;
+}
+else
+{ 
+    FSeek(mdlHeader.surfacepropindex);
+    char stringtable[mdlHeader.bonedataindex - mdlHeader.surfacepropindex] <fgcolor=cLtRed>;
+}
+
+
+FSeek(mdlHeader.bonedataindex);
+mstudiobonedata_t_v16 bonedata[mdlHeader.numbones] <bgcolor=cLtGreen>;
+
+
+local int jigglebonecount = 0;
+
+// get jiggle bone count
+for (i = 0; i < mdlHeader.numbones; ++i)
+{
+    if (bonedata[i].proctype == 5) {
+        jigglebonecount++;
+    }
+}
+
+// do jigglebones
+mstudiojigglebone_t_v54 jigglebones[jigglebonecount] <bgcolor=cGreen, read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex)>;
+
+
+// related to physics bones?
+if(mdlHeader.m_nBoneFlexDriverCount)
+{
+    FSeek(mdlHeader.m_nBoneFlexDriverIndex);
+    ubyte unkboneindex[mdlHeader.m_nBoneFlexDriverCount] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
+    
+    FSeek(mdlHeader.unkindexflex);
+    byte unkbonearray[mdlHeader.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
+}
+
+FSeek(mdlHeader.srcbonetransformindex);
+mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
+
+#include "../rmdl/rmdl_v16_module_linearbone.bt"
+
+
+// unchanged between subversions
+#include "../rmdl/rmdl_v16_module_rui.bt"
+
+/*// global string table setup, only changes for v14
+#include "../rmdl/rmdl_v54_v14_module_stringtable.bt"
+
+
+// unkdata headers changed in v12
+#include "../rmdl/rmdl_v54_v12_module_unkdata.bt"
+
+
+// unsure what this is for, same as v53
+#include "../mdl/mdl_v53_module_unk3.bt"
+*/
+
+if(mdlHeader.unkcount3)
+{
+    FSeek(GetRMDLOffset(mdlHeader.unkindex3));
+    short unk3[mdlHeader.unkcount3] <bgcolor=cLtYellow>;
+}
+
+// third set of core parts, done like this for spacing.
+#include "../rmdl/rmdl_v16_vg.bt"
+
+
+// unkdata
+if(mdlHeader.unkindex4)
+{
+    FSeek(GetRMDLOffset(mdlHeader.unkindex4));
+    unkheader_v54 unkhdr <bgcolor=cDkBlue>;
+    unksectionheader_v54_v12 unksecthdr[unkhdr.numsections] <bgcolor=cBlue>;
+    unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;
+}

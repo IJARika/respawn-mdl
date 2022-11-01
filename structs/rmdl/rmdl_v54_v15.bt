@@ -63,7 +63,7 @@ mstudiomodel_t_v54_v14 models[modelCount] <bgcolor=cDkGray>;
 
 
 // v54 node
-#include "../rmdl/rmdl_v54_module_nodes.bt"
+#include "../rmdl/rmdl_v54_v141_module_nodes.bt"
 
 
 FSeek(mdlHeader.localposeparamindex);

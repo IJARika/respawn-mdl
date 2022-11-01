@@ -18,6 +18,23 @@
 // these are just all structs that I have mostly working/fitting, it does not mean they are correct.
 // a lot of these are from either valvedevwiki, the public source sdk 2013 code, and crowbar.
 
+//==================
+// Generic Functions
+
+int GetRMDLOffset(int offset)
+{
+    local int fixedOffset = ((offset & 0xFFFE) << (4 * (offset & 1)));
+
+    return fixedOffset;
+}
+
+// whar
+/*int GetMDLString(int index)
+{
+    local int relativeIndex = startof(parentof(index)) + index;
+
+    return relativeIndex;
+}*/
 
 //========
 // Headers
@@ -919,6 +936,118 @@ struct studiohdr_t_v54_v14
     int unk1_v54_v13[3];
 };
 
+struct rstudiohdr_t_v16
+{
+    int flags <read=ReadHeaderFlags(this)>;
+	int checksum; // unsure if this is still checksum, there isn't any other files that have it still
+	short sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
+	char name[32]; // The internal name of the model, padding with null bytes.
+                   // Typically "my_model.mdl" will have an internal name of "my_model"
+	byte unk_v16;
+
+    byte surfacepropLookup; // saved in the file
+ 
+    float mass;
+
+    int unk1_v16;
+
+	uint16 hitboxsetindex;
+    byte numhitboxsets;
+
+    byte illumpositionattachmentindex;
+
+	Vector3 illumposition;	// illumination center
+	
+	Vector3 hull_min;		// ideal movement hull size
+	Vector3 hull_max;			
+
+	Vector3 view_bbmin;		// clipping bounding box
+	Vector3 view_bbmax;		
+  
+	short numbones; // bones
+	uint16 boneindex;
+    uint16 bonedataindex;
+
+    short numlocalseq; // sequences
+	uint16 localseqindex;
+
+    byte unkfill[5];
+
+    byte numlocalattachments;
+	uint16 localattachmentindex;
+
+    short numlocalnodes;
+	uint16 localnodenameindex;
+    uint16 localnodeindex;
+
+	short numikchains;
+	uint16 ikchainindex;
+
+    short numtextures; // the material limit exceeds 128, probably 256.
+	uint16 textureindex;
+
+    // replaceable textures tables
+	short numskinref;
+	short numskinfamilies;
+	uint16 skinindex;
+
+    short numbodyparts;		
+	uint16 bodypartindex;
+
+    // this is rui meshes
+	short numruimeshes;
+	uint16 ruimeshindex;
+
+    short numlocalposeparameters;
+	uint16 localposeparamindex;
+
+    uint16 surfacepropindex <read=ReadString(this)>;
+
+    uint16 keyvalueindex;
+
+	uint16 vgmeshindex;
+    short numvgmeshes;
+
+    short bonetablebynameindex;
+
+    uint16 boneremapindex;
+    short numboneremaps;
+
+    uint16 vgloddataindex;
+    short numvgloddata;
+
+	uint16 vglodheaderindex;
+    short numvglodheader;
+
+    float fadedistance;
+	
+	float gathersize; // what. from r5r struct
+
+    short numsrcbonetransform;
+    uint16 srcbonetransformindex;
+
+    // asset bakery strings if it has any
+	uint16 mayaindex;
+
+    uint16 linearboneindex;
+
+    short m_nBoneFlexDriverCount; // unsure if that's what it is in apex
+	uint16 m_nBoneFlexDriverIndex;	
+    uint16 unkindexflex;
+
+    short unkcount3; // same as v54
+    uint16 unkindex3; // same as v54
+
+    uint16 unkindex4; // same as v54
+
+    byte unk5_v16; // unk4_v54[0]
+    byte unk6_v16; // unk4_v54[1]
+    short unk7_v16; // unk4_v54[2]
+    short unk8_v16;
+    short unk9_v16;
+
+    //uint16 unkshorts[7];
+};
 
 //=============
 // Bone Structs
@@ -977,7 +1106,7 @@ struct mstudiobone_t_v54_v121
 	Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	int proctype;
+	int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule
 	int physicsbone; // index into physically simulated bone
 	
@@ -990,6 +1119,45 @@ struct mstudiobone_t_v54_v121
     byte unkid; // this is separate because it's set to 0xFF when unused (-1)
 
     byte unk1[3]; // maybe this is 'unk'?
+};
+
+struct mstudiobone_t_v16
+{
+    int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
+
+    byte unk;
+
+    byte surfacepropLookup; // written on compile in v54
+
+    short surfacepropidx <read=ReadString(startof(this) + this - 6)>; // index into string tablefor property name
+
+    short physicsbone; // index into physically simulated bone
+
+	short sznameindex <read=ReadString(startof(this) + this - 10)>;
+};
+
+struct mstudiobonedata_t_v16
+{
+	matrix3x4_t poseToBone;
+	Quaternion qAlignment;
+
+    // default values
+	Vector3 pos;
+	Quaternion quat;
+	RadianEuler rot;
+
+    Vector3 unkvector; // the same as whatever v53 is
+
+    short parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone;
+
+    short unk1;
+
+    int flags <read=ReadBoneFlags(this)>;
+
+    byte unkid;
+
+	byte proctype <read=ReadProcFlags(this)>;
+    uint16 procindex; // procedural rule
 };
 
 // jigglebone
@@ -1057,6 +1225,15 @@ struct mstudioattachment_t_v54
 	matrix3x4_t			localmatrix; // attachment point
 };
 
+struct mstudioattachment_t_v16
+{
+	short sznameindex <read=ReadString(startof(this) + this)>;
+    short localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
+	int flags;
+
+	matrix3x4_t			localmatrix; // attachment point
+};
+
 // ikchain
 struct mstudioikchain_t_v54
 {
@@ -1065,6 +1242,18 @@ struct mstudioikchain_t_v54
 	int linktype;
 	int numlinks;
 	int linkindex;
+    
+    float unk; // no clue what this does tbh, tweaking it does nothing
+               // default value: 0.707f
+};
+
+struct mstudioikchain_t_v16
+{
+	uint16 sznameindex <read=ReadString(startof(this) + this)>;
+
+	short linktype;
+	short numlinks;
+	uint16 linkindex;
     
     float unk; // no clue what this does tbh, tweaking it does nothing
                // default value: 0.707f
@@ -1097,6 +1286,24 @@ struct mstudiolinearbone_t_v54
 	int posetoboneindex;
 };
 
+struct mstudiolinearbone_t_v16
+{
+    // they cut pos and rot scale, understandable since posscale was never used it tf|2 and they do anims different in apex
+	short numbones;
+
+	short flagsindex;
+
+	short	parentindex;
+	
+	short	posindex;
+	
+	short quatindex;
+	
+	short rotindex;
+	
+	short posetoboneindex;
+};
+
 // bone remaps
 struct mstudioboneremaptable_t
 {
@@ -1108,6 +1315,29 @@ struct mstudioboneremaptable_t
 //===============
 // Hitbox Structs
 
+
+enum <short> hboxgroup_v16
+{
+    aGeneric = 0,
+    aHead = 1,
+    aChest = 2,
+    aStomach = 3,
+    aLeft_Arm = 4,
+    aRight_Arm = 5,
+    aLeft_Leg = 6,
+    aRight_Leg = 7,
+    aNeck = 8
+};
+
+
+// hitbox sets
+struct mstudiohitboxset_t_v16
+{
+	short sznameindex <read=ReadString(startof(this) + this)>;
+
+	short numhitboxes;
+	short hitboxindex;
+};
 
 // hit box boxes
 struct mstudiobbox_t_v54
@@ -1123,6 +1353,19 @@ struct mstudiobbox_t_v54
     int critoverride; // overrides the group to be a crit, 0 or 1. might be group override since group 1 is head.
 
     int keyvalueindex <read=ReadString(startof(this) + this - 40)>; // used for keyvalues, most for titans.
+};
+
+struct mstudiobbox_t_v16
+{
+	short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+	hboxgroup_v16 group; // intersection group
+
+	Vector3 bbmin; // bounding box
+	Vector3 bbmax;	
+
+	uint16 szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
+
+    uint16 keyvalueindex <read=ReadString(startof(this) + this - 30)>; // used for keyvalues, most for titans.
 };
 
 
@@ -1194,6 +1437,41 @@ struct mstudioanimdesc_t_v54_v121
     // it seems like there's another int here but I'm unsure
 };
 
+struct mstudioanimdesc_t_v16
+{
+	//int baseptr;
+
+	float fps; // frames per second	
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+
+	short numframes;
+
+	// piecewise movement
+	//short nummovements;
+	//short movementindex;
+
+    short unk_v16;
+
+    uint16 sznameindex <read=ReadString(startof(parentof(this)) + this)>;    
+
+    uint16 compressedikerrorindex;
+
+	int animindex; // non-zero when anim data isn't in sections
+
+	short numikrules;
+	uint16 ikruleindex; // non-zero when IK data is stored in the mdl
+
+    uint16 unk1[5];
+
+	uint16 sectionindex;
+
+    uint16 unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
+
+    uint16 sectionframes; // number of frames used in each fast lookup section, zero if not used
+
+    // it seems like there's another int here but I'm unsure
+};
+
 struct sectionindexes_t_v54
 {
     mstudioanimsections_t_v53 sectionoffsets[((animdesc[i].numframes - 1) / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
@@ -1203,6 +1481,12 @@ struct mstudioanimsections_t_v54_v121
 {
 	int animindex;
     int isExternal; // 0 or 1, if 1 section is not in rseq (I think)
+};
+
+struct mstudioanimsections_t_v16
+{
+	uint16 animindex;
+    short isExternal; // -1 if not present
 };
 
 struct sectionindexes_t_v54_v121
@@ -1380,7 +1664,7 @@ struct mstudioikrule_t_v54
 
     int szattachmentindex; // name of world attachment
 
-    int unk; // there is an int here in apex and 9 unused doesn't make sense.
+    int unk1; // there is an int here in apex and 9 unused doesn't make sense.
 
     
 };
@@ -1425,6 +1709,54 @@ struct mstudioikrule_t_v54_new
     //int unused[9];
 };
 
+// this struct is really incomplete but I'm not sure how to fill it
+struct mstudioikrule_t_v16
+{
+    int index;
+    //ikruletype type;
+    byte type;
+    byte chain;
+    short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+
+    int slot; // iktarget slot. Usually same as chain.
+    float height;
+    float radius;
+    float floor;
+
+    char unkfill[8];
+
+    //Vector3 pos;
+    //Quaternion q;
+
+    //float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+	//int16 offset[6];
+
+    //int unk1[3];
+
+    //int compressedikerrorindex;
+
+    int unkindex;
+
+    int iStart;
+    //int ikerrorindex;
+
+    float start; // beginning of influence
+    float peak; // start of full influence
+    float tail; // end of full influence
+    float end; // end of all influence
+
+    float contact; // frame footstep makes ground concact
+    float drop; // how far down the foot should drop when reaching for IK
+    float top; // top of the foot box
+
+    char fill[44];
+
+    //int szattachmentindex; // name of world attachment
+
+    //int unk;
+
+    //int unused[9];
+};
 
 struct mstudiocompressedikerror_t_v54
 {
@@ -1508,6 +1840,83 @@ struct mstudioseqdesc_t_v54
     int unkcount;
 };
 
+struct mstudioseqdesc_t_v16
+{
+	short szlabelindex <read=ReadString(startof(this) + this)>;
+
+	short szactivitynameindex <read=ReadString(startof(this) + this - 2)>;
+
+	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+
+	short activity; // initialized at loadtime to game DLL values
+	short actweight;
+
+	short numevents;
+	short eventindex;
+	
+	Vector3 bbmin; // per sequence bounding box
+	Vector3 bbmax;		
+
+	short numblends;
+
+	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
+	short animindexindex;
+
+	//short movementindex; // [blend] float array for blended movement
+	short paramindex[2]; // X, Y, Z, XR, YR, ZR
+	float paramstart[2]; // local (0..1) starting value
+	float paramend[2]; // local (0..1) ending value
+	//short paramparent;
+
+	float fadeintime; // ideal cross fate in time (0.2 default)
+	float fadeouttime; // ideal cross fade out time (0.2 default)
+
+    byte fill[4];
+
+    // stuff is different after this
+    /*
+	short localentrynode; // transition node at entry
+	short localexitnode; // transition node at exit
+	short nodeflags; // transition rules
+
+	float entryphase; // used to match entry gait
+	float exitphase; // used to match exit gait
+	
+	float lastframe; // frame that should generation EndOfSequence
+
+	short nextseq; // auto advancing sequences
+	short pose; // index of delta animation between end and nextseq*/
+
+	short numikrules;
+
+	short numautolayers;
+	uint16 autolayerindex;
+
+	uint16 weightlistindex;
+
+    byte groupsize[2];
+
+    uint16 posekeyindex;
+
+	short numiklocks;
+	short iklockindex;
+
+	// Key values
+	uint16 keyvalueindex;
+	short keyvaluesize;
+
+	//short cycleposeindex; // index of pose parameter to use as cycle index
+
+    short activitymodifierindex;
+	short numactivitymodifiers;
+
+	int unk;
+    int unk1;
+
+    uint16 unkindex;
+    short unkcount;
+};
+
 struct mstudioautolayer_t_v54
 {
     // this needs to have a guid descriptor in rpak
@@ -1540,17 +1949,43 @@ struct mstudioevent_t_v54_v122
 	int	event;
 	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 
-    int unk;
+    int unk; // 2, 4, animseq/weapons/crypto_heirloom/ptpov_sword_crypto/draw.rseq
 
 	char options[256]; // this is the only difference compared to normal v54
 
 	int szeventindex <read=ReadString(startof(this) + this - 272)>;
 };
 
+struct mstudioevent_t_v16
+{
+	float cycle;
+	int	event;
+	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
+
+    int unk;
+
+	short szoptionsindex <read=ReadString(startof(this) + this - 16)>;
+
+    short szeventindex <read=ReadString(startof(this) + this - 18)>;
+};
+
 struct blendgroup_t_v54
 {
     // this is an offset now
     int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
+};
+
+struct blendgroup_t_v16
+{
+    // this is an offset now
+    uint16 blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
+};
+
+struct mstudioactivitymodifier_t_v16
+{	
+	short sznameindex <read=ReadString(startof(this) + this)>;
+
+    short unk; // 0 or 1 observed.
 };
 
 // wraith_menu_select.rseq
@@ -1570,6 +2005,17 @@ struct unkseqdata_t
     float unkfloat4;
 };
 
+// pose parameter desc
+struct mstudioposeparamdesc_t_v16
+{
+	uint16 sznameindex <read=ReadString(startof(this) + this)>;
+
+	short flags; // ????
+	float start; // starting value
+	float end; // ending value
+	float loop;	// looping range, 0 for no looping, 360 for rotations, etc.
+};
+
 //===================
 // Model/Mesh Structs
 
@@ -1577,13 +2023,22 @@ struct unkseqdata_t
 // bodyparts
 struct mstudiobodyparts_t_v54_v15
 {
-	int sznameindex;
+	int sznameindex <read=ReadString(startof(this) + this)>;
 	int nummodels;
 	int base;
 	int modelindex; // index into models array
 
     int unk;
     int meshindex; // start of meshes?
+};
+
+struct mstudiobodyparts_t_v16
+{
+	uint16 sznameindex <read=ReadString(startof(this) + this)>;
+    uint16 modelindex;
+    int base;
+	int nummodels;
+	int meshindex; // index into models array
 };
 
 // studio models
@@ -1618,8 +2073,10 @@ struct mstudiomodel_t_v54
     // same as v53, except trimming the fat
 	int unk[4];
 
-    int unkindex;
-    int unkindex1;
+    int colorindex; // vertex color
+                    // offset by colorindex number of bytes into vvc vertex colors
+    int uv2index; // vertex second uv map
+                  // offset by uv2index number of bytes into vvc secondary uv map
 };
 
 struct mstudiomodel_t_v54_v121
@@ -1646,8 +2103,10 @@ struct mstudiomodel_t_v54_v121
 	int numattachments;
 	int attachmentindex;
 
-    int unkindex;
-    int unkindex1;
+    int colorindex; // vertex color
+                    // offset by colorindex number of bytes into vvc vertex colors
+    int uv2index; // vertex second uv map
+                  // offset by uv2index number of bytes into vvc secondary uv map
 };
 
 struct mstudiomodel_t_v54_v13
@@ -1674,10 +2133,12 @@ struct mstudiomodel_t_v54_v13
 	int numattachments;
 	int attachmentindex;
 
-    int unkindex;
-    int unkindex1;
+    int colorindex; // vertex color
+                    // offset by colorindex number of bytes into vvc vertex colors
+    int uv2index; // vertex second uv map
+                  // offset by uv2index number of bytes into vvc secondary uv map
 
-	int unk;
+	int unk; // same as uv2index, did they add something to vvc/0tVG?
 };
 
 struct mstudiomodel_t_v54_v14
@@ -1707,10 +2168,29 @@ struct mstudiomodel_t_v54_v14
 	int numattachments;
 	int attachmentindex;
 
-    int unkindex; // not written in v14.1 (s14 v14)
-    int unkindex1; // not written in v14.1 (s14 v14)
+
+    int colorindex; // vertex color
+                    // offset by colorindex number of bytes into vvc vertex colors
+                    // not written in v14.1 (s14 v14)
+    int uv2index; // vertex second uv map
+                  // offset by uv2index number of bytes into vvc secondary uv map
+                  // not written in v14.1 (s14 v14)
 
 	int unk;
+};
+
+struct mstudiomodel_t_v16
+{
+
+    short unkindex2 <read=ReadString(startof(this) + this)>;
+
+	short nummeshes;	
+
+	// first is the same as nummeshes?
+    short unk_v14;
+    short unk1_v14;
+
+    uint16 meshindex;
 };
 
 // meshes
@@ -1757,12 +2237,21 @@ struct mstudiomesh_t_v54_v121
 
     Vector3 center;
 
-	// a unique ordinal for this mesh
-	//int meshid;
-
 	mstudio_meshvertexdata_t vertexdata;
     
 	int unk[2]; // these are suposed to be filled on load, however this isn't true??
+};
+
+struct mstudiomesh_t_v16
+{
+	short material;
+
+    // a unique ordinal for this mesh
+	short meshid;
+
+    byte unk[4];
+
+    Vector3 center;
 };
 
 
@@ -1775,6 +2264,11 @@ struct mstudiotexture_t_v54
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
+	int64 guid <read=Str("%s - %LX", "matl", this)>;
+};
+
+struct mstudiotexture_t_v16
+{
 	int64 guid <read=Str("%s - %LX", "matl", this)>;
 };
 
@@ -1798,10 +2292,12 @@ enum <byte> MaterialShaderType_t
 // RUI
 
 
+// not actually fourth vert wtf??
 struct mstudioruifourthvertv54_t
 {
     // -1 if unused, dedicated slot for fourth vert
-    int16 vertextra;
+    byte vertextra;
+    byte vertextra1;
 };
 
 struct mstudioruimesh_t_v54
@@ -1815,6 +2311,7 @@ struct mstudioruimesh_t_v54
     int parentindex; // this gets padding out front of it to even off the struct
 
     int vertexindex; // offset into smd style vertex data
+    // not actually fourth vert wtf??
     int fourthvertmapindex; // they now fully map the vertices for each quad
     int vertmapindex; // offsets into a vertex map for each quad
     int facedataindex; // offset into uv section
@@ -1866,7 +2363,7 @@ struct unksectionheader_v54_v12
 
 struct unkheaderdata_v54
 {
-    int unk[2];
+    byte unk[unkhdr.dataindex1 - unkhdr.dataindex2];
     int unk1;
     int unk2;
 };
@@ -1883,6 +2380,16 @@ struct unkdata_t
     short unk5[4]; // max
 
     int unk6[4];
+};
+
+struct unkdata2section_t
+{
+    int unk[6];
+};
+
+struct unkdata2_t
+{
+    unkdata2section_t unk[2];
 };
 
 //========
@@ -1937,6 +2444,23 @@ struct vgLoDdata_t
     // alignment?
     int16 unk3; // never filled, maybe this is int32 above should never exceed 128 so unsure
 };
+
+struct vgLoDdata_t_v16
+{
+    int vgoffset; // offset to this section in vg
+    int unk;
+    int vgsize; // decompressed size of data in vg
+
+    byte numMeshes;
+
+    // this could also be vg section index
+    byte lodlevel; // 0, 1, 2, 3, etc
+    byte numlods; // normally 1, stolen from vg structs
+
+    // ids for something
+    byte unk2; // powers of two
+};
+
 
 struct vgmesh_t
 {
