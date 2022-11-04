@@ -1262,7 +1262,7 @@ struct mstudioikchain_t_v16
 // ikinfo
 struct mstudioiklink_t_v54
 {
-	uint32 bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	Vector3	unused0; // no kneeDir in apex I think
 };
 
@@ -1483,10 +1483,30 @@ struct mstudioanimsections_t_v54_v121
     int isExternal; // 0 or 1, if 1 section is not in rseq (I think)
 };
 
+/*int GetRMDLOffset(int offset)
+{
+    local int fixedOffset = ((offset & 0xFFFE) << (4 * (offset & 1)));
+
+    return fixedOffset;
+}*/
+
+int ReadSectionIndex(unsigned short index, short offset)
+{
+    local int realIndex = 0;
+    local int base = 65535;
+
+    realIndex += (offset * 65535) + index + (offset + 1);
+
+    //realIndex += offset - index;
+
+    return Abs(realIndex);
+};
+
 struct mstudioanimsections_t_v16
 {
-	uint16 animindex;
-    short isExternal; // -1 if not present
+	unsigned short animindex;  // signed but not, I love it
+    short isExternal; // pretty sure this is an offset now but I don't know how to read it not jank
+
 };
 
 struct sectionindexes_t_v54_v121
@@ -1634,9 +1654,9 @@ struct mstudio_rle_anim_t_v54
 struct mstudioikrule_t_v54
 {
     int index;
-    ikruletype type;
+    int type <read=ReadIKRuleType(this)>;
     int chain;
-    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+    int bone; // gets it from ikchain now pretty sure
 
     int slot; // iktarget slot. Usually same as chain.
     float height;
@@ -1672,9 +1692,9 @@ struct mstudioikrule_t_v54
 struct mstudioikrule_t_v54_new
 {
     int index;
-    ikruletype type;
+    int type <read=ReadIKRuleType(this)>;
     int chain;
-    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+    int bone; // gets it from ikchain now pretty sure
 
     int slot; // iktarget slot. Usually same as chain.
     float height;
@@ -1713,8 +1733,7 @@ struct mstudioikrule_t_v54_new
 struct mstudioikrule_t_v16
 {
     int index;
-    //ikruletype type;
-    byte type;
+    byte type <read=ReadIKRuleType(this)>;
     byte chain;
     short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 
@@ -2447,9 +2466,9 @@ struct vgLoDdata_t
 
 struct vgLoDdata_t_v16
 {
-    int vgoffset; // offset to this section in vg
-    int unk;
-    int vgsize; // decompressed size of data in vg
+    int vgoffset; // offset to this section in compressed vg
+    int vgsizecompressed; // compressed size of data in vg
+    int vgsizedecompressed; // decompressed size of data in vg
 
     byte numMeshes;
 

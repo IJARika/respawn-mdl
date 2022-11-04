@@ -70,8 +70,7 @@ mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=Str("%s : %s : %i", 
 
 // more bones
 FSeek(mdlHeader.bonetablebynameindex);
-mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
-
+ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 
 // animation
 FSeek(mdlHeader.localanimindex);
@@ -223,7 +222,12 @@ if(mdlHeader.numlocalanim)
                                     if(ikcompressederror.offset[g])
                                     {
                                         FSeek(startof(ikcompressederror) + ikcompressederror.offset[g]);
-                                        mstudioanimvalue_t animvalueik <bgcolor=0x228822>;
+                                        struct {
+                                            mstudioanimvalue_t animvalue <bgcolor=0x228822>;
+            
+                                            if(animvalue.num.valid > 0)
+                                                short value[animvalue.num.valid];
+                                        } animvalueik;
                                     }
                                 }
                             } compressed_ik_values;
@@ -234,7 +238,7 @@ if(mdlHeader.numlocalanim)
                             FSeek(startof(animikrule[j]) + animikrule[j].szattachmentindex);
                             struct {
                                 string ikattachment <fgcolor=cGreen>;
-                            } attachemntstring;
+                            } attachmentstring;
                         }
                     }
                 }
@@ -250,7 +254,12 @@ if(mdlHeader.numlocalanim)
                             if(ikcompressederror_v52.offset[g])
                             {
                                 FSeek(startof(ikcompressederror_v52) + ikcompressederror_v52.offset[g]);
-                                mstudioanimvalue_t animvalueik <bgcolor=0x99CC99>;
+                                struct {
+                                    mstudioanimvalue_t animvalue <bgcolor=0x99CC99>;
+                                
+                                    if(animvalue.num.valid > 0)
+                                        short value[animvalue.num.valid];
+                                } animvalueik;
                             }
                         }
                     } compressed_ik_values;

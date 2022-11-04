@@ -74,7 +74,7 @@ for(k = 0; k < numanims; k++)
                     local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
-                    mstudioanimsections_t_v54_v121 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
+                    mstudioanimsections_t_v54_v121 sectionindexes[sectionlength] <read=Str("idx %i", this.animindex), bgcolor=cLtBlue>;
         
                     local int nullsections = 0;
 

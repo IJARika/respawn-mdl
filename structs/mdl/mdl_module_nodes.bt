@@ -21,7 +21,7 @@
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionodename_t nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
+    int localnodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this)>;
 
     FSeek(mdlHeader.localnodeindex);
     mstudionodedata nodedata[mdlHeader.numlocalnodes] <bgcolor=cLtYellow>;

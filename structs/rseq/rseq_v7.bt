@@ -86,7 +86,7 @@ for(k = 0; k < numanims; k++)
                     for(i = 0; i < sectionlength; i++)
                     {
                         // gotta check here because apparently it can have sections but no data???
-                        if(sectionindexes[i].animindex && (blends[k] + sectionindexes[i].animindex) < seqdesc.szlabelindex
+                        if(sectionindexes[i].animindex && (blends[k] + sectionindexes[i].animindex) < seqdesc.szlabelindex)
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);

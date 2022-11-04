@@ -1290,6 +1290,8 @@ string ReadProcFlags(uint flags)
 #define BONE_HAS_SAVEFRAME_ROT64	0x00400000	// Quaternion64
 #define BONE_HAS_SAVEFRAME_ROT32	0x00800000	// Quaternion32
 
+#define BONE_FLAG_UNK_52            0x01000000
+
 string ReadBoneFlags(uint flags)
 {
     string value = "";
@@ -2513,21 +2515,55 @@ struct mstudio_rle_anim_t_v53
 };
 
 // ik rule
-enum ikruletype
+#define IK_SELF 1
+#define IK_WORLD 2
+#define IK_GROUND 3
+#define IK_RELEASE 4
+#define IK_ATTACHMENT 5
+#define IK_UNLATCH 6
+
+string ReadIKRuleType(byte flags)
 {
-    IK_SELF = 1,
-    IK_WORLD = 2,
-    IK_GROUND = 3,
-    IK_RELEASE = 4,
-    IK_ATTACHMENT = 5,
-    IK_UNLATCH = 6
-};
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    switch(flags)
+    {
+    case 0:
+        break;
+    case IK_SELF:
+        value += "IK_SELF";
+        break;
+    case IK_WORLD:
+        value += "IK_WORLD";
+        break;
+    case IK_GROUND:
+        value += "IK_GROUND";
+        break;
+    case IK_RELEASE:
+        value += "IK_RELEASE";
+        break;
+    case IK_ATTACHMENT:
+        value += "IK_ATTACHMENT";
+        break;
+    case IK_UNLATCH:
+        value += "IK_UNLATCH";
+        break;
+    default:
+        value += Str("UNK_%x", flag);
+        break;
+    }
+
+    return value;
+}
 
 struct mstudioikrule_t
 {
 	int index;
 
-	ikruletype type;
+	int type <read=ReadIKRuleType(this)>;
 	int chain;
 
 	int	bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
@@ -2569,7 +2605,7 @@ struct mstudioikrule_t
 struct mstudioikrule_t_v53
 {
     int index;
-    ikruletype type;
+    int type <read=ReadIKRuleType(this)>;
     int chain;
     int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 

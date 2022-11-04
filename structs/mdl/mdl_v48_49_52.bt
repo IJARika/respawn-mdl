@@ -19,6 +19,8 @@ local int i = 0;
 local int j = 0;
 local int k = 1;
 local int x = 0;
+local int g = 0;
+
 
 
 // version before the header is created.
@@ -109,7 +111,200 @@ local int numikrule = 0;
 local int numsections = 0;
 local int sectionlength = 0;
 
-for (i = 0; i < mdlHeader.numlocalanim; ++i)
+if(mdlHeader.numlocalanim)
+{
+    struct {
+        for (i = 0; i < mdlHeader.numlocalanim; ++i)
+        {
+            struct {
+                if(animdesc[i].sectionindex)
+                {
+                    struct {
+                        local int sectionlength = (animdesc[i].numframes / animdesc[i].sectionframes) + 2;
+    
+                        FSeek(startof(animdesc[i]) + animdesc[i].sectionindex);
+                        mstudioanimsections_t sectionindexes[sectionlength] <bgcolor=cLtBlue>;
+    
+                        for(k = 0; k < sectionlength; k++)
+                        {
+                            if(sectionindexes[k].animindex && !sectionindexes[k].animblock)
+                            {
+                                struct {
+                                    FSeek(startof(animdesc[i]) + sectionindexes[k].animindex);
+                            
+                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                    {
+                                        struct {
+                                            mstudio_rle_anim_t sectionanimheader <bgcolor=0x771122>;
+    
+                                            /*if(!(sectionanimheader.flags & STUDIO_ANIM_RAWROT_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animrot.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animrot) + sectionanimheader.animrot.offset[g]);
+                                                        mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if(!(sectionanimheader.flags & STUDIO_ANIM_RAWPOS_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animpos.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animpos) + sectionanimheader.animpos.offset[g]);
+                                                        mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }
+                                            
+                                            if(!(sectionanimheader.flags & STUDIO_ANIM_RAWSCALE_53))
+                                            {
+                                                for(g = 0; g < 3; g++)
+                                                {
+                                                    if(sectionanimheader.animscale.offset[g])
+                                                    {
+                                                        FSeek(startof(sectionanimheader.animscale) + sectionanimheader.animscale.offset[g]);
+                                                        mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
+                                                    }
+                                                }
+                                            }*/
+    
+                                            FSeek(startof(sectionanimheader) + sectionanimheader.nextoffset);
+                                        } section_anim_header_data;
+
+                                        if(section_anim_header_data.sectionanimheader.nextoffset <= 0)
+                                                break;
+                                    }
+                                } section;
+                            }
+                        }
+                    } sectionanimation;
+                }
+                else
+                {
+                    struct {
+                        FSeek(startof(animdesc[i]) + animdesc[i].animindex);
+    
+                        for(j = 0; j < mdlHeader.numbones; j++)
+                        {
+                            struct {
+                                mstudio_rle_anim_t animheader <bgcolor=cBlue>;
+    
+                                /*if(!(animheader.flags & STUDIO_ANIM_RAWROT_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animrot.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animrot) + animheader.animrot.offset[g]);
+                                            mstudioanimvalue_t animvaluerot <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }
+                                
+                                if(!(animheader.flags & STUDIO_ANIM_RAWPOS_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animpos.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animpos) + animheader.animpos.offset[g]);
+                                            mstudioanimvalue_t animvaluepos <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }
+                                
+                                if(!(animheader.flags & STUDIO_ANIM_RAWSCALE_53))
+                                {
+                                    for(g = 0; g < 3; g++)
+                                    {
+                                        if(animheader.animscale.offset[g])
+                                        {
+                                            FSeek(startof(animheader.animscale) + animheader.animscale.offset[g]);
+                                            mstudioanimvalue_t animvaluescale <bgcolor=0xFF6600>;
+                                        }
+                                    }
+                                }*/
+    
+                                FSeek(startof(animheader) + animheader.nextoffset);     
+                            } anim_header_data;
+
+                            if(anim_header_data.animheader.nextoffset <= 0)
+                                    break;
+                        }
+                    } animation;
+                }
+    
+                if(animdesc[i].numikrules)
+                {
+                    FSeek(startof(animdesc[i]) + animdesc[i].ikruleindex);
+                    mstudioikrule_t animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
+
+                    for(j = 0; j < animdesc[i].numikrules; j++)
+                    {
+                        if(animikrule[j].compressedikerrorindex)
+                        {
+                            FSeek(startof(animikrule[j]) + animikrule[j].compressedikerrorindex);
+                            mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+
+                            struct {
+                                for(g = 0; g < 6; g++)
+                                {
+                                    if(ikcompressederror.offset[g])
+                                    {
+                                        FSeek(startof(ikcompressederror) + ikcompressederror.offset[g]);
+                                        struct {
+                                            mstudioanimvalue_t animvalue <bgcolor=0x228822>;
+            
+                                            if(animvalue.num.valid > 0)
+                                                short value[animvalue.num.valid];
+                                        } animvalueik;
+                                    }
+                                }
+                            } compressed_ik_values;
+                        }
+
+                        if(animikrule[j].szattachmentindex)
+                        {
+                            FSeek(startof(animikrule[j]) + animikrule[j].szattachmentindex);
+                            struct {
+                                string ikattachment <fgcolor=cGreen>;
+                            } attachmentstring;
+                        }
+                    }
+                }
+            
+                if(mdlHeader.version == 52 && animdesc[i].compressedikerrorindex)
+                {
+                    FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
+                    mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
+
+                    struct {
+                        for(g = 0; g < 4; g++)
+                        {
+                            if(ikcompressederror_v52.offset[g])
+                            {
+                                FSeek(startof(ikcompressederror_v52) + ikcompressederror_v52.offset[g]);
+                                struct {
+                                    mstudioanimvalue_t animvalue <bgcolor=0x99CC99>;
+                                
+                                    if(animvalue.num.valid > 0)
+                                        short value[animvalue.num.valid];
+                                } animvalueik;
+                            }
+                        }
+                    } compressed_ik_values;
+                }
+            } animdesc_data;
+        }      
+    } animation_data;
+}
+
+/*for (i = 0; i < mdlHeader.numlocalanim; ++i)
 {
 	if(animdesc[i].sectionframes > 0)
     {
@@ -182,7 +377,7 @@ for (i = 0; i < mdlHeader.numlocalanim; ++i)
             mstudiocompressedikerror_t_v52 ikcompressederrorNEW <bgcolor=cLtGreen>;
         }
     }
-};
+};*/
 
 
 // sequence stuff
@@ -291,40 +486,32 @@ char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 FSeek(mdlSubHeader.srcbonetransformindex);
 mstudiosrcbonetransform_t srcbonetransform[mdlSubHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
-if (mdlSubHeader.linearboneindex > 0)
+
+// linear bone table
+//#include "../mdl/mdl_module_linearbone.bt"
+if (mdlSubHeader.linearboneindex)
 {
     FSeek(startof(mdlSubHeader) + mdlSubHeader.linearboneindex);
     mstudiolinearbone_t linearbone <bgcolor=cGreen>;
-
-    struct mstudiolinearbonedata_t
-    {
-        if(linearbone.flagsindex > 0)
-            int bone_flags[linearbone.numbones];
-        if(linearbone.parentindex > 0)
-            int bone_parents[linearbone.numbones];
+    
+    struct {
+        int bone_flags[linearbone.numbones] <read=ReadBoneFlags(this)>;
+        int bone_parents[linearbone.numbones] <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>;
         
-        if(linearbone.posindex > 0)
-            Vector3 bone_pos[linearbone.numbones];
-        if(linearbone.quatindex > 0)
-	        Quaternion bone_quat[linearbone.numbones];
-        if(linearbone.rotindex > 0)
-	        RadianEuler bone_rot[linearbone.numbones];
+        Vector3 bone_pos[linearbone.numbones];
+        Quaternion bone_quat[linearbone.numbones];
+        RadianEuler bone_rot[linearbone.numbones];
         
-        if(linearbone.posetoboneindex > 0)
-            matrix3x4_t bone_poseToBone[linearbone.numbones];
-
-        if(linearbone.posscaleindex > 0)
+        matrix3x4_t bone_poseToBone[linearbone.numbones];
+        
+        // only check this because all others should (as far as I know) be filled out no matter what version (version < 53)
+        if(linearbone.posscaleindex)
             Vector3 bone_posscale[linearbone.numbones];
-        if(linearbone.rotscaleindex > 0)
-	        Vector3 bone_rotscale[linearbone.numbones];
-	
-        if(linearbone.qalignmentindex > 0)
-	        Quaternion bone_qAlignment[linearbone.numbones];
-    };
-
-    mstudiolinearbonedata_t linearbonedata <bgcolor=cLtGreen>;
+        Vector3 bone_rotscale[linearbone.numbones];
+                
+        Quaternion bone_qAlignment[linearbone.numbones];
+    } linearbonedata <bgcolor=cLtGreen>;
 };
-
 
 
 if (mdlHeader.version == 52)

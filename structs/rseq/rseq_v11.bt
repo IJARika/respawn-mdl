@@ -26,7 +26,7 @@ mstudioseqdesc_t_v16 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(s
 local int numanims = seqdesc.groupsize[0] * seqdesc.groupsize[1];
 local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
 
-if((seqdesc.unkindex - seqdesc.animindexindex) < sizeof(mstudioanimdesc_t_v16))
+if((seqdesc.unkindex - seqdesc.animindexindex) <= sizeof(mstudioanimdesc_t_v16))
     numanims = 0;
 
 // generate all the sequences data structures
@@ -74,11 +74,16 @@ for(k = 0; k < numanims; k++)
                     local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
-                    mstudioanimsections_t_v16 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
-        
+                    mstudioanimsections_t_v16 sectionindexes[sectionlength] <read=Str("real value %i", ReadSectionIndex(this.animindex, this.isExternal)), bgcolor=cLtBlue>;
+                
+                    local int nullsection = 0;
+
+                    if((sectionindexes[1].animindex - sectionindexes[0].animindex) <= 4)
+                        nullsection = 1;
+
                     for(i = 0; i < sectionlength; i++)
                     {
-                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && (blends[k] + sectionindexes[i].animindex) < seqdesc.szlabelindex)
+                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && !nullsection)
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
