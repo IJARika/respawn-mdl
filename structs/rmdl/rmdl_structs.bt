@@ -1483,30 +1483,22 @@ struct mstudioanimsections_t_v54_v121
     int isExternal; // 0 or 1, if 1 section is not in rseq (I think)
 };
 
-/*int GetRMDLOffset(int offset)
-{
-    local int fixedOffset = ((offset & 0xFFFE) << (4 * (offset & 1)));
-
-    return fixedOffset;
-}*/
-
-int ReadSectionIndex(unsigned short index, short offset)
+// fix index for external stuff
+int ReadSectionIndex(int index)
 {
     local int realIndex = 0;
-    local int base = 65535;
 
-    realIndex += (offset * 65535) + index + (offset + 1);
+    if(index < 0)
+        realIndex = Abs(index) - 1;
+    else
+        realIndex = index;
 
-    //realIndex += offset - index;
-
-    return Abs(realIndex);
+    return realIndex;
 };
 
 struct mstudioanimsections_t_v16
 {
-	unsigned short animindex;  // signed but not, I love it
-    short isExternal; // pretty sure this is an offset now but I don't know how to read it not jank
-
+	int animindex;  // negative number if external
 };
 
 struct sectionindexes_t_v54_v121

@@ -55,7 +55,7 @@ FSeek(startof(seqdesc) + seqdesc.activitymodifierindex);
 mstudioactivitymodifier_t_v16 activitymodifier[seqdesc.numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
 
 FSeek(startof(seqdesc) + seqdesc.animindexindex);
-uint16 blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]] <bgcolor=0xffff00>;
+short blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]] <bgcolor=0xffff00>;
 
 for(k = 0; k < numanims; k++)
 {
@@ -74,7 +74,7 @@ for(k = 0; k < numanims; k++)
                     local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
-                    mstudioanimsections_t_v16 sectionindexes[sectionlength] <read=Str("real value %i", ReadSectionIndex(this.animindex, this.isExternal)), bgcolor=cLtBlue>;
+                    mstudioanimsections_t_v16 sectionindexes[sectionlength] <read=Str("idx %i", ReadSectionIndex(this.animindex)), bgcolor=cLtBlue>;
                 
                     local int nullsection = 0;
 
@@ -83,7 +83,7 @@ for(k = 0; k < numanims; k++)
 
                     for(i = 0; i < sectionlength; i++)
                     {
-                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && !nullsection)
+                        if(sectionindexes[i].animindex && sectionindexes[i].animindex > 0)
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
