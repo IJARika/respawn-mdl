@@ -5,3 +5,6 @@ structs/vg/MDLv54_VG.bt
 structs/ani/ani.bt
 structs/rmdl/animheadertest.bt
 structs/dmx/dmx.bt
+*.png
+structs/bsp/bsp.bt
+structs/bsp/bspstructs.bt

@@ -29,6 +29,8 @@ struct Vector3
     float z;
 };
 
+typedef Vector3 Vector;
+
 struct Vector4
 {
     float x;
@@ -112,10 +114,12 @@ enum <int> boolean
     True = 1,
 };
 
-struct bool
+/*struct bool
 {
     byte bool;
-};
+};*/
+
+typedef byte bool;
 
 struct VertexColor_t
 {

@@ -2,7 +2,7 @@
 //--- 010 Editor v12.0.1 Binary Template
 //
 //      File: mdl
-//   Authors: Valve, Rika, & Others
+//   Authors: Valve, Respawn, Rika, & Others
 //   Version: 47/48/49/52/53
 //   Purpose: Valve/Respawn MDL Structs
 //  Category: Struct
@@ -109,7 +109,9 @@
 #define STUDIOHDR_FLAGS_RESPAWN_UNK                 0x800000
 // "unkindex is only shifted if 0x1000000 flag is set on the studiohdr" talking about unkindex in mstudiomodel struct
 // unkindex is now colorindex
+#define STUDIOHDR_FLAGS_USES_VERTEX_COLOR           0x1000000 // hehe
 #define STUDIOHDR_FLAGS_RESPAWN_UNK1                0x1000000 // maybe related to vvc
+
 #define STUDIOHDR_FLAGS_RESPAWN_UNK2                0x2000000 // might be related to 2nd uv layer?
 
 string ReadHeaderFlags(int flags)
@@ -864,20 +866,20 @@ struct studiohdr_t_v52
 	int localnodeindex;
 	int localnodenameindex;
  
-    int numflexdesc;
-	int flexdescindex;
+    int deprecated_numflexdesc;
+	int deprecated_flexdescindex;
  
-    int numflexcontrollers;
-	int flexcontrollerindex;
+    int deprecated_numflexcontrollers;
+	int deprecated_flexcontrollerindex;
  
-    int numflexrules;
-	int flexruleindex;
+    int deprecated_numflexrules;
+	int deprecated_flexruleindex;
  
     int numikchains;
 	int ikchainindex;
 	
-    int nummouths;
-	int mouthindex;
+    int deprecated_nummouths;
+	int deprecated_mouthindex;
  
     int numlocalposeparameters;
 	int localposeparamindex;
@@ -930,10 +932,10 @@ struct studiohdr_t_v52
 
 	byte unused;
 
-	float fadedistance;
+	float fadeDistance;
 
-	int numflexcontrollerui;
-	int flexcontrolleruiindex;
+	int deprecated_numflexcontrollerui;
+	int deprecated_flexcontrolleruiindex;
 
     float flVertAnimFixedPointScale;
     int surfacepropLookup;	// this index must be cached by the loader, not saved in the file
@@ -943,7 +945,7 @@ struct studiohdr_t_v52
 	// or add your stuff to studiohdr2_t. See NumSrcBoneTransforms/SrcBoneTransform for the pattern to use.
 	int studiohdr2index;
 	
-	int mayaindex; // in v52 not every model has these strings, only four bytes when not present.
+	int sourceFilenameOffset; // in v52 not every model has these strings, only four bytes when not present.
 };
 
 struct studiohdr_t_v53
@@ -1014,14 +1016,14 @@ struct studiohdr_t_v53
 	int localnodeindex;
 	int localnodenameindex;
  
-    int numflexdesc;
-	int flexdescindex;
+    int deprecated_numflexdesc;
+	int deprecated_flexdescindex;
  
-    int numflexcontrollers;
-	int flexcontrollerindex;
+    int deprecated_numflexcontrollers;
+	int deprecated_flexcontrollerindex;
  
-    int numflexrules;
-	int flexruleindex;
+    int deprecated_numflexrules;
+	int deprecated_flexruleindex;
  
     int numikchains;
 	int ikchainindex;
@@ -1071,12 +1073,12 @@ struct studiohdr_t_v53
 
 	byte unused;
 
-	float fadedistance; // set to -1 to never fade. set above 0 if you want it to fade out, distance is in feet.
+	float fadeDistance; // set to -1 to never fade. set above 0 if you want it to fade out, distance is in feet.
                         // player/titan models seem to inherit this value from the first model loaded in menus.
                         // works oddly on entities, probably only meant for static props
 
-	int numflexcontrollerui;
-	int flexcontrolleruiindex;
+	int deprecated_numflexcontrollerui;
+	int deprecated_flexcontrolleruiindex;
     
     float flVertAnimFixedPointScale;
     int surfacepropLookup; // this index must be cached by the loader, not saved in the file
@@ -1084,7 +1086,7 @@ struct studiohdr_t_v53
     // this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
     // doesn't actually need to be written pretty sure, only four bytes when not present.
     // this is not completely true as some models simply have nothing, such as animation models.
-	int mayaindex;
+	int sourceFilenameOffset;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -1098,10 +1100,10 @@ struct studiohdr_t_v53
     
     // for static props (and maybe others)
     // Precomputed Per-Triangle AABB data
-    int aabbindex;
-    int numaabb;
-    int numaabb1;
-    int numaabb2;
+    int m_nPerTriAABBIndex;
+    int m_nPerTriAABBNodeCount;
+    int m_nPerTriAABBLeafCount;
+    int m_nPerTriAABBVertCount;
 
     // always "" or "Titan"
     int unkstringindex <read=ReadString(this)>;
@@ -1173,10 +1175,10 @@ struct studiohdr2_t_v52
     
     // for static props (and maybe others)
     // Precomputed Per-Triangle AABB data
-    int aabbindex;
-    int numaabb;
-    int numaabb1;
-    int numaabb2;
+    int m_nPerTriAABBIndex;
+    int m_nPerTriAABBNodeCount;
+    int m_nPerTriAABBLeafCount;
+    int m_nPerTriAABBVertCount;
 
     // always "" or "Titan"
     int unkstringindex <read=ReadString(startof(mdlSubHeader) + mdlSubHeader.unkstringindex)>;
@@ -1287,6 +1289,7 @@ string ReadProcFlags(uint flags)
 #define BONE_FIXED_ALIGNMENT		0x00100000	// bone can't spin 360 degrees, all interpolation is normalized around a fixed orientation
 
 #define BONE_HAS_SAVEFRAME_POS		0x00200000	// Vector48
+// v48 -> v49 : BONE_HAS_SAVEFRAME_ROT -> BONE_HAS_SAVEFRAME_ROT64
 #define BONE_HAS_SAVEFRAME_ROT64	0x00400000	// Quaternion64
 #define BONE_HAS_SAVEFRAME_ROT32	0x00800000	// Quaternion32
 
@@ -1530,8 +1533,9 @@ struct mstudiobone_t_v52
 	
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
-	Vector3 unkvector;	
-	Vector3 unkvector1;
+    // bone scale(?)
+	Vector3 scale;	
+	Vector3 scalescale;
 	
 	int unused[1]; // remove as appropriate
 };
@@ -1547,16 +1551,12 @@ struct mstudiobone_t_v53
 	Vector3 pos; // base bone position
 	Quaternion quat;
 	RadianEuler rot; // base bone rotation
-	
-	Vector3 unkvector; // scale, porter named this though so like yea.
-                       // pretty sure this is related to the new data type in mstudioanim
+	Vector3 scale; // bone scale(?)
 	
 	// compression scale
-	Vector3 posscale; // scale muliplier for bone position in animations
-                      // posscale in v53 is not used as the scale is stored in the animation bone headers.
+	Vector3 posscale; // scale muliplier for bone position in animations. depreciated in v53, as the posscale is stored in anim bone headers
 	Vector3 rotscale; // scale muliplier for bone rotation in animations
-
-	Vector3 unkvector1; // compression scale for scale
+	Vector3 scalescale; // scale muliplier for scale
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1573,8 +1573,8 @@ struct mstudiobone_t_v53
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
     // unknown phy related section
-	int16 unkindex; // index into this section
-    int16 unkcount; // number of sections for this bone?? see: models\s2s\s2s_malta_gun_animated.mdl
+	short unkindex; // index into this section
+    short unkcount; // number of sections for this bone?? see: models\s2s\s2s_malta_gun_animated.mdl
 	
 	int unused[7]; // remove as appropriate
 };
@@ -1732,13 +1732,6 @@ struct mstudioattachment_t
 	int	unused[8];
 };
 
-// bone id in alphabetical order
-struct mstudiobonenametable_t
-{
-    for(i = 0; i < mdlHeader.numbones; i++)
-        ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-};
-
 // ikchain
 struct mstudioikchain_t
 {
@@ -1772,6 +1765,7 @@ struct mstudioiklink_t
 };
 
 // iklock
+// this struct doesn't change for V52
 struct mstudioiklock_t
 {
 	int chain;
@@ -1964,7 +1958,7 @@ struct mstudiobbox_t_v53
 #define STUDIO_NOFORCELOOP 0x8000	// do not force the animation loop
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
-#define STUDIO_ANIMDESC_53_UNK 0x20000 // haven't seen in v53 yet
+#define STUDIO_ANIMDESC_53_UNK 0x20000 // actually first in v52
 #define STUDIO_ANIMDESC_52_UNK 0x40000
 
 
@@ -2174,7 +2168,7 @@ struct mstudioanimdesc_t_v52
 
     int ikrulezeroframeindex;
 
-    int compressedikerrorindex;
+    int framemovementindex; // new in v52
 
 	int unused1[4]; // remove as appropriate (and zero if loading older versions)	
 
@@ -2214,7 +2208,8 @@ struct mstudioanimdesc_t_v53
 	int nummovements;
 	int movementindex;
 
-	int compressedikerrorindex;
+	int framemovementindex; // new in v52
+
 	int animindex; // non-zero when anim data isn't in sections
 
 	int numikrules;
@@ -2225,12 +2220,6 @@ struct mstudioanimdesc_t_v53
 
 	int sectionindex;
 	int sectionframes; // number of frames used in each fast lookup section, zero if not used
-
-    // these all get cut in apex which means this is 99% unused, it would also grow the unused section back to 8 ints which further adds proof.
-	//short zeroframespan; // frames per span
-	//short zeroframecount; // number of spans
-	//int zeroframeindex;
-    //float zeroframestalltime; // saved during read stalls
 
     int unused[8];
 };
@@ -2267,17 +2256,16 @@ struct sectionindexes_t
 #define STUDIO_ANIM_DELTA	0x10
 #define STUDIO_ANIM_RAWROT2	0x20 // Quaternion64
 
+// probably some new flags here for v52 scale stuff
+
 // v53 flags
 #define STUDIO_ANIM_DELTA_53    0x01 // this appears to be delta until proven otherwise
-// These work as toggles, flag enabled is raw data, flag disabled is pointers, see 'STUDIO_ANIM_READBONE_53' for exception.
+// These work as toggles, flag enabled = raw data, flag disabled = pointers
 #define STUDIO_ANIM_RAWPOS_53	0x02 // Vector48
 #define STUDIO_ANIM_RAWROT_53	0x04 // Quaternion48
+// drone_frag.mdl for scale track usage
 #define STUDIO_ANIM_RAWSCALE_53	0x08 // Vector48
-// if above flag is disabled and below is enabled there is special exceptions
-// I don't actually think this is correct, as the issue I thought this flag solved was related to position, not rotation,
-// which this flag seems to relate to.
-// only appears in model that have raw rotation data disabled and when the pointer has no values
-#define STUDIO_ANIM_UNK_53 0x10 // read bone data if any of the above are disabled, only observed for rotation
+#define STUDIO_ANIM_UNK_53 0x10 // whar?
 
 string ReadAnimFlags(byte flags)
 {
@@ -2490,14 +2478,16 @@ struct mstudio_rle_anim_t_v53
 	ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // unsigned byte, bone limit exceeds 128 so has to be. also means max bones is 255.
 	byte flags <read=ReadAnimFlagsV53(this)>;
 
-	int16 unk; // normally null data
+	short unk; // normally null data
+               // honestly might just be fake to get the size to a clean 8 bytes
+               // since the lower members are not actually part of the struct, at least in pre v52
 	
     if(flags & STUDIO_ANIM_RAWROT_53)
 	    Quat64 rawrot; // pQuat64
     else
     {
         mstudioanim_valueptr_t animrot; // pRotV
-        int16 unused; // pretty sure
+        short pad;
     }
 
 	if (flags & STUDIO_ANIM_RAWPOS_53)
@@ -2505,13 +2495,166 @@ struct mstudio_rle_anim_t_v53
     else
         mstudioanim_valueptr_t animpos; // pPosV
 
-    // named by porter
+    // scale track
+    // a_Scaletest in pete_scripted for r1/2
+    // drone_frag.mdl
     if (flags & STUDIO_ANIM_RAWSCALE_53)
-	    Vector48 rawscale; // new in v53
+	    Vector48 rawscale;
     else
         mstudioanim_valueptr_t animscale;
 
 	int nextoffset;
+};
+
+#define STUDIO_FRAME_RAWPOS		0x01 // Vector48 in constants
+#define STUDIO_FRAME_RAWROT		0x02 // Quaternion48 in constants
+#define STUDIO_FRAME_ANIMPOS	0x04 // Vector48 in framedata
+#define STUDIO_FRAME_ANIMROT	0x08 // Quaternion48 in framedata
+#define STUDIO_FRAME_FULLANIMPOS	0x10 // Vector in framedata
+
+// v52 also has STUDIO_FRAME_RAWPOS & STUDIO_FRAME_RAWROT at the same values
+// atlas_mp_scripted.mdl at_hotdrop_loop at_hotdrop_01
+#define STUDIO_FRAME_RAWSCALE_52	0x04 // Vector48 in constants
+#define STUDIO_FRAME_ANIMPOS_52	0x08 // Quaternion48 in framedata
+#define STUDIO_FRAME_ANIMROT_52	0x10 // Vector48 in framedata
+#define STUDIO_FRAME_ANIMSCALE_52	0x20 // Vector48 in framedata
+
+// v52 frame flags:
+// rawpos, rawrot, rawscale
+// animpos, animrot, animscale
+
+string ReadFrameAnimFlags(byte flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    int i = 0;
+    byte flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case STUDIO_FRAME_RAWPOS:
+            value += "STUDIO_FRAME_RAWPOS";
+            break;
+        case STUDIO_FRAME_RAWROT:
+            value += "STUDIO_FRAME_RAWROT";
+            break;
+        case 0x4:
+            if(mdlHeader.version == 52)
+                value += "STUDIO_FRAME_RAWSCALE_52";
+            else
+                value += "STUDIO_FRAME_ANIMPOS";
+            break;
+        case 0x8:
+            if(mdlHeader.version == 52)
+                value += "STUDIO_FRAME_ANIMPOS_52";
+            else
+                value += "STUDIO_FRAME_ANIMROT";
+            break;
+        case 0x10:
+            if(mdlHeader.version == 52)
+                value += "STUDIO_FRAME_ANIMROT_52";
+            else
+                value += "STUDIO_FRAME_FULLANIMPOS";
+            break;
+        case 0x20:
+           if(mdlHeader.version == 52)
+                value += "STUDIO_FRAME_ANIMSCALE_52";
+            else
+                value += "UNK_0x20";
+            break;
+        default:
+            value += Str("UNK_%x", flag);
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
+
+struct mstudio_frame_anim_t
+{
+	int constantsoffset;
+
+	int frameoffset;
+	int framelength;
+
+	int unused[3];
+};
+
+struct mstudio_frame_anim_t_v52
+{
+	int constantsoffset;
+
+	int frameoffset;
+	int framelength;
+
+    int fixedOldBoneflags;
+
+    int unkdataindex;
+
+	int unused;
+};
+
+// func to read these
+#define STUDIO_X		0x00000001
+#define STUDIO_Y		0x00000002	
+#define STUDIO_Z		0x00000004
+#define STUDIO_XR		0x00000008
+#define STUDIO_YR		0x00000010
+#define STUDIO_ZR		0x00000020
+
+#define STUDIO_LX		0x00000040
+#define STUDIO_LY		0x00000080
+#define STUDIO_LZ		0x00000100
+#define STUDIO_LXR		0x00000200
+#define STUDIO_LYR		0x00000400
+#define STUDIO_LZR		0x00000800
+
+#define STUDIO_LINEAR	0x00001000
+
+#define STUDIO_TYPES	0x0003FFFF
+#define STUDIO_RLOOP	0x00040000	// controller that wraps shortest distance
+
+struct mstudiomovement_t
+{
+	int					endframe;				
+	int					motionflags;
+	float				v0;			// velocity at start of block
+	float				v1;			// velocity at end of block
+	float				angle;		// YAW rotation at end of this blocks movement
+	Vector				vector;		// movement vector relative to this blocks initial angle
+	Vector				position;	// relative to start of animation???
 };
 
 // ik rule
@@ -2601,6 +2744,50 @@ struct mstudioikrule_t
 	int unused[7];
 };
 
+struct mstudioikrule_t_v52
+{
+	int index;
+
+	int type <read=ReadIKRuleType(this)>;
+	int chain;
+
+	int	bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+
+	int slot;	// iktarget slot.  Usually same as chain.
+	float height;
+	float radius;
+	float floor;
+	Vector3 pos;
+	Quaternion q;
+
+	int compressedikerrorindex;
+	
+    int unused2;
+
+	int iStart;
+	int ikerrorindex;
+
+	float start;	// beginning of influence
+	float peak;	// start of full influence
+	float tail;	// end of full influence
+	float end;	// end of all influence
+
+	float unused3;	// 
+	float contact;	// frame footstep makes ground concact
+	float drop;		// how far down the foot should drop when reaching for IK
+	float top;		// top of the foot box
+
+	int unused6;
+	int unused7;
+	int unused8;
+
+	int szattachmentindex;		// name of world attachment
+
+    float endHeight; // new in v52
+
+	int unused[6];
+};
+
 
 struct mstudioikrule_t_v53
 {
@@ -2632,7 +2819,8 @@ struct mstudioikrule_t_v53
 
     int szattachmentindex; // name of world attachment
 
-    int unk; // there is an int here in apex and 9 unused doesn't make sense.
+    float endHeight; // new in v52
+                     // titan_buddy_mp_core.mdl
 
     int unused[8];
 };
@@ -2640,14 +2828,21 @@ struct mstudioikrule_t_v53
 struct mstudiocompressedikerror_t
 {
 	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	int16 offset[6];
+	short offset[6];
 };
 
-struct mstudiocompressedikerror_t_v52
+// new in v52
+struct mstudioframemovement_t
 {
 	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
-	int16 offset[4];
+	short offset[4];
 };
+
+// v54 has offsets to the arry of four offset shorts, these are per section or only having one if it isn't
+// a section based animation
+
+// in the V54 version of this struct each offset goes to a struct(?) of eight bytes,
+// the first int is an offset(?) to the data, the second is unknown
 
 struct mstudioikerror_t
 {
@@ -2657,8 +2852,8 @@ struct mstudioikerror_t
 
 struct mstudioikrulezeroframe_t
 {
-	int16		chain;
-	int16		slot;
+	short		chain;
+	short		slot;
 	hfloat		start;	// beginning of influence
 	hfloat		peak;	// start of full influence
 	hfloat		tail;	// end of full influence
@@ -2870,7 +3065,7 @@ struct mstudioseqdesc_t_v52
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-    int unk; // not seen yet
+    int ikResetMask; // new in v52
     int unk1; // count? STUDIO_ANIMDESC_52_UNK??
 
 	int unused[3];
@@ -2943,8 +3138,11 @@ struct mstudioseqdesc_t_v53
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-    int unk; // not seen yet
+    int ikResetMask; // new in v52
+                     // titan_buddy_mp_core.mdl
+                     // reset all ikrules with this type???
     int unk1; // count? STUDIO_ANIMDESC_52_UNK??
+              // mayhaps this is the ik type applied to the mask if what's above it true
 
 	int unused[8];
 };
@@ -3128,26 +3326,19 @@ struct mstudioautolayer_t
 	float end;	// end of all influence
 };
 
+// activity modifers are coniditions for the activity, e.g:
+// if you have two sequences with ACT_RELOAD or such and one has an activity modifier for 'crouch',
+// the activity modifier one with 'crouch' will only play when you are crouching an the other when you are not.
 struct mstudioactivitymodifier_t
 {	
 	int sznameindex <read=ReadString(startof(this) + this)>;
 };
 
-struct mstudioactivitymodifier_t_v53
+struct mstudioactivitymodifier_t_v52
 {	
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-    int unk; // 0 or 1 observed.
-};
-
-struct seqweightlist_t
-{
-    float boneweight[mdlHeader.numbones];
-};
-
-struct blendgroup_t
-{
-    int16 blends[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]] <read=ReadString(startof(animdesc[this]) + animdesc[this].sznameindex)>;
+    bool negate; // negate all other activity modifiers when this one is active?
 };
 
 // demand loaded sequence groups
@@ -3172,6 +3363,27 @@ struct mstudiobodyparts_t
 };
 
 // studio models
+struct mstudio_modelvertexdata_t
+{
+	/*DECLARE_BYTESWAP_DATADESC();
+	Vector				*Position( int i ) const;
+	Vector				*Normal( int i ) const;
+	Vector4D			*TangentS( int i ) const;
+	Vector2D			*Texcoord( int i ) const;
+	mstudioboneweight_t	*BoneWeights( int i ) const;
+	mstudiovertex_t		*Vertex( int i ) const;
+	bool				HasTangentData( void ) const;
+	int					GetGlobalVertexIndex( int i ) const;
+	int					GetGlobalTangentIndex( int i ) const;
+
+	// base of external vertex data stores
+	const void			*pVertexData;
+	const void			*pTangentData;*/
+
+    int pVertexData;
+    int pTangentData;
+};
+
 struct mstudiomodel_t
 {
 	char name[64];
@@ -3198,11 +3410,9 @@ struct mstudiomodel_t
 	int	numeyeballs;
 	int eyeballindex;
 
-	//mstudio_modelvertexdata_t vertexdata;
+	mstudio_modelvertexdata_t vertexdata;
     
-    // sections of this are removed as needed.
-	int unused[10]; // remove as appropriate
-                    // first two get used in v47/48
+	int unused[8]; // remove as appropriate
 };
 
 struct mstudiomodel_t_v52
@@ -3226,13 +3436,10 @@ struct mstudiomodel_t_v52
 	int numattachments;
 	int attachmentindex;
 
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
+	int deprecated_numeyeballs;
+	int deprecated_eyeballindex;
 
-	//mstudio_modelvertexdata_t vertexdata;
-
-	int unk[4];
+	int pad[4];
 
     int colorindex; // vertex color
                     // offset by colorindex number of bytes into vvc vertex colors
@@ -3245,11 +3452,30 @@ struct mstudiomodel_t_v52
 // meshes
 struct mstudio_meshvertexdata_t
 {
-    int unk;    
+    /*DECLARE_BYTESWAP_DATADESC();
+	Vector				*Position( int i ) const;
+	Vector				*Normal( int i ) const;
+	Vector4D			*TangentS( int i ) const;
+	Vector2D			*Texcoord( int i ) const;
+	mstudioboneweight_t *BoneWeights( int i ) const;
+	mstudiovertex_t		*Vertex( int i ) const;
+	bool				HasTangentData( void ) const;
+	int					GetModelVertexIndex( int i ) const;
+	int					GetGlobalVertexIndex( int i ) const;
+
+	// indirection to this mesh's model's vertex data
+	const mstudio_modelvertexdata_t	*modelvertexdata;*/
+    int modelvertexdata;
 
 	int numLODVertexes[MAX_NUM_LODS];
 };
 
+struct mstudio_meshvertexloddata_t
+{
+    int modelvertexdataUnusedPad; // likely has none of the funny stuff because unused
+
+	int numLODVertexes[MAX_NUM_LODS]; // depreciated starting with rmdl v14(?)
+};
 
 struct mstudiomesh_t
 {
@@ -3280,6 +3506,35 @@ struct mstudiomesh_t
 	int unused[8]; // remove as appropriate
 };
 
+struct mstudiomesh_t_v52
+{
+	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+
+	int modelindex;
+
+	int numvertices; // number of unique vertices/normals/texcoords
+	int vertexoffset; // vertex mstudiovertex_t
+                      // offset by vertexoffset number of verts into vvd vertexes, relative to the models offset
+
+	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
+	
+	int deprecated_numflexes; // vertex animation
+	int deprecated_flexindex;
+
+	// special codes for material operations
+	int deprecated_materialtype;
+	int deprecated_materialparam;
+
+	// a unique ordinal for this mesh
+	int meshid;
+
+	Vector3 center;
+
+	mstudio_meshvertexloddata_t vertexloddata;
+
+	int unused[8]; // remove as appropriate
+};
+
 struct mstudiomesh_t_v53
 {
 	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
@@ -3292,19 +3547,19 @@ struct mstudiomesh_t_v53
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 	
-	int numflexes; // vertex animation
-	int flexindex;
+	int deprecated_numflexes; // vertex animation
+	int deprecated_flexindex;
 
 	// special codes for material operations
-	int materialtype;
-	int materialparam;
+	int deprecated_materialtype;
+	int deprecated_materialparam;
 
 	// a unique ordinal for this mesh
 	int meshid;
 
 	Vector3 center;
 
-	mstudio_meshvertexdata_t vertexdata;
+	mstudio_meshvertexloddata_t vertexloddata;
     
     int unk[2]; // set on load
 
@@ -3338,19 +3593,6 @@ struct mstudiotexturedir_t
 };
 
 // skin info
-struct mstudiotexture_t_v47
-{
-	int sznameindex <read=ReadString(startof(this) + this)>;
-
-	int flags;
-	int used;
-    int unused1;
-
-    int unk;
-	
-    int unused[11];
-};
-
 struct mstudiotexture_t
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
@@ -3359,24 +3601,36 @@ struct mstudiotexture_t
 	int used;
     int unused1;
 	
-    int unused[12];
+    // these are turned into 64 bit ints on load and only filled in memory
+    int material_RESERVED;
+    int clientmaterial_RESERVED;
+
+    int unused[10];
+};
+
+struct mstudiotexture_t_v52
+{
+	int sznameindex <read=ReadString(startof(this) + this)>;
+
+	int unused_flags;
+	int used;
+    int unused1;
+	
+    // these are turned into 64 bit ints on load and only filled in memory
+    int material_RESERVED;
+    int clientmaterial_RESERVED;
+
+    int unused[10];
 };
 
 struct mstudiotexture_t_v53
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int flags;
+	int unused_flags;
 	int used;
 
 	int unused[8];
-};
-
-// skin groups
-struct mstudioskingroup_t
-{
-    for(i = 0; i < mdlHeader.numskinref; i++)
-        int16 textureId <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 };
 
 
@@ -3454,7 +3708,8 @@ struct mstudioruimesh_t
 // Per Triangle Collision
 
 
-struct pertriheader_t
+// struct names are assumptions
+struct mstudioaabbheader_t
 {
     int version; // unsure if this is an actual version or type
                  // set to '2' for static prop.
@@ -3466,7 +3721,7 @@ struct pertriheader_t
     int unused[8]; // hopefully, checks out with other mdl structs 
 };
 
-struct aabbsection1
+struct mstudioaabbnode_t
 {
     int16 unk[3];
     int16 unk1[3];
@@ -3481,7 +3736,7 @@ struct aabbtype
     int16 unk1;
 };
 
-struct aabbsection2
+struct mstudioaabbleaf_t
 {
     int16 unk[6];
 
@@ -3490,9 +3745,9 @@ struct aabbsection2
     aabbtype unk2[12];
 };
 
-struct aabbsection3
+struct mstudioaabbvert_t
 {
-    Quat48 unk;
+    char vertex[6]; // format is unknown
 };
 
 

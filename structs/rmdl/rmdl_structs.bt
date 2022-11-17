@@ -2,7 +2,7 @@
 //--- 010 Editor v12.0.1 Binary Template
 //
 //      File: rmdl, rrig
-//   Authors: Valve, Rika, & Others
+//   Authors: Valve, Respawn, Rika, & Others
 //   Version: 54
 //   Purpose: Respawn MDL Structs
 //  Category: Struct
@@ -21,7 +21,7 @@
 //==================
 // Generic Functions
 
-int GetRMDLOffset(int offset)
+int GetRMDLOffset(uint16 offset)
 {
     local int fixedOffset = ((offset & 0xFFFE) << (4 * (offset & 1)));
 
@@ -115,11 +115,11 @@ struct studiohdr_t_v54
  
 	int meshindex; // offset to model meshes
 
-	int numflexcontrollers;
-	int flexcontrollerindex;
+	int deprecated_numflexcontrollers;
+	int deprecated_flexcontrollerindex;
  
-	int numflexrules;
-	int flexruleindex;
+	int deprecated_numflexrules;
+	int deprecated_flexruleindex;
  
 	int numikchains;
 	int ikchainindex;
@@ -168,7 +168,7 @@ struct studiohdr_t_v54
 
 	byte unused;
 
-	float fadedistance;
+	float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 
@@ -178,8 +178,7 @@ struct studiohdr_t_v54
 	float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
-	// this is in all shipped models, probably part of their asset bakery. it should be 0x2CC.
-	int mayaindex; // doesn't actually need to be written pretty sure, only four bytes when not present.
+	int sourceFilenameOffset; // doesn't actually need to be written pretty sure, only four bytes when not present.
 
 	int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -357,7 +356,7 @@ struct studiohdr_t_v54_v121
 	int vglodheaderindex;
     int numvglodheader;
 
-    float fadedistance;
+    float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 	
@@ -365,7 +364,7 @@ struct studiohdr_t_v54_v121
     int surfacepropLookup; // saved in the file
 
     // asset bakery strings if it has any
-	int mayaindex;
+	int sourceFilenameOffset;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -529,7 +528,7 @@ struct studiohdr_t_v54_v122
 	int vglodheaderindex;
     int numvglodheader;
 
-    float fadedistance;
+    float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 	
@@ -539,7 +538,7 @@ struct studiohdr_t_v54_v122
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int mayaindex;
+	int sourceFilenameOffset;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -703,7 +702,7 @@ struct studiohdr_t_v54_v13
 	int vglodheaderindex;
     int numvglodheader;
 
-    float fadedistance;
+    float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 	
@@ -713,7 +712,7 @@ struct studiohdr_t_v54_v13
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int mayaindex;
+	int sourceFilenameOffset;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -881,7 +880,7 @@ struct studiohdr_t_v54_v14
 	int vglodheaderindex;
     int numvglodheader;
 
-    float fadedistance;
+    float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 	
@@ -891,7 +890,7 @@ struct studiohdr_t_v54_v14
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int mayaindex;
+	int sourceFilenameOffset;
 
     int numsrcbonetransform;
 	int srcbonetransformindex;
@@ -1019,7 +1018,7 @@ struct rstudiohdr_t_v16
 	uint16 vglodheaderindex;
     short numvglodheader;
 
-    float fadedistance;
+    float fadeDistance;
 	
 	float gathersize; // what. from r5r struct
 
@@ -1027,7 +1026,7 @@ struct rstudiohdr_t_v16
     uint16 srcbonetransformindex;
 
     // asset bakery strings if it has any
-	uint16 mayaindex;
+	uint16 sourceFilenameOffset;
 
     uint16 linearboneindex;
 
@@ -1066,8 +1065,7 @@ struct mstudiobone_t_v54
 	Vector3 pos;
 	Quaternion quat;
 	RadianEuler rot;
-	
-	Vector3 unkvector; // the same as whatever v53 is
+	Vector3 scale; // bone scale(?)
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1098,9 +1096,8 @@ struct mstudiobone_t_v54_v121
 	// default values
 	Vector3 pos;
 	Quaternion quat;
-	RadianEuler rot;
-	
-	Vector3 unkvector; // the same as whatever v53 is
+	RadianEuler rot;	
+	Vector3 scale; // bone scale(?)
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1145,8 +1142,7 @@ struct mstudiobonedata_t_v16
 	Vector3 pos;
 	Quaternion quat;
 	RadianEuler rot;
-
-    Vector3 unkvector; // the same as whatever v53 is
+    Vector3 scale; // bone scale(?)
 
     short parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone;
 
@@ -1167,7 +1163,7 @@ struct mstudiojigglebone_t_v54
 
     ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // id of bone, might be single byte
 
-    int16 unused; // possibly unused
+    short pad; // possibly unused
 
 	// general params
 	float length; // how far from bone base, along bone, is tip
@@ -1389,7 +1385,8 @@ struct mstudioanimdesc_t_v54
 	int nummovements;
 	int movementindex;
 
-	int compressedikerrorindex;
+	int framemovementindex; // new in v52
+
 	int animindex; // non-zero when anim data isn't in sections
 
 	int numikrules;
@@ -1415,19 +1412,18 @@ struct mstudioanimdesc_t_v54_v121
 	int nummovements;
 	int movementindex;
 
-	int compressedikerrorindex;
+	int framemovementindex; // new in v52
+
 	int animindex; // non-zero when anim data isn't in sections
 
 	int numikrules;
 	int ikruleindex; // non-zero when IK data is stored in the mdl
 
 	int sectionindex;
-
     int unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
-
     int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
-    int unk1[4];
+    int unk1[4]; // is this even real?
 
     //int unk1; // Padding
     //int unk2; // Padding
@@ -1439,8 +1435,6 @@ struct mstudioanimdesc_t_v54_v121
 
 struct mstudioanimdesc_t_v16
 {
-	//int baseptr;
-
 	float fps; // frames per second	
 	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
@@ -1452,29 +1446,20 @@ struct mstudioanimdesc_t_v16
 
     short unk_v16;
 
-    uint16 sznameindex <read=ReadString(startof(parentof(this)) + this)>;    
+    short sznameindex <read=ReadString(startof(parentof(this)) + this)>;    
 
-    uint16 compressedikerrorindex;
+    unsigned short framemovementindex; // new in v52
 
 	int animindex; // non-zero when anim data isn't in sections
 
 	short numikrules;
-	uint16 ikruleindex; // non-zero when IK data is stored in the mdl
+	unsigned short ikruleindex; // non-zero when IK data is stored in the mdl
 
-    uint16 unk1[5];
+    short unk1[5];
 
-	uint16 sectionindex;
-
-    uint16 unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
-
-    uint16 sectionframes; // number of frames used in each fast lookup section, zero if not used
-
-    // it seems like there's another int here but I'm unsure
-};
-
-struct sectionindexes_t_v54
-{
-    mstudioanimsections_t_v53 sectionoffsets[((animdesc[i].numframes - 1) / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
+	short sectionindex;
+    short unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
+    short sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
 struct mstudioanimsections_t_v54_v121
@@ -1643,6 +1628,19 @@ struct mstudio_rle_anim_t_v54
     }
 };
 
+// apex ikerrors do the same thing as apex framemovements
+struct mstudiocompressedikerror_t_v54
+{
+	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+	int unk; // same as framemovement unk (I think). bone mayb?
+};
+
+struct mstudiocompressedikerror_t_v16
+{
+    short unk;
+	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+};
+
 struct mstudioikrule_t_v54
 {
     int index;
@@ -1657,9 +1655,8 @@ struct mstudioikrule_t_v54
     Vector3 pos;
     Quaternion q;
 
-    // in later versions this is scale, that also might apply here
-    int unk[7]; // might be before pos and q
-
+    // whar the heck
+    mstudiocompressedikerror_t_v54 compressedikerror;
     int compressedikerrorindex;
 
     int iStart;
@@ -1676,104 +1673,47 @@ struct mstudioikrule_t_v54
 
     int szattachmentindex; // name of world attachment
 
-    int unk1; // there is an int here in apex and 9 unused doesn't make sense.
-
-    
+    float endHeight; // new in v52   
 };
 
-struct mstudioikrule_t_v54_new
+struct mstudioikrule_t_v16
 {
-    int index;
-    int type <read=ReadIKRuleType(this)>;
-    int chain;
-    int bone; // gets it from ikchain now pretty sure
+    short index;
+    short bone;
+    byte type <read=ReadIKRuleType(this)>;
+    byte slot; // chain/slot merged?
 
-    int slot; // iktarget slot. Usually same as chain.
+    // whar the heck
+    mstudiocompressedikerror_t_v16 compressedikerror;
+    int compressedikerrorindex;
+
+    short iStart;
+    short ikerrorindex;
+
+    float start; // beginning of influence
+    float peak; // start of full influence
+    float tail; // end of full influence
+    float end; // end of all influence
+
+    float contact; // frame footstep makes ground concact
+    float drop; // how far down the foot should drop when reaching for IK
+    float top; // top of the foot box
+
+    char placeholder[44];
+
+    // if both of these ints become shorts then it would fit
+
+    //int szattachmentindex; // name of world attachment
+
+    //float endHeight; // new in v52
+
+    // this fits but I don't really know
+    /*int slot; // iktarget slot. Usually same as chain.
     float height;
     float radius;
     float floor;
     Vector3 pos;
-    Quaternion q;
-
-    float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	//int16 offset[6];
-
-    int unk1[3];
-
-    //int compressedikerrorindex;
-
-    int iStart;
-    //int ikerrorindex;
-
-    float start; // beginning of influence
-    float peak; // start of full influence
-    float tail; // end of full influence
-    float end; // end of all influence
-
-    float contact; // frame footstep makes ground concact
-    float drop; // how far down the foot should drop when reaching for IK
-    float top; // top of the foot box
-
-    int szattachmentindex; // name of world attachment
-
-    int unk;
-
-    //int unused[9];
-};
-
-// this struct is really incomplete but I'm not sure how to fill it
-struct mstudioikrule_t_v16
-{
-    int index;
-    byte type <read=ReadIKRuleType(this)>;
-    byte chain;
-    short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-
-    int slot; // iktarget slot. Usually same as chain.
-    float height;
-    float radius;
-    float floor;
-
-    char unkfill[8];
-
-    //Vector3 pos;
-    //Quaternion q;
-
-    //float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	//int16 offset[6];
-
-    //int unk1[3];
-
-    //int compressedikerrorindex;
-
-    int unkindex;
-
-    int iStart;
-    //int ikerrorindex;
-
-    float start; // beginning of influence
-    float peak; // start of full influence
-    float tail; // end of full influence
-    float end; // end of all influence
-
-    float contact; // frame footstep makes ground concact
-    float drop; // how far down the foot should drop when reaching for IK
-    float top; // top of the foot box
-
-    char fill[44];
-
-    //int szattachmentindex; // name of world attachment
-
-    //int unk;
-
-    //int unused[9];
-};
-
-struct mstudiocompressedikerror_t_v54
-{
-	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
-    // unknown how this works now
-	//int offset[9];
+    Quaternion q;*/
 };
 
 // seq descriptions
@@ -1844,7 +1784,7 @@ struct mstudioseqdesc_t_v54
     int activitymodifierindex;
 	int numactivitymodifiers;
 
-	int unk;
+	int ikResetMask; // new in v52
     int unk1;
 
     int unkindex;
@@ -1921,7 +1861,7 @@ struct mstudioseqdesc_t_v16
     short activitymodifierindex;
 	short numactivitymodifiers;
 
-	int unk;
+	int ikResetMask; // new in v52
     int unk1;
 
     uint16 unkindex;
@@ -1980,23 +1920,11 @@ struct mstudioevent_t_v16
     short szeventindex <read=ReadString(startof(this) + this - 18)>;
 };
 
-struct blendgroup_t_v54
-{
-    // this is an offset now
-    int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
-};
-
-struct blendgroup_t_v16
-{
-    // this is an offset now
-    uint16 blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]];
-};
-
 struct mstudioactivitymodifier_t_v16
 {	
 	short sznameindex <read=ReadString(startof(this) + this)>;
 
-    short unk; // 0 or 1 observed.
+    bool negate; // 0 or 1 observed.
 };
 
 // wraith_menu_select.rseq
@@ -2045,11 +1973,11 @@ struct mstudiobodyparts_t_v54_v15
 
 struct mstudiobodyparts_t_v16
 {
-	uint16 sznameindex <read=ReadString(startof(this) + this)>;
-    uint16 modelindex;
+	short sznameindex <read=ReadString(startof(this) + this)>;
+    short modelindex;
     int base;
 	int nummodels;
-	int meshindex; // index into models array
+	int meshindex; // might be short
 };
 
 // studio models
@@ -2059,7 +1987,6 @@ struct mstudiomodel_t_v54
 
 	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes
 
-    // in v11 they start to overwrite this if it is just the default
     int type;
 
 	float boundingradius;
@@ -2075,14 +2002,10 @@ struct mstudiomodel_t_v54
 	int numattachments;
 	int attachmentindex;
 
-    // might be cut
-	int numeyeballs;
-	int eyeballindex;
+    int deprecated_numeyeballs;
+	int deprecated_eyeballindex;
 
-	//mstudio_modelvertexdata_t vertexdata;
-
-    // same as v53, except trimming the fat
-	int unk[4];
+	int pad[4];
 
     int colorindex; // vertex color
                     // offset by colorindex number of bytes into vvc vertex colors
@@ -2171,22 +2094,18 @@ struct mstudiomodel_t_v54_v14
 
     int meshindex;
 
+    // most of these vtx, vvd, vvc, and vg indexes are depreciated after v14.1 (s14)
+
 	// cache purposes
 	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector, not written in v14.1 (s14 v14)
-	int tangentsindex; // tangents Vector, not written v14.1 (s14 v14)
+	int vertexindex; // vertex Vector
+	int tangentsindex; // tangents Vector
 
 	int numattachments;
 	int attachmentindex;
 
-
     int colorindex; // vertex color
-                    // offset by colorindex number of bytes into vvc vertex colors
-                    // not written in v14.1 (s14 v14)
     int uv2index; // vertex second uv map
-                  // offset by uv2index number of bytes into vvc secondary uv map
-                  // not written in v14.1 (s14 v14)
-
 	int unk;
 };
 
@@ -2201,7 +2120,7 @@ struct mstudiomodel_t_v16
     short unk_v14;
     short unk1_v14;
 
-    uint16 meshindex;
+    short meshindex;
 };
 
 // meshes
@@ -2216,20 +2135,19 @@ struct mstudiomesh_t_v54
 
 	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
 	
-	int numflexes; // vertex animation
-	int flexindex;
-
+	int deprecated_numflexes; // vertex animation
+	int deprecated_flexindex;
 
 	// special codes for material operations
-	int materialtype;
-	int materialparam;
+	int deprecated_materialtype;
+	int deprecated_materialparam;
 
 	// a unique ordinal for this mesh
 	int meshid;
 
 	Vector3 center;
 
-	mstudio_meshvertexdata_t vertexdata;
+	mstudio_meshvertexloddata_t vertexloddata;
     
 	int unk[2]; // these are suposed to be filled on load, however this isn't true??
 };
@@ -2248,7 +2166,8 @@ struct mstudiomesh_t_v54_v121
 
     Vector3 center;
 
-	mstudio_meshvertexdata_t vertexdata;
+    // depreciated in later versions?
+	mstudio_meshvertexloddata_t vertexloddata;
     
 	int unk[2]; // these are suposed to be filled on load, however this isn't true??
 };
@@ -2275,12 +2194,12 @@ struct mstudiotexture_t_v54
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int64 guid <read=Str("%s - %LX", "matl", this)>;
+	__int64 guid <read=Str("%s - %LX", "matl", this)>;
 };
 
 struct mstudiotexture_t_v16
 {
-	int64 guid <read=Str("%s - %LX", "matl", this)>;
+	__int64 guid <read=Str("%s - %LX", "matl", this)>;
 };
 
 // texture types, new in v54

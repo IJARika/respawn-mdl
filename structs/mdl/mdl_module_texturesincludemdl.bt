@@ -22,12 +22,10 @@ FSeek(mdlHeader.textureindex);
 // do textures and version checks
 if(mdlHeader.version == 53)
     mstudiotexture_t_v53 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
-
-if(mdlHeader.version <= 52 && mdlHeader.version >= 48)
+else if(mdlHeader.version == 52)
+    mstudiotexture_t_v52 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+else
     mstudiotexture_t textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
-
-if(mdlHeader.version <= 47)
-    mstudiotexture_t_v47 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 // do cdmaterials
 FSeek(mdlHeader.cdtextureindex);
@@ -35,4 +33,9 @@ mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read
 
 // do skingroups
 FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+if(mdlHeader.numskinfamilies)
+{
+    struct {
+        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+}

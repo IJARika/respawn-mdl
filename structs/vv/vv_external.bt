@@ -16,11 +16,12 @@
 #include "../vv/vv.bt"
 #include "../mdl/mdl_structs.bt"
 
+local int pre_id = ReadInt();
 
-vertexFileHeader_t vv_header <bgcolor=cYellow>;
-
-if(vv_header.id == 1447248969)
+if(pre_id == 1447248969)
 {
+    vertexColorFileHeader_t vv_header <bgcolor=cYellow>;
+
     /*===========
     from r1 vmts:
 
@@ -34,15 +35,17 @@ if(vv_header.id == 1447248969)
 	"$seconduvset" "1"
     ===========*/
 
-    FSeek(vv_header.numFixups);
+    FSeek(vv_header.colorDataStart);
     VertexColor_t m_color[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
 
     
-    FSeek(vv_header.fixupTableStart);
+    FSeek(vv_header.uv2DataStart);
     Vector2 m_vecTexCoord2[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
 }
 else
 {  
+    vertexFileHeader_t vv_header <bgcolor=cYellow>;
+
     if(vv_header.fixupTableStart > 0)
     {
         FSeek(vv_header.fixupTableStart);

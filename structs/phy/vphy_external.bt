@@ -21,11 +21,11 @@ local int x = 0;
 
 
 phyheader_t vphy_header <bgcolor=cLtRed>;
-physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
+physection_t vphy_section[vphy_header.solidCount] <optimize=false>;
 
 local int64 charSize = FileSize();
 
-for (i = 0; i < vphy_header.numsolids; i++)
+for (i = 0; i < vphy_header.solidCount; i++)
 {
     charSize -= vphy_section[i].surfaceheader.size + 4;
 };

@@ -45,7 +45,8 @@ mstudioattachment_t_v16 attachments[mdlHeader.numlocalattachments]  <bgcolor=0xc
 
 
 FSeek(mdlHeader.bonetablebynameindex);
-mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
+ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
+
 
 
 // seqs change for v12.2, or aseq v10.
@@ -56,19 +57,31 @@ mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
 // models
 // these change between v12.1/v13/v14 because Respawn.
 FSeek(mdlHeader.bodypartindex);
-mstudiobodyparts_t_v16 bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
-
 if(mdlHeader.numbodyparts)
 {
-    local int modelCount = 0;
+    struct {
     
-    for (i = 0; i < mdlHeader.numbodyparts; ++i)
-    {
-       modelCount += bodyparts[i].nummodels;
-    }
+        for(i = 0; i < mdlHeader.numbodyparts; i++)
+        {
+            FSeek(mdlHeader.bodypartindex + (sizeof(mstudiobodyparts_t_v16) * i));
+            struct {
+                mstudiobodyparts_t_v16 bodypart <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
+        
+                FSeek(startof(bodypart) + bodypart.modelindex);
+                for(j = 0; j < bodypart.nummodels; j++)
+                {
+                    FSeek(startof(bodypart) + bodypart.modelindex + (sizeof(mstudiomodel_t_v16) * j));
+                    struct {
+                        mstudiomodel_t_v16 model;
     
-    FSeek(startof(bodyparts) + bodyparts.modelindex);
-    mstudiomodel_t_v16 models[modelCount] <bgcolor=cDkGray>;
+                        FSeek(startof(model) + model.meshindex);
+                        mstudiomesh_t_v16 meshes[model.nummeshes] <bgcolor=cLtGray>;
+                    } model <bgcolor=cDkGray>;
+                }
+            } bodypart <read=ReadString(startof(this.bodypart) + this.bodypart.sznameindex)>;
+        }
+    
+    } bodyparts <read=Str("%i bodyparts", mdlHeader.numbodyparts)>;
 }
 
 
@@ -103,22 +116,6 @@ for (i = 0; i < mdlHeader.numikchains; ++i)
 mstudioiklink_t_v54 iklinks[linkCount] <bgcolor=0x7d3c98>;
 
 
-if(mdlHeader.numbodyparts)
-{  
-    // meshes
-    // can't find an offset for this so it goes here.
-    local int meshCount = 0;
-    
-    for (i = 0; i < modelCount; ++i)
-    {
-       meshCount += models[i].nummeshes;
-    }
-    
-    FSeek(startof(bodyparts) + bodyparts.meshindex);
-    mstudiomesh_t_v16 meshes[meshCount] <bgcolor=cLtGray>;
-}
-
-
 // various includes, materials, and groups
 
 // we no longer do include model because that's handled in the rpak header.
@@ -128,16 +125,14 @@ if(mdlHeader.numbodyparts)
 FSeek(mdlHeader.textureindex);
 mstudiotexture_t_v16 textures[mdlHeader.numtextures] <bgcolor=cGreen>;
 
-// do material types if they exist
-/*(mdlHeader.materialtypesindex > 0)
-{
-    FSeek(mdlHeader.materialtypesindex);
-    MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
-}*/
-
 // do skingroups
 FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+if(mdlHeader.numskinfamilies)
+{
+    struct {
+        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+}
 
 // do skingroup names if they exist
 if(mdlHeader.numskinfamilies > 1)

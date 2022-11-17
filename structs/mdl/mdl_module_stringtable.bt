@@ -1,0 +1,84 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl, rrig
+//   Authors: Rika
+//   Version: 52/53/54
+// Increment: 8/9/10/11/12/12.1/12.2/13/14/15
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl, *rrig
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*STRING TABLE MODULE*/
+
+
+struct {
+    if (mdlHeader.version >= 53)
+    {
+        if (mdlHeader.sznameindex > sizeof(mdlHeader))
+        {
+            FSeek(mdlHeader.sznameindex);
+            string mdl_name <fgcolor=cLtBlue>;
+        }
+    }
+    else if (mdlHeader.version <= 52 && mdlSubHeader.sznameindex > (sizeof(mdlHeader) + sizeof(mdlSubHeader)))
+    {
+        FSeek(startof(mdlSubHeader) + mdlSubHeader.sznameindex);
+        string mdl_name <fgcolor=cDkBlue>;
+    }
+    
+    FSeek(mdlHeader.surfacepropindex);
+    string mdl_surfaceprop <fgcolor=cLtBlue>;
+
+    if (mdlHeader.version <= 52)
+    {
+        FSeek(mdlHeader.szanimblocknameindex);
+        string mdl_animblockname <fgcolor=cLtBlue>;
+    }
+    
+    if (mdlHeader.version >= 52)
+    {
+        if (mdlHeader.version >= 53)
+        {
+            FSeek(mdlHeader.unkstringindex);
+            string mdl_unkstring <fgcolor=cLtBlue>;
+        }
+        else
+        {
+            FSeek(startof(mdlSubHeader) + mdlSubHeader.unkstringindex);
+            string mdl_unkstring <fgcolor=cDkBlue>;
+        }
+    }
+
+} header_strings <read=this.mdl_name>;
+
+// help with struct starting pos
+FSeek(mdlHeader.surfacepropindex);
+struct {
+    for (i = 0; i < mdlHeader.numbones; i++)
+    {
+        struct {
+            FSeek(startof(bones[i]) + bones[i].sznameindex);
+            string bone_name <fgcolor=cLtGreen>;
+    
+            FSeek(startof(bones[i]) + bones[i].surfacepropidx);
+            string mdl_surfaceprop <fgcolor=cLtBlue>;
+        } bone_string <read=this.bone_name>;
+    }
+} bone_strings;
+
+// help with struct starting pos
+FSeek(mdlHeader.surfacepropindex);
+struct {
+    for (i = 0; i < mdlHeader.numlocalattachments; i++)
+    {
+        struct {
+            FSeek(startof(attachments[i]) + attachments[i].sznameindex);
+            string attachment_name <fgcolor=0xcff5ca>;
+        } attachment_string <read=this.attachment_name>;
+    }
+} attachment_strings;

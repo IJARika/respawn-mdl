@@ -33,7 +33,12 @@ mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read
 
 // do skingroups
 FSeek(mdlHeader.skinindex);
-mstudioskingroup_t skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+if(mdlHeader.numskinfamilies)
+{
+    struct {
+        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+}
 
 if(mdlHeader.numskinfamilies > 0)
 {

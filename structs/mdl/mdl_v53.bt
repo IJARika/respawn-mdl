@@ -82,6 +82,8 @@ if(mdlHeader.numlocalanim)
         for (i = 0; i < mdlHeader.numlocalanim; ++i)
         {
             struct {
+                local int animidx = i;
+
                 if(animdesc[i].sectionindex)
                 {
                     struct {
@@ -100,7 +102,7 @@ if(mdlHeader.numlocalanim)
                                     for(j = 0; j < mdlHeader.numbones; j++)
                                     {
                                         struct {
-                                            mstudio_rle_anim_t_v53 sectionanimheader <bgcolor=0x771122>;
+                                            mstudio_rle_anim_t_v53 sectionanimheader <read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex), bgcolor=0x771122>;
     
                                             if(!(sectionanimheader.flags & STUDIO_ANIM_RAWROT_53))
                                             {
@@ -125,7 +127,7 @@ if(mdlHeader.numlocalanim)
                                                     }
                                                 }
                                             }
-                                            
+
                                             if(!(sectionanimheader.flags & STUDIO_ANIM_RAWSCALE_53))
                                             {
                                                 for(g = 0; g < 3; g++)
@@ -139,7 +141,7 @@ if(mdlHeader.numlocalanim)
                                             }
     
                                             FSeek(startof(sectionanimheader) + sectionanimheader.nextoffset);
-                                        } section_anim_header_data;
+                                        } section_anim_header_data <read=ReadString(startof(bones[this.sectionanimheader.bone]) + bones[this.sectionanimheader.bone].sznameindex)>;
 
                                         if(section_anim_header_data.sectionanimheader.nextoffset <= 0)
                                                 break;
@@ -157,7 +159,7 @@ if(mdlHeader.numlocalanim)
                         for(j = 0; j < mdlHeader.numbones; j++)
                         {
                             struct {
-                                mstudio_rle_anim_t_v53 animheader <bgcolor=cBlue>;
+                                mstudio_rle_anim_t_v53 animheader <read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex), bgcolor=cBlue>;
     
                                 if(!(animheader.flags & STUDIO_ANIM_RAWROT_53))
                                 {
@@ -196,7 +198,7 @@ if(mdlHeader.numlocalanim)
                                 }
     
                                 FSeek(startof(animheader) + animheader.nextoffset);     
-                            } anim_header_data;
+                            } anim_header_data <read=ReadString(startof(bones[this.animheader.bone]) + bones[this.animheader.bone].sznameindex)>;
 
                             if(anim_header_data.animheader.nextoffset <= 0)
                                     break;
@@ -243,17 +245,17 @@ if(mdlHeader.numlocalanim)
                     }
                 }
             
-                if(animdesc[i].compressedikerrorindex)
+                if(mdlHeader.version >= 52 && animdesc[i].framemovementindex)
                 {
-                    FSeek(startof(animdesc[i]) + animdesc[i].compressedikerrorindex);
-                    mstudiocompressedikerror_t_v52 ikcompressederror_v52 <bgcolor=cLtGreen>;
+                    FSeek(startof(animdesc[i]) + animdesc[i].framemovementindex);
+                    mstudioframemovement_t framemovement <bgcolor=cLtGreen>;
 
                     struct {
                         for(g = 0; g < 4; g++)
                         {
-                            if(ikcompressederror_v52.offset[g])
+                            if(framemovement.offset[g])
                             {
-                                FSeek(startof(ikcompressederror_v52) + ikcompressederror_v52.offset[g]);
+                                FSeek(startof(framemovement) + framemovement.offset[g]);
                                 struct {
                                     mstudioanimvalue_t animvalue <bgcolor=0x99CC99>;
                                 
@@ -262,9 +264,9 @@ if(mdlHeader.numlocalanim)
                                 } animvalueik;
                             }
                         }
-                    } compressed_ik_values;
+                    } framemovement_values;
                 }
-            } animdesc_data;
+            } animdesc_data <read=ReadString(startof(animdesc[animidx]) + animdesc[animidx].sznameindex)>;
         }      
     } animation_data;
 }
@@ -276,19 +278,9 @@ if(mdlHeader.numlocalanim)
 // unchanged until v54
 #include "../mdl/mdl_module_nodes.bt"
 
-
 // models
-FSeek(mdlHeader.bodypartindex);
-mstudiobodyparts_t bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
+#include "../mdl/mdl_module_bodyparts.bt"
 
-local int modelCount = 0;
-
-for (i = 0; i < mdlHeader.numbodyparts; ++i)
-{
-   modelCount += bodyparts[i].nummodels;
-};
-
-mstudiomodel_t_v52 models[modelCount] <bgcolor=cDkGray>;
 
 // ik
 FSeek(mdlHeader.ikchainindex);
@@ -308,18 +300,6 @@ mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
 
 FSeek(mdlHeader.localposeparamindex);
 mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
-
-
-// meshes
-// can't find an offset for this so it goes here.
-local int meshCount = 0;
-
-for (i = 0; i < modelCount; ++i)
-{
-   meshCount += models[i].nummeshes;
-};
-
-mstudiomesh_t_v53 meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // rui
@@ -345,18 +325,20 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 
 
 // per tri aabb data
-FSeek(mdlHeader.aabbindex);
-pertriheader_t pertrihdr <fgcolor=cDkRed>; // header completely nulled out if unused.
+FSeek(mdlHeader.m_nPerTriAABBIndex);
+mstudioaabbheader_t aabbheader <fgcolor=cDkRed>; // header completely nulled out if unused.
 
-if (mdlHeader.numaabb || mdlHeader.numaabb1 || mdlHeader.numaabb2)
+if (mdlHeader.m_nPerTriAABBNodeCount || mdlHeader.m_nPerTriAABBLeafCount || mdlHeader.m_nPerTriAABBVertCount)
 {
-    aabbsection1 unk_bytes1[mdlHeader.numaabb] <fgcolor=cRed>;
-    aabbsection2 unk_bytes2[mdlHeader.numaabb1] <fgcolor=cRed>;
-    aabbsection3 unk_bytes3[mdlHeader.numaabb2] <fgcolor=cRed>;
+    mstudioaabbnode_t aabb_nodes[mdlHeader.m_nPerTriAABBNodeCount] <fgcolor=cRed>;
+    mstudioaabbleaf_t aabb_leafs[mdlHeader.m_nPerTriAABBLeafCount] <fgcolor=cRed>;
+    mstudioaabbvert_t aabb_verts[mdlHeader.m_nPerTriAABBVertCount] <fgcolor=cRed>;
 };
 
 
 // string table
+//#include "../mdl/mdl_module_stringtable.bt"
+
 local int stringtable_size;
 
 if(mdlHeader.vphysize || mdlHeader.vtxsize)
@@ -380,11 +362,11 @@ char stringtable[stringtable_size] <fgcolor=cLtRed>;
 struct vphygroup_t
 {   
     phyheader_t vphy_header <bgcolor=cLtRed>;
-    physection_t vphy_section[vphy_header.numsolids] <optimize=false>;
+    physection_t vphy_section[vphy_header.solidCount] <optimize=false>;
     
     local int64 charSize = mdlHeader.vphysize; // have to do this locally here because we can't use FileSize()
     
-    for (i = 0; i < vphy_header.numsolids; i++)
+    for (i = 0; i < vphy_header.solidCount; i++)
         charSize -= vphy_section[i].surfaceheader.size + 4;
     
     charSize -= 16;
@@ -553,40 +535,13 @@ if(mdlHeader.vtxsize)
 // VV
 
 
-// vv
-struct unkfloatsection
+// vvd
+if (mdlHeader.vvdsize)
 {
-    float a;
-    float b;
-};
+    FSeek(mdlHeader.vvdindex);
+    struct {
+        vertexFileHeader_t vv_header <bgcolor=cYellow>;
 
-struct vvgroup
-{
-    vertexFileHeader_t vv_header <bgcolor=cYellow>;
-
-    if(vv_header.id == 1447248969)
-    {
-        /*===========
-        from r1 vmts:
-    
-        "$vertexcolor" "1"
-        "$vertcoloristint" "1"
-        "$vertexalpha" "1"
-    
-        "$cockpitlightmap0" "models\titans\stryder\stryder_cockpit\stryder_cockpit_console_pov_lightmap_01"
-	    "$cockpitlightmap1" "models\weapons\arms\titan_atlas_screen_lightmap_02"
-	    "$cockpitscreenlight" "_rt_TinyFB0"
-	    "$seconduvset" "1"
-        ===========*/
-    
-        FSeek(startof(vv_header) + vv_header.numFixups);
-        VertexColor_t m_color[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
-           
-        FSeek(startof(vv_header) + vv_header.fixupTableStart);
-        Vector2 m_vecTexCoord2[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
-    }
-    else
-    {  
         if(vv_header.fixupTableStart)
         {
             FSeek(startof(vv_header) + vv_header.fixupTableStart);
@@ -604,19 +559,34 @@ struct vvgroup
             FSeek(startof(vv_header) + vv_header.tangentDataStart);
             Vector4 vv_tangent[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
         }
-    }
-};
-
-// vvd
-if (mdlHeader.vvdsize)
-{
-    FSeek(mdlHeader.vvdindex);
-    vvgroup vvd;
+    } vvd;
 }
 
 // vvc
 if (mdlHeader.vvcsize)
 {
     FSeek(mdlHeader.vvcindex);
-    vvgroup vvc;
+    struct {
+        vertexColorFileHeader_t vv_header <bgcolor=cYellow>;
+    
+        /*===========
+        from r1 vmts:
+    
+        "$vertexcolor" "1"
+        "$vertcoloristint" "1"
+        "$vertexalpha" "1"
+    
+        "$cockpitlightmap0" "models\titans\stryder\stryder_cockpit\stryder_cockpit_console_pov_lightmap_01"
+	    "$cockpitlightmap1" "models\weapons\arms\titan_atlas_screen_lightmap_02"
+	    "$cockpitscreenlight" "_rt_TinyFB0"
+	    "$seconduvset" "1"
+        ===========*/
+    
+        FSeek(startof(vv_header) + vv_header.colorDataStart);
+        VertexColor_t m_color[vv_header.numLODVertexes[0]] <bgcolor=cLtYellow>;
+    
+        
+        FSeek(startof(vv_header) + vv_header.uv2DataStart);
+        Vector2 m_vecTexCoord2[vv_header.numLODVertexes[0]] <bgcolor=cDkYellow>;
+    } vvc;
 }

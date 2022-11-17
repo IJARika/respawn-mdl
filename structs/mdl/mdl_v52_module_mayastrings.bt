@@ -17,8 +17,8 @@
 
 
 // this is a check for non shipped models, or others that may not have maya strings.
-if (mdlHeader.boneindex > mdlHeader.mayaindex && mdlHeader.mayaindex != 0)
+if (mdlHeader.boneindex > mdlHeader.sourceFilenameOffset && mdlHeader.sourceFilenameOffset != 0)
 {
-    FSeek(mdlHeader.mayaindex);
-    char mayabakery[mdlHeader.boneindex - mdlHeader.mayaindex] <fgcolor=cRed>;
+    FSeek(mdlHeader.sourceFilenameOffset);
+    char source_files[mdlHeader.boneindex - mdlHeader.sourceFilenameOffset] <fgcolor=cRed>;
 }

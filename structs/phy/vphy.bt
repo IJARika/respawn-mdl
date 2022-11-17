@@ -23,23 +23,34 @@ struct phyheader_t
 {
 	int size; // Size of this header section (generally 16), this is also version.
 	int id; // Often zero, unknown purpose.
-	int numsolids; // Number of solids in file
-	int checksum; // checksum of source .mdl file (4-bytes)
+	int solidCount; // Number of solids in file
+	int checkSum; // checksum of source .mdl file (4-bytes)
 };
 
 struct compactsurfaceheader_t
 {
-	int size; // size of the content after this byte
+	int size;
 	int id;
-	int16 version;
+	short version;
 
-	int16 modeltype;
+	short modeltype;
 
 	int surfacesize;
 
 	Vector3 dragaxisareas;
 
 	int axismaparea;
+};
+
+struct swapcompactsurfaceheader_t
+{
+	int		size; // size of the content after this byte
+	int		vphysicsID;
+	short	version;
+	short	modelType;
+	int		surfaceSize;
+	Vector	dragAxisAreas;
+	int		axisMapSize;
 };
 
 struct legacysurfaceheader_t
@@ -52,11 +63,9 @@ struct legacysurfaceheader_t
     // big if true
 	int	max_deviation : 24;
 	int	byte_size : 8;
-	int	nodeindex;
+	int	offset_ledgetree_root;
 
-    int pad[2];
-
-    int id;
+    int dummy[3]; // dummy[2] is id
 };
 
 struct trianglefaceheader_t
@@ -111,7 +120,7 @@ struct phynode_t
 
 struct physection_t
 {
-    compactsurfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
+    swapcompactsurfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
     legacysurfaceheader_t surfaceheader2 <bgcolor=cLtRed, fgcolor=cYellow>;
     trianglefaceheader_t trihdr <bgcolor=cDkRed, fgcolor=cDkYellow>;
     trianglevertmap_t vertmap[trihdr.numfaces] <bgcolor=cDkRed, fgcolor=cLtYellow, optimize=false>;
@@ -146,7 +155,7 @@ struct physection_t
     FSeek(startof(trihdr[0]) + trihdr[0].vertexindex);
     phyvertex_t vertices[numvertices] <bgcolor=cDkRed, fgcolor=cYellow, optimize=false>;
 
-    FSeek(startof(surfaceheader2) + surfaceheader2.nodeindex);
+    FSeek(startof(surfaceheader2) + surfaceheader2.offset_ledgetree_root);
 
     while(FTell() - startof(surfaceheader) < surfaceheader.size)
     {

@@ -34,6 +34,19 @@ struct vertexFileHeader_t
 	int tangentDataStart; // offset from base to tangent block
 };
 
+struct vertexColorFileHeader_t
+{
+	int id; // MODEL_VERTEX_FILE_ID
+	int version; // MODEL_VERTEX_FILE_VERSION
+	int checksum; // same as studiohdr_t, ensures sync
+
+	int numLODs; // num of valid lods
+	int numLODVertexes[MAX_NUM_LODS]; // num verts for desired root lod
+
+	int colorDataStart;
+	int uv2DataStart;
+};
+
 struct vertexFileFixup_t
 {
 	int		lod;				// used to skip culled root lod

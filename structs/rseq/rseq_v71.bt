@@ -53,7 +53,11 @@ FSeek(startof(seqdesc) + seqdesc.weightlistindex);
 float weightlist[numbones] <bgcolor=0xe1f27a>;
 
 FSeek(startof(seqdesc) + seqdesc.activitymodifierindex);
-mstudioactivitymodifier_t_v53 activitymodifier[seqdesc.numactivitymodifiers] <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.unk)>;
+for(j = 0; j < seqdesc.numactivitymodifiers; j++)
+{
+    mstudioactivitymodifier_t_v52 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.negate)>;
+    FSeek(startof(seqdesc) + seqdesc.activitymodifierindex + ((sizeof(activitymodifier.sznameindex) * 2) * (j + 1)));
+}
 
 FSeek(startof(seqdesc) + seqdesc.animindexindex);
 int blends[seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1]] <bgcolor=0xffff00>;
@@ -130,11 +134,11 @@ for(k = 0; k < numanims; k++)
                 mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cDkGreen>;
             }
         }*/
-    
-        if(animdesc[k].compressedikerrorindex)
+
+        if(animdesc[k].framemovementindex)
         {
-            FSeek(startof(animdesc[k]) + animdesc[k].compressedikerrorindex);
-            mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cLtGreen>;
+            FSeek(startof(animdesc[k]) + animdesc[k].framemovementindex);
+            mstudioframemovement_t framemovement <bgcolor=cLtGreen>;
         }
     } animdesc_data;
 }

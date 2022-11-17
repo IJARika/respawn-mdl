@@ -40,25 +40,14 @@ studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this
 
 
 FSeek(mdlHeader.bonetablebynameindex);
-mstudiobonenametable_t bonenames <bgcolor=cDkGreen>;
+ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 
 
 // global sequences, unchanged across all v54 so far.
 #include "../rmdl/rmdl_v54_module_sequences.bt"
 
-
 // models
-FSeek(mdlHeader.bodypartindex);
-mstudiobodyparts_t bodyparts[mdlHeader.numbodyparts] <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int modelCount = 0;
-
-for (i = 0; i < mdlHeader.numbodyparts; ++i)
-{
-   modelCount += bodyparts[i].nummodels;
-}
-
-mstudiomodel_t_v54 models[modelCount]<bgcolor=cDkGray>;
+#include "../mdl/mdl_module_bodyparts.bt"
 
 
 // v54 node
@@ -71,19 +60,6 @@ mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYell
 
 // unchanged between subversions
 #include "../rmdl/rmdl_v54_module_ikchain.bt"
-
-
-// meshes
-// can't find an offset for this so it goes here.
-local int meshCount = 0;
-
-for (i = 0; i < modelCount; ++i)
-{
-   meshCount += models[i].nummeshes;
-}
-
-FSeek(mdlHeader.meshindex);
-mstudiomesh_t_v54 meshes[meshCount] <bgcolor=cLtGray>;
 
 
 // unchanged between subversions
