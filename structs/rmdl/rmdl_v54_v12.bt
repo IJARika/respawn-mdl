@@ -93,7 +93,7 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 
 
 // unkdata headers changed in v12
-#include "../rmdl/rmdl_v54_v12_module_unkdata.bt"
+#include "../rmdl/rmdl_v54_v12_module_bvh4.bt"
 
 
 // unsure what this is for, same as v53

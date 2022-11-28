@@ -106,13 +106,15 @@
 #define STUDIOHDR_FLAGS_VERT_ANIM_FIXED_POINT_SCALE	0x200000
 
 
-#define STUDIOHDR_FLAGS_RESPAWN_UNK                 0x800000
-// "unkindex is only shifted if 0x1000000 flag is set on the studiohdr" talking about unkindex in mstudiomodel struct
-// unkindex is now colorindex
-#define STUDIOHDR_FLAGS_USES_VERTEX_COLOR           0x1000000 // hehe
-#define STUDIOHDR_FLAGS_RESPAWN_UNK1                0x1000000 // maybe related to vvc
+// added in v54
+#define STUDIOHDR_FLAGS_COMPLEX_WEIGHTS		        0x4000 // don't really know what to name this one
 
-#define STUDIOHDR_FLAGS_RESPAWN_UNK2                0x2000000 // might be related to 2nd uv layer?
+// added in v52
+#define STUDIOHDR_FLAGS_RESPAWN_UNK                 0x800000
+
+// "colorindex is only shifted if 0x1000000 flag is set on the studiohdr" talking about colorindex in mstudiomodel struct
+#define STUDIOHDR_FLAGS_USES_VERTEX_COLOR	        0x1000000 // model has/uses vertex color
+#define STUDIOHDR_FLAGS_USES_UV2			        0x2000000 // model has/uses secondary uv layer
 
 string ReadHeaderFlags(int flags)
 {
@@ -187,8 +189,11 @@ string ReadHeaderFlags(int flags)
         case STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT:
             value += "STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT";
             break;
-        case STUDIOHDR_FLAGS_FLEXES_CONVERTED:
-            value += "STUDIOHDR_FLAGS_FLEXES_CONVERTED";
+        case 0x4000:
+            if(mdlHeader.version == 54 || mdlHeader.version == 1)
+                value += "STUDIOHDR_FLAGS_COMPLEX_WEIGHTS";
+            else
+                value += "STUDIOHDR_FLAGS_FLEXES_CONVERTED";
             break;
         case STUDIOHDR_FLAGS_BUILT_IN_PREVIEW_MODE:
             value += "STUDIOHDR_FLAGS_BUILT_IN_PREVIEW_MODE";
@@ -214,11 +219,11 @@ string ReadHeaderFlags(int flags)
         case STUDIOHDR_FLAGS_RESPAWN_UNK:
             value += "STUDIOHDR_FLAGS_RESPAWN_UNK";
             break;
-        case STUDIOHDR_FLAGS_RESPAWN_UNK1:
-            value += "STUDIOHDR_FLAGS_RESPAWN_UNK1";
+        case STUDIOHDR_FLAGS_USES_VERTEX_COLOR:
+            value += "STUDIOHDR_FLAGS_USES_VERTEX_COLOR";
             break;
-        case STUDIOHDR_FLAGS_RESPAWN_UNK2:
-            value += "STUDIOHDR_FLAGS_RESPAWN_UNK2";
+        case STUDIOHDR_FLAGS_USES_UV2:
+            value += "STUDIOHDR_FLAGS_USES_UV2";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -3566,21 +3571,6 @@ struct mstudiomesh_t_v53
 	int unused[6]; // remove as appropriate
 };
 
-struct mstudioboneweight_t
-{
-	float	weight[MAX_NUM_BONES_PER_VERT];
-	char	bone[MAX_NUM_BONES_PER_VERT]; 
-	byte	numbones;
-};
-
-struct mstudiovertex_t
-{
-	mstudioboneweight_t	m_BoneWeights;
-	Vector3 m_vecPosition;
-	Vector3 m_vecNormal;
-	Vector2 m_vecTexCoord;
-};
-
 
 //=================
 // Material Structs
@@ -3758,10 +3748,10 @@ struct mstudioaabbvert_t
 // struct near end of file.
 struct unkphysectionhdr_t
 {
-    int unk; // parent/flags?
+    int numfaces;
     int numunk1; // quaternion, edges?
-    int numunk2; // unk member, faces?
-    int numvertices; // vector
+    int numunk2; // // has to do with faces, has array of face index
+    int numverts;
 
     int dataindex; // offset to related data chunk
 };

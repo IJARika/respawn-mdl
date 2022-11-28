@@ -26,7 +26,7 @@ local int i = 0;
 
 struct phyheader_t
 {
-	int size; // Size of this header section (generally 16)
+	int size; // Size of this header section
 	int id; // version?
 	int numsolids; // Number of solids in file
 	int checksum; // checksum of source .mdl file (4-bytes)
@@ -34,29 +34,38 @@ struct phyheader_t
     int keyvalueindex; // string block or size of data after this member
 };
 
+struct phyheader_t_v16
+{
+	short numsolids; // Number of solids in file
+    unsigned short keyvalueindex; // funny rmdl v16 offset
+};
+
 struct phyheader2_t
 {
-    // respawn using int64 for some reason when it's absolutely unneeded
+    // respawn using __int64 for some reason when it's absolutely unneeded
 
-	int64 size; // Size of this header section (generally 16)
-	int64 numsolids; // Number of solids in file
-	int64 id; // unsure but this would go with the theme of new stuff.
+	__int64 size; // Size of this header section
+	__int64 numsolids; // Number of solids in file
+	__int64 id; // unsure but this would go with the theme of new stuff.
 
-    int64 keyvalueindex; // string block or size of data after this member
+    __int64 keyvalueindex; // string block or size of data after this member
 };
 
 struct surfaceheader_t
 {
-	int64 size; // offsets to associated unknown section
-    int64 numsolids;    
+	__int64 meshindex;
+    __int64 numsolids;    
 
     float unkfloat;
 
     int unk[2];
 
-    float unkfloat1[20];
+    // idx 0, and 4 match the floats in meshheader
+    struct {
+        float unkfloatarray[4];
+    } unkfloat1[5];
 
-    int unk;
+    int unk1;
 
     // differs slightly from model but should be the mostly same assuming it is one solid.
     // this is PER SOLID so on multi-solid phys this will be smaller than the models
@@ -66,85 +75,21 @@ struct surfaceheader_t
     int unk2[2];
 };
 
-struct unktype_t
-{
-    byte unk[4];
-
-    int unk1[7];
-};
-
-struct unktype2_t
-{
-    byte unk[4];
-};
-
-struct unksection_t
-{
-    int unk;
-
-    float unkfloat[3];
-
-    // same as 'verts' in v53 phy related section
-    int64 vertexoffset;
-    int64 numvertexes;
-
-    // unk
-    int64 unkoffset;
-    int64 numunk;    
-
-    // numunk2
-    int64 unk2offset;
-    int64 numunk2;    
-
-    Vector3 vert[numvertexes] <fgcolor=cLtYellow>;
-
-    unktype_t unktype[numunk] <fgcolor=cLtYellow>;
-
-    unktype2_t unktype2[numunk2] <bgcolor=cDkBlue, fgcolor=cLtYellow>; 
-};
-
-struct unksection_t_stub
-{
-    int unk;
-
-    float unkfloat[3];
-
-    // same as 'verts' in v53 phy related section
-    int64 vertexoffset;
-    int64 numvertexes;
-
-    // unk
-    int64 unkoffset;
-    int64 numunk;    
-
-    // numunk2
-    int64 unk2offset;
-    int64 numunk2;
-
-    // don't do data here as it's gonna be in unk sections
-};
-
 struct trianglefaceheader_t
 {
-    int vertexindex; // from this member to verts
-    int parent; // parent bone
-    int flags;
-    int numfaces;
-};
+    float unkfloat[3]; // first might not be float
 
-struct trianglevertmap_t
-{
-    byte faceindex;
-    byte unkdata[3];
+    float unkfloat1;
 
-    int16 vertex1;
-    byte unkdata1[2];
+    __int64 vertoffset;
+    __int64 numverts;
 
-    int16 vertex2;
-    byte unkdata2[2];
+    __int64 faceoffset;
+    __int64 numfaces;    
 
-    int16 vertex3;
-    byte unkdata3[2];
+    // numunk2
+    __int64 unk2offset;
+    __int64 numunk2;  
 };
 
 struct phyvertex_t
@@ -165,30 +110,37 @@ struct phynode_t
 };
 
 phyheader_t vphy_header <bgcolor=cLtRed>;
-
-// this might be a header for unk sections
 phyheader2_t vphy_subheader <bgcolor=cRed>;
 
-surfaceheader_t vphy_section[vphy_header.numsolids] <bgcolor=cLtRed, fgcolor=cLtYellow, optimize=false>;
-
-// this is similar to "one solid" normal phy, but done differently
-if(vphy_section.numsolids > 1)
-{
-    unksection_t_stub vphy_section_child[vphy_section.numsolids - 1] <bgcolor=cLtRed>;
-}
-
-// this doesn't work properly if the above is true
-// needs to inherit values of above children if true
 for(i = 0; i < vphy_header.numsolids; i++)
 {
-    //FSeek(startof(vphy_subheader) + vphy_section[i].size);
-    unksection_t unksection <bgcolor=cBlue, optimize=false>;
-};
+    FSeek(52 + sizeof(surfaceheader_t) * i);
+    struct {
+        surfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
 
+        local int offset = 0;
 
+        FSeek(startof(vphy_subheader) + surfaceheader.meshindex);
+        trianglefaceheader_t mesh <bgcolor=cBlue>;
+
+        FSeek(startof(vphy_subheader) + mesh.vertoffset);
+        Vector3 vert[mesh.numverts] <bgcolor=cDkBlue, fgcolor=cLtYellow>;
+
+        FSeek(startof(vphy_subheader) + mesh.faceoffset);
+        struct {
+            byte vertex[32];
+        } face[mesh.numfaces] <bgcolor=cBlue, fgcolor=cLtYellow>;
+
+        // array of face indexes, whar?
+        struct {
+            byte face[4];
+        } unk[mesh.numunk2] <bgcolor=cDkBlue, fgcolor=cLtYellow>;
+
+    } physection;
+}
 
 FSeek(vphy_header.keyvalueindex);
 
-local int64 charSize = FileSize() - vphy_header.keyvalueindex;
+local int charSize = FileSize() - vphy_header.keyvalueindex;
 
 char vphy_stringdata[charSize] <fgcolor=cRed>;

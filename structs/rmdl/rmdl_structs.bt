@@ -21,7 +21,7 @@
 //==================
 // Generic Functions
 
-int GetRMDLOffset(uint16 offset)
+int GetRMDLOffset(unsigned short offset)
 {
     local int fixedOffset = ((offset & 0xFFFE) << (4 * (offset & 1)));
 
@@ -172,8 +172,8 @@ struct studiohdr_t_v54
 	
 	float gathersize; // what. from r5r struct
 
-    int numunk_v54_early;
-    int unkindex_v54_early;
+    int deprecated_numflexcontrollerui;
+	int deprecated_flexcontrolleruiindex;
 
 	float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
@@ -187,13 +187,19 @@ struct studiohdr_t_v54
 	
 	int linearboneindex;
 
-	int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-    int unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	int numprocbonesunk;
+	int procbonearrayindex;	
+    int procbonemaskindex;
 
-    // aabb tree in here maybe? definitely unused
-	int unk1_v54[6];
+    // depreciated as they are removed in 12.1
+    int m_nBoneFlexDriverCount;
+	int m_nBoneFlexDriverIndex;
+    
+    int m_nPerTriAABBIndex;
+    int m_nPerTriAABBNodeCount;
+    int m_nPerTriAABBLeafCount;
+    int m_nPerTriAABBVertCount;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -211,7 +217,7 @@ struct studiohdr_t_v54
 	int vvcsize;
 	int vphysize; // still used in models using vg
 
-    // unused in apex
+    // unused in apex, gets cut in 12.1
     int unkmemberindex1;
     int numunkmember1;
 
@@ -219,15 +225,18 @@ struct studiohdr_t_v54
     int unkcount3;
     int unkindex3;
 
-    // Per Tri Collision AABB size
+    // BVH4 size (?)
     Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
     int unk3_v54[3];
 
-	int unkindex4; // chunk before unkindex3 sometimes
+	int bvh4index; // bvh4 tree
 
-	int unk4_v54[3]; // same as unk3_v54_v121
+	short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+
+    int vvwindex;
+    int vvwsize;
 
     //int vgindex; // 0tVG
     //int unksize; // might be offset
@@ -373,10 +382,10 @@ struct studiohdr_t_v54_v121
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-    int unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	int numprocbonesunk;
+	int procbonearrayindex;	
+    int procbonemaskindex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -398,13 +407,16 @@ struct studiohdr_t_v54_v121
     int unkcount3;
     int unkindex3;
 
-    // Per Tri Collision AABB size
+    // BVH4 size (?)
     Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex4; // chunk before unkindex2 sometimes
+    int bvh4index; // bvh4 tree
 
-    int unk4_v54[3];
+    short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+
+    int vvwindex;
+    int vvwsize;
 };
 
 struct studiohdr_t_v54_v122
@@ -547,10 +559,10 @@ struct studiohdr_t_v54_v122
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-    int unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	int numprocbonesunk;
+	int procbonearrayindex;	
+    int procbonemaskindex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -572,13 +584,16 @@ struct studiohdr_t_v54_v122
     int unkcount3;
     int unkindex3;
 
-    // Per Tri Collision AABB size
+    // BVH4 size (?)
     Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex4; // chunk before unkindex2 sometimes
+    int bvh4index; // bvh4 tree
 
-    int unk4_v54[3];
+    short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+
+    int vvwindex;
+    int vvwsize;
 };
 
 struct studiohdr_t_v54_v13
@@ -721,10 +736,10 @@ struct studiohdr_t_v54_v13
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-    int unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	int numprocbonesunk;
+	int procbonearrayindex;	
+    int procbonemaskindex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -746,13 +761,16 @@ struct studiohdr_t_v54_v13
     int unkcount3;
     int unkindex3;
 
-    // Per Tri Collision AABB size
+    // BVH4 size (?)
     Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex4; // chunk before unkindex2 sometimes
+    int bvh4index; // bvh4 tree
 
-    int unk4_v54[3];
+    short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+
+    int vvwindex;
+    int vvwsize;
 
     int unk1_v54_v13[3];
 };
@@ -899,10 +917,10 @@ struct studiohdr_t_v54_v14
 
 	int linearboneindex;
 
-    int m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	int m_nBoneFlexDriverIndex;
-	
-    int unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	int numprocbonesunk;
+	int procbonearrayindex;	
+    int procbonemaskindex;
 
 	// always "" or "Titan"
     int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
@@ -924,18 +942,21 @@ struct studiohdr_t_v54_v14
     int unkcount3;
     int unkindex3;
 
-    // Per Tri Collision AABB size
+    // BVH4 size (?)
     Vector3 mins;
     Vector3 maxs; // seem to be the same as hull size
 
-    int unkindex4; // chunk before unkindex2 sometimes
+    int bvh4index; // bvh4 tree
 
-    int unk4_v54[3]; // int16s
+    short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+
+    int vvwindex;
+    int vvwsize;
 
     int unk1_v54_v13[3];
 };
 
-struct rstudiohdr_t_v16
+struct studiohdr_t_v16
 {
     int flags <read=ReadHeaderFlags(this)>;
 	int checksum; // unsure if this is still checksum, there isn't any other files that have it still
@@ -948,9 +969,9 @@ struct rstudiohdr_t_v16
  
     float mass;
 
-    int unk1_v16;
+    int version; // time will tell
 
-	uint16 hitboxsetindex;
+	unsigned short hitboxsetindex;
     byte numhitboxsets;
 
     byte illumpositionattachmentindex;
@@ -964,58 +985,58 @@ struct rstudiohdr_t_v16
 	Vector3 view_bbmax;		
   
 	short numbones; // bones
-	uint16 boneindex;
-    uint16 bonedataindex;
+	unsigned short boneindex;
+    unsigned short bonedataindex;
 
     short numlocalseq; // sequences
-	uint16 localseqindex;
+	unsigned short localseqindex;
 
     byte unkfill[5];
 
     byte numlocalattachments;
-	uint16 localattachmentindex;
+	unsigned short localattachmentindex;
 
     short numlocalnodes;
-	uint16 localnodenameindex;
-    uint16 localnodeindex;
+	unsigned short localnodenameindex;
+    unsigned short localnodeindex;
 
 	short numikchains;
-	uint16 ikchainindex;
+	unsigned short ikchainindex;
 
     short numtextures; // the material limit exceeds 128, probably 256.
-	uint16 textureindex;
+	unsigned short textureindex;
 
     // replaceable textures tables
 	short numskinref;
 	short numskinfamilies;
-	uint16 skinindex;
+	unsigned short skinindex;
 
     short numbodyparts;		
-	uint16 bodypartindex;
+	unsigned short bodypartindex;
 
     // this is rui meshes
 	short numruimeshes;
-	uint16 ruimeshindex;
+	unsigned short ruimeshindex;
 
     short numlocalposeparameters;
-	uint16 localposeparamindex;
+	unsigned short localposeparamindex;
 
-    uint16 surfacepropindex <read=ReadString(this)>;
+    unsigned short surfacepropindex <read=ReadString(this)>;
 
-    uint16 keyvalueindex;
+    unsigned short keyvalueindex;
 
-	uint16 vgmeshindex;
+	unsigned short vgmeshindex;
     short numvgmeshes;
 
     short bonetablebynameindex;
 
-    uint16 boneremapindex;
+    unsigned short boneremapindex;
     short numboneremaps;
 
-    uint16 vgloddataindex;
+    unsigned short vgloddataindex;
     short numvgloddata;
 
-	uint16 vglodheaderindex;
+	unsigned short vglodheaderindex;
     short numvglodheader;
 
     float fadeDistance;
@@ -1023,21 +1044,22 @@ struct rstudiohdr_t_v16
 	float gathersize; // what. from r5r struct
 
     short numsrcbonetransform;
-    uint16 srcbonetransformindex;
+    unsigned short srcbonetransformindex;
 
     // asset bakery strings if it has any
-	uint16 sourceFilenameOffset;
+	unsigned short sourceFilenameOffset;
 
-    uint16 linearboneindex;
+    unsigned short linearboneindex;
 
-    short m_nBoneFlexDriverCount; // unsure if that's what it is in apex
-	uint16 m_nBoneFlexDriverIndex;	
-    uint16 unkindexflex;
+    // unsure what this is for but it exists for jigglbones
+	short numprocbonesunk;
+	unsigned short procbonearrayindex;	
+    unsigned short procbonemaskindex;
 
     short unkcount3; // same as v54
-    uint16 unkindex3; // same as v54
+    unsigned short unkindex3; // same as v54
 
-    uint16 unkindex4; // same as v54
+    unsigned short bvh4index; // same as v54
 
     byte unk5_v16; // unk4_v54[0]
     byte unk6_v16; // unk4_v54[1]
@@ -1045,7 +1067,7 @@ struct rstudiohdr_t_v16
     short unk8_v16;
     short unk9_v16;
 
-    //uint16 unkshorts[7];
+    //unsigned short unkshorts[7];
 };
 
 //=============
@@ -1083,7 +1105,7 @@ struct mstudiobone_t_v54
 
     int unk;
 	
-	int unkid; // id is for unk section after stringblock, lacks toggle
+	int unkid; // physics index (?)
 };
 
 struct mstudiobone_t_v54_v121
@@ -1153,7 +1175,7 @@ struct mstudiobonedata_t_v16
     byte unkid;
 
 	byte proctype <read=ReadProcFlags(this)>;
-    uint16 procindex; // procedural rule
+    unsigned short procindex; // procedural rule
 };
 
 // jigglebone
@@ -1245,11 +1267,11 @@ struct mstudioikchain_t_v54
 
 struct mstudioikchain_t_v16
 {
-	uint16 sznameindex <read=ReadString(startof(this) + this)>;
+	unsigned short sznameindex <read=ReadString(startof(this) + this)>;
 
 	short linktype;
 	short numlinks;
-	uint16 linkindex;
+	unsigned short linkindex;
     
     float unk; // no clue what this does tbh, tweaking it does nothing
                // default value: 0.707f
@@ -1359,9 +1381,9 @@ struct mstudiobbox_t_v16
 	Vector3 bbmin; // bounding box
 	Vector3 bbmax;	
 
-	uint16 szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
+	unsigned short szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
 
-    uint16 keyvalueindex <read=ReadString(startof(this) + this - 30)>; // used for keyvalues, most for titans.
+    unsigned short keyvalueindex <read=ReadString(startof(this) + this - 30)>; // used for keyvalues, most for titans.
 };
 
 
@@ -1841,19 +1863,19 @@ struct mstudioseqdesc_t_v16
 	short numikrules;
 
 	short numautolayers;
-	uint16 autolayerindex;
+	unsigned short autolayerindex;
 
-	uint16 weightlistindex;
+	unsigned short weightlistindex;
 
     byte groupsize[2];
 
-    uint16 posekeyindex;
+    unsigned short posekeyindex;
 
 	short numiklocks;
 	short iklockindex;
 
 	// Key values
-	uint16 keyvalueindex;
+	unsigned short keyvalueindex;
 	short keyvaluesize;
 
 	//short cycleposeindex; // index of pose parameter to use as cycle index
@@ -1864,7 +1886,7 @@ struct mstudioseqdesc_t_v16
 	int ikResetMask; // new in v52
     int unk1;
 
-    uint16 unkindex;
+    unsigned short unkindex;
     short unkcount;
 };
 
@@ -1947,7 +1969,7 @@ struct unkseqdata_t
 // pose parameter desc
 struct mstudioposeparamdesc_t_v16
 {
-	uint16 sznameindex <read=ReadString(startof(this) + this)>;
+	unsigned short sznameindex <read=ReadString(startof(this) + this)>;
 
 	short flags; // ????
 	float start; // starting value
@@ -2260,13 +2282,14 @@ struct unkheader_v54
     int numsections;
 };
 
+// "tricol headers" but not?
 struct unksectionheader_v54
 {
-    int unk;
+    int unk; // num of nodes?
 
-    int dataindex1;
-    int dataindex2;
-    int dataindex3;
+    int nodeindex;
+    int dataindex2; // tri
+    int dataindex3; // vert
 
     float unkfloat[3]; // unsure if this is a vector
 
@@ -2278,13 +2301,13 @@ struct unksectionheader_v54_v12
 {
     int unk;
 
-    int dataindex1;
+    int nodeindex;
     int dataindex2;
     int dataindex3;
 
     int dataindex4; // new
 
-    int unknew;
+    int unkNew;
 
     float unkfloat[3]; // unsure if this is a vector
 
@@ -2312,15 +2335,86 @@ struct unkdata_t
     int unk6[4];
 };
 
-struct unkdata2section_t
-{
-    int unk[6];
-};
-
 struct unkdata2_t
 {
-    unkdata2section_t unk[2];
+    short unk[24];
 };
+
+// for bvh4 types:
+// 0 bvh4 node
+// 1 no children
+// 3 on flyer
+// 5 on most models
+// 7 on flyer
+
+string ReadBVHChildType(byte flags)
+{
+    string value = "";
+
+    //if(flags == 0)
+    //    return "node";
+
+    switch(flags)
+    {
+    case 0:
+        value += "NODE";
+        break;
+    case 1:
+        value += "NO_CHILD";
+        break;
+    case 3:
+        value += "UNK_ON_FLYER_1";
+        break;
+    case 5:
+        value += "UNK_NO_CHILD_MODEL";
+        break;
+    case 7:
+        value += "UNK_ON_FLYER_2";
+        break;
+    default:
+        value += Str("UNK_%x", flag);
+        break;
+    }
+
+    return value;
+}
+
+struct BVH4Axis_t
+{
+    short minChild0;
+    short maxChild0;
+
+    short minChild1;
+    short maxChild1;
+
+    short minChild2;
+    short maxChild2;
+
+    short minChild3;
+    short maxChild3;
+};
+
+struct BVH4Node_t
+{
+        BVH4Axis_t x;
+        BVH4Axis_t y;
+        BVH4Axis_t z;
+
+        int pad : 8;
+        int index0 : 24; 
+
+        int collision_mask : 8;
+        int index1 : 24; 
+
+        int child0_type : 4 <read=ReadBVHChildType(this)>; 
+        int child1_type : 4 <read=ReadBVHChildType(this)>;
+        int index2 : 24;
+
+        int child2_type : 4 <read=ReadBVHChildType(this)>; 
+        int child3_type : 4 <read=ReadBVHChildType(this)>;
+        int index3 : 24;
+};
+
 
 //========
 // VG Data

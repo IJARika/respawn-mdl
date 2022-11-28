@@ -25,8 +25,8 @@ local int64 stringtable_size; // size for string table
 if(mdlHeader.unkindex3 > 0 || mdlHeader.unkindex4 > 0)
 {
     // unkindex4 is sometimes nulled, check if it is
-    if(mdlHeader.unkindex4 > 0)
-        stringtable_size = mdlHeader.unkindex4 - (mdlHeader.sznameindex - 1);
+    if(mdlHeader.bvh4index > 0)
+        stringtable_size = mdlHeader.bvh4index - (mdlHeader.sznameindex - 1);
     else
         stringtable_size = mdlHeader.unkindex3 - (mdlHeader.sznameindex - 1);
 }

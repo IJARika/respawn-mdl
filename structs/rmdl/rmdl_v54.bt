@@ -92,9 +92,9 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 #include "../rmdl/rmdl_v54_module_stringtable.bt"
 
 
-if(mdlHeader.unkindex4 > 0)
+if(mdlHeader.bvh4index > 0)
 {
-    FSeek(mdlHeader.unkindex4);
+    FSeek(mdlHeader.bvh4index);
     unkheader_v54 unkhdr <bgcolor=cDkBlue>;
     unksectionheader_v54 unksecthdr[unkhdr.numsections] <bgcolor=cBlue>;
 
@@ -109,8 +109,8 @@ if(mdlHeader.unkindex4 > 0)
 
     for(i = 0; i < unkhdr.numsections; i++)
     {
-        FSeek(startof(unkhdr) + unksecthdr[i].dataindex1);
-        unkdata_t guh <bgcolor=0xAA9600>;
+        FSeek(startof(unkhdr) + unksecthdr[i].nodeindex);
+        BVH4Node_t parent_node <bgcolor=0xAA9600>;
     }
 }
 

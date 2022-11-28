@@ -34,6 +34,9 @@ if (pre_version == 52)
 { 
     studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
     studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
+
+    // funny strings that work the same always
+    #include "../mdl/mdl_v52_module_mayastrings.bt"
 }
 else if (pre_version == 49)
 {
@@ -43,11 +46,9 @@ else if (pre_version == 49)
 else
 {
     studiohdr_t_v48 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
-    studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
+    if(mdlHeader.version == 48)
+        studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
 }
-
-// funny strings that work the same always
-#include "../mdl/mdl_v52_module_mayastrings.bt"
 
 
 // bones

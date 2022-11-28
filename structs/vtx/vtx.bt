@@ -31,12 +31,12 @@ struct FileHeader_t
 
 	// hardware params that affect how the model is to be optimized.
 	int vertCacheSize;
-	int16 maxBonesPerStrip;
-	int16 maxBonesPerTri;
+	unsigned short maxBonesPerStrip;
+	unsigned short maxBonesPerFace;
 	int maxBonesPerVert;
 
 	// must match checkSum in the .mdl
-	int checksum;
+	int checkSum;
 
 	int numLODs; // Also specified in ModelHeader_t's and should match
 

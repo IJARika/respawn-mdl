@@ -1,0 +1,22 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vvwhar
+//   Authors: Valve
+//   Version: 1
+//   Purpose: Valve Vertex Files
+//  Category: Model
+// File Mask: *.vvwhar
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+#include "../source_math.bt"
+#include "../vv/vv.bt"
+#include "../mdl/mdl_structs.bt"
+
+vertexWeightFileHeader_t vv_header <bgcolor=cYellow>;
+
+FSeek(vv_header.weightDataStart);
+mstudioexternalboneweight_t weight[(FileSize() - vv_header.weightDataStart) / 4] <bgcolor=cDkYellow>;

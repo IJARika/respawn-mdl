@@ -52,17 +52,22 @@ if(mdlHeader.numlocalseq)
                 FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
                 short blendgroup[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]] <read=ReadString(startof(animdesc[this]) + animdesc[this].sznameindex), bgcolor=0xffff00>;
 
-                FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
-                if(mdlHeader.version >= 52)
+                if(mdlHeader.version > 48)
                 {
-                    for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
+                    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
+                    if(mdlHeader.version >= 52)
                     {
-                        mstudioactivitymodifier_t_v52 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.negate)>;
-                        FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex + ((sizeof(activitymodifier.sznameindex) * 2) * (j + 1)));
+                        for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
+                        {
+                            mstudioactivitymodifier_t_v52 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.negate)>;
+                            FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex + ((sizeof(activitymodifier.sznameindex) * 2) * (j + 1)));
+                        }
+                    }
+                    else
+                    {
+                        mstudioactivitymodifier_t activitymodifier[seqdesc[i].numactivitymodifiers] <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
                     }
                 }
-                else
-                    mstudioactivitymodifier_t activitymodifier[seqdesc[i].numactivitymodifiers] <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
             } sequence <read=ReadString(startof(seqdesc[seqidx]) + seqdesc[seqidx].szlabelindex)>;
 
             if(mdlHeader.version >= 52)

@@ -409,7 +409,7 @@ if (mdlHeader.vphysize > 0)
                 
                 unkphysectiondatatype_t unktype[unksechdr[i].numunk2] <bgcolor=cDkBlue>;
             
-                Vector3 vertex[unksechdr[i].numvertices] <bgcolor=cBlue>; // vertices
+                Vector3 vertex[unksechdr[i].numverts] <bgcolor=cBlue>; // vertices
             } unksecdatachunk <fgcolor=cLtYellow>;
         }
     } unksecdata;

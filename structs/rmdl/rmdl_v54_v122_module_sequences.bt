@@ -129,7 +129,7 @@ if(mdlHeader.numlocalseq)
                         if(animdesc[k].numikrules)
                         {
                             FSeek(startof(animdesc[k]) + animdesc[k].ikruleindex);
-                            mstudioikrule_t_v54_new animikrule[animdesc[k].numikrules] <bgcolor=cGreen>;
+                            mstudioikrule_t_v54 animikrule[animdesc[k].numikrules] <bgcolor=cGreen>;
                         }
                     
                         /*for(j = -animdesc.numikrules; j < 0; j++)

@@ -8,3 +8,4 @@ structs/dmx/dmx.bt
 *.png
 structs/bsp/bsp.bt
 structs/bsp/bspstructs.bt
+structs/vg/packed vert test.bt

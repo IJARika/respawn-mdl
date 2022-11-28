@@ -39,49 +39,55 @@ for (i = 0; i < vtx_header.numBodyParts; ++i)
         for(j = 0; j < vtx_partheader.numModels; j++)
         {
             FSeek(startof(vtx_partheader) + vtx_partheader.modelOffset + (sizeof(ModelHeader_t) * j));
-            ModelHeader_t vtx_modelheader <bgcolor=cDkPurple>;
-    
-            for(k = 0; k < vtx_modelheader.numLODs; k++)
-            {
-                FSeek(startof(vtx_modelheader) + vtx_modelheader.lodOffset + (sizeof(ModelLODHeader_t) * k));
-                ModelLODHeader_t vtx_lodheader <bgcolor=cLtPurple>;
-            
-                for(l = 0; l < vtx_lodheader.numMeshes; l++)
+            struct {
+                ModelHeader_t vtx_modelheader <bgcolor=cDkPurple>;
+        
+                for(k = 0; k < vtx_modelheader.numLODs; k++)
                 {
-                    FSeek(startof(vtx_lodheader) + vtx_lodheader.meshOffset + (sizeof(MeshHeader_t) * l));
-                    MeshHeader_t vtx_meshheader <bgcolor=cPurple>;
-    
-                    for(m = 0; m < vtx_meshheader.numStripGroups; m++)
-                    {
-                        FSeek(startof(vtx_meshheader) + vtx_meshheader.stripGroupHeaderOffset);
-                        StripGroupHeader_t vtx_stripgrphdr <bgcolor=cDkPurple>;
-        
-                        for(n = 0; n < vtx_stripgrphdr.numStrips; n++)
+                    FSeek(startof(vtx_modelheader) + vtx_modelheader.lodOffset + (sizeof(ModelLODHeader_t) * k));
+                    struct {
+                        ModelLODHeader_t vtx_lodheader <bgcolor=cLtPurple>;
+                    
+                        for(l = 0; l < vtx_lodheader.numMeshes; l++)
                         {
-                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.stripOffset + (sizeof(StripHeader_t) * n));
-                            StripHeader_t vtx_strip <bgcolor=cLtPurple>;
-        
-                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.vertOffset);
+                            FSeek(startof(vtx_lodheader) + vtx_lodheader.meshOffset + (sizeof(MeshHeader_t) * l));
                             struct {
-                                Vertex_t vtx_stripverts[vtx_stripgrphdr.numVerts] <bgcolor=cPurple>;
-                            } vert_group;
-    
-                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.indexOffset);
-                            struct {
-                                 int16 indice[vtx_stripgrphdr.numIndices] <bgcolor=cDkPurple>;
-                            } indice_group;
-    
-                            if(vtx_strip.boneStateChangeOffset)
-                            {
-                                FSeek(startof(vtx_strip) + vtx_strip.boneStateChangeOffset);
-                                struct {
-                                     BoneStateChangeHeader_t bonestate[vtx_strip.numBoneStateChanges] <bgcolor=cLtPurple, optimize=false>;
-                                } bonestate_group;
-                            }
+                                MeshHeader_t vtx_meshheader <bgcolor=cPurple>;
+                
+                                for(m = 0; m < vtx_meshheader.numStripGroups; m++)
+                                {
+                                    FSeek(startof(vtx_meshheader) + vtx_meshheader.stripGroupHeaderOffset);
+                                    StripGroupHeader_t vtx_stripgrphdr <bgcolor=cDkPurple>;
+                    
+                                    for(n = 0; n < vtx_stripgrphdr.numStrips; n++)
+                                    {
+                                        FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.stripOffset + (sizeof(StripHeader_t) * n));
+                                        StripHeader_t vtx_strip <bgcolor=cLtPurple>;
+                    
+                                        FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.vertOffset);
+                                        struct {
+                                            Vertex_t vtx_stripverts[vtx_stripgrphdr.numVerts] <bgcolor=cPurple>;
+                                        } vert_group;
+                
+                                        FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.indexOffset);
+                                        struct {
+                                             unsigned short indice[vtx_stripgrphdr.numIndices] <bgcolor=cDkPurple>;
+                                        } indice_group;
+                
+                                        if(vtx_strip.boneStateChangeOffset)
+                                        {
+                                            FSeek(startof(vtx_strip) + vtx_strip.boneStateChangeOffset);
+                                            struct {
+                                                 BoneStateChangeHeader_t bonestate[vtx_strip.numBoneStateChanges] <bgcolor=cLtPurple, optimize=false>;
+                                            } bonestate_group;
+                                        }
+                                    }
+                                }
+                            } mesh;
                         }
-                    }
+                    } model_lod;
                 }
-            }
+            } model;
         }
     } bodypart;
 };

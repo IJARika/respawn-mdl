@@ -24,11 +24,11 @@ if(mdlHeader.sznameindex > 16)
     FSeek(mdlHeader.sznameindex);
     
     // check if either of these is null
-    if(mdlHeader.unkindex3 > 0 || mdlHeader.unkindex4 > 0)
+    if(mdlHeader.unkindex3 > 0 || mdlHeader.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
-        if(mdlHeader.unkindex4 > 0)
-            stringtable_size = mdlHeader.unkindex4 - (mdlHeader.sznameindex);
+        if(mdlHeader.bvh4index > 0)
+            stringtable_size = mdlHeader.bvh4index - (mdlHeader.sznameindex);
         else
             stringtable_size = mdlHeader.unkindex3 - (mdlHeader.sznameindex);
     }
@@ -43,11 +43,11 @@ else
     FSeek(mdlHeader.surfacepropindex);
     
     // check if either of these is null
-    if(mdlHeader.unkindex3 > 0 || mdlHeader.unkindex4 > 0)
+    if(mdlHeader.unkindex3 > 0 || mdlHeader.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
-        if(mdlHeader.unkindex4 > 0)
-            stringtable_size = mdlHeader.unkindex4 - mdlHeader.surfacepropindex;
+        if(mdlHeader.bvh4index > 0)
+            stringtable_size = mdlHeader.bvh4index - mdlHeader.surfacepropindex;
         else
             stringtable_size = mdlHeader.unkindex3 - mdlHeader.surfacepropindex;
     }

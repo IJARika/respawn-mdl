@@ -47,11 +47,63 @@ struct vertexColorFileHeader_t
 	int uv2DataStart;
 };
 
+struct vertexWeightFileHeader_t
+{
+	int checksum; // same as studiohdr_t, ensures sync
+    int version;
+
+	int numLODVertexes[MAX_NUM_LODS]; // maybe this but the others don't get filled?
+
+	int weightDataStart; // index into mstudioexternalboneweight_t array
+};
+
 struct vertexFileFixup_t
 {
 	int		lod;				// used to skip culled root lod
 	int		sourceVertexID;		// absolute index from start of vertex/tangent blocks
 	int		numVertexes;
+};
+
+struct mstudioboneweight_t
+{
+	float	weight[MAX_NUM_BONES_PER_VERT];
+	unsigned char bone[MAX_NUM_BONES_PER_VERT]; // set to unsigned so we can read it
+	byte	numbones;
+};
+
+// v54 weight stuff
+struct mstudioexternalboneweight_t
+{
+	short	weight <read=Str("%f", this / 32767.0)>;
+	short	bone; 
+};
+
+struct mstudiopackedweight_t
+{
+    short weight[3] <read=Str("%f", this / 32767.0)>; 
+
+    short pad; // what if
+
+    int externalweightindex;
+};
+
+struct mstudioboneweight_t_v54
+{
+    union {       
+        mstudiopackedweight_t packedweight;
+        float weight[MAX_NUM_BONES_PER_VERT];
+    } weights;
+
+    unsigned char bone[MAX_NUM_BONES_PER_VERT]; // set to unsigned so we can read it
+    byte numbones;
+};
+
+struct mstudiovertex_t
+{
+	mstudioboneweight_t	m_BoneWeights;
+	Vector3 m_vecPosition;
+	Vector3 m_vecNormal;
+	Vector2 m_vecTexCoord;
 };
 
 struct thinModelVertices_t
