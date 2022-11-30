@@ -14,23 +14,23 @@
 
 
 
-FSeek(startof(mdlHeader.vglodheaderindex) + mdlHeader.vglodheaderindex);
-ModelLODHeader_t_RMDL vgLODHeader[mdlHeader.numvglodheader] <bgcolor=0x99CC44>;
+FSeek(startof(mdlHeader.vgLODIndex) + mdlHeader.vgLODIndex);
+ModelLODHeader_RMDL_t vglod[mdlHeader.numVGLODs] <bgcolor=0x99CC44>;
 
 
-FSeek(startof(mdlHeader.vgloddataindex) + mdlHeader.vgloddataindex);
-vgLoDdata_t vgloddata[mdlHeader.numvgloddata] <bgcolor=0x229944>;
+FSeek(startof(mdlHeader.vgHeaderIndex) + mdlHeader.vgHeaderIndex);
+vgHeaderData_t vgheader[mdlHeader.numVGHeaders] <bgcolor=0x229944>;
 
 
-if(mdlHeader.vgmeshindex > 0)
+if(mdlHeader.vgMeshIndex > 0)
 {
-    FSeek(startof(mdlHeader.vgmeshindex) + mdlHeader.vgmeshindex);
-    vgmesh_t vgmesh[mdlHeader.numvgmeshes] <bgcolor=0x559922>;
+    FSeek(startof(mdlHeader.vgMeshIndex) + mdlHeader.vgMeshIndex);
+    vgmesh_t vgmesh[mdlHeader.numVGMeshes] <bgcolor=0x559922>;
 }
 
 
-if(mdlHeader.boneremapindex > 0 && mdlHeader.numboneremaps > 0)
+if(mdlHeader.numBoneStates > 0 && mdlHeader.boneStateIndex > 0)
 {
-    FSeek(startof(mdlHeader.boneremapindex) + mdlHeader.boneremapindex);
-    mstudioboneremaptable_t boneremap <bgcolor=cDkGreen>;
+    FSeek(startof(mdlHeader.boneStateIndex) + mdlHeader.boneStateIndex);
+    ubyte boneStates[mdlHeader.numBoneStates] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 }

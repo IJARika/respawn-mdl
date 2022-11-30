@@ -344,26 +344,26 @@ struct studiohdr_t_v54_v121
 	int bonetablebynameindex;
 
     // stuff moved from vg in v12.1
-	int numvgmeshes;
-	int vgmeshindex;
+	int numVGMeshes; // total number of meshes, not including LODs
+	int vgMeshIndex;
 
-    int boneremapindex;
-    int numboneremaps;
+    int boneStateIndex;
+    int numBoneStates;
 
-    int unk_v54_v121;
+    int unk_v54_v121; // related to vg likely
 
-    int vgsize;
+    int vgSize;
 
-    int16 unk_vg; // same as padding in vg header
-    int16 vglodcount; // same as lod count in vg header
+    short vgUnk; // same as padding in vg header
+    int16 vgLODCount; // same as lod count in vg header
 
-    int unk1_vg; // same as unk1 in vg header
+    int vgNumUnknown; // same as unk1 in vg header
 
-    int vgloddataindex;
-    int numvgloddata;
+    int vgHeaderIndex;
+    int numVGHeaders;
 
-	int vglodheaderindex;
-    int numvglodheader;
+	int vgLODIndex;
+    int numVGLODs;
 
     float fadeDistance;
 	
@@ -519,26 +519,26 @@ struct studiohdr_t_v54_v122
 	int bonetablebynameindex;
 
 	// stuff moved from vg in v12.1
-	int numvgmeshes;
-	int vgmeshindex;
+	int numVGMeshes; // total number of meshes, not including LODs
+	int vgMeshIndex;
 
-    int boneremapindex;
-    int numboneremaps;
+    int boneStateIndex;
+    int numBoneStates;
 
-    int unk_v54_v121;
+    int unk_v54_v121; // related to vg likely
 
-    int vgsize;
+    int vgSize;
 
-    int16 unk_vg; // same as padding in vg header
-    int16 vglodcount; // same as lod count in vg header
+    short vgUnk; // same as padding in vg header
+    int16 vgLODCount; // same as lod count in vg header
 
-    int unk1_vg; // same as unk1 in vg header
+    int vgNumUnknown; // same as unk1 in vg header
 
-    int vgloddataindex;
-    int numvgloddata;
+    int vgHeaderIndex;
+    int numVGHeaders;
 
-	int vglodheaderindex;
-    int numvglodheader;
+	int vgLODIndex;
+    int numVGLODs;
 
     float fadeDistance;
 	
@@ -696,26 +696,26 @@ struct studiohdr_t_v54_v13
 	int bonetablebynameindex;
 
 	// stuff moved from vg in v12.1
-	int numvgmeshes;
-	int vgmeshindex;
+	int numVGMeshes; // total number of meshes, not including LODs
+	int vgMeshIndex;
 
-    int boneremapindex;
-    int numboneremaps;
+    int boneStateIndex;
+    int numBoneStates;
 
-    int unk_v54_v121;
+    int unk_v54_v121; // related to vg likely
 
-    int vgsize;
+    int vgSize;
 
-    int16 unk_vg; // same as padding in vg header
-    int16 vglodcount; // same as lod count in vg header
+    short vgUnk; // same as padding in vg header
+    int16 vgLODCount; // same as lod count in vg header
 
-    int unk1_vg; // same as unk1 in vg header
+    int vgNumUnknown; // same as unk1 in vg header
 
-    int vgloddataindex;
-    int numvgloddata;
+    int vgHeaderIndex;
+    int numVGHeaders;
 
-	int vglodheaderindex;
-    int numvglodheader;
+	int vgLODIndex;
+    int numVGLODs;
 
     float fadeDistance;
 	
@@ -877,26 +877,26 @@ struct studiohdr_t_v54_v14
 	int bonetablebynameindex;
 
     // stuff moved from vg in v12.1
-	int numvgmeshes;
-	int vgmeshindex;
+	int numVGMeshes; // total number of meshes, not including LODs
+	int vgMeshIndex;
 
-    int boneremapindex;
-    int numboneremaps;
+    int boneStateIndex;
+    int numBoneStates;
 
-    int unk_v54_v121;
+    int unk_v54_v121; // related to vg likely
 
-    int vgsize;
+    int vgSize;
 
-    int16 unk_vg; // same as padding in vg header
-    int16 vglodcount; // same as lod count in vg header
+    short vgUnk; // same as padding in vg header
+    int16 vgLODCount; // same as lod count in vg header
 
-    int unk1_vg; // same as unk1 in vg header
+    int vgNumUnknown; // same as unk1 in vg header
 
-    int vgloddataindex;
-    int numvgloddata;
+    int vgHeaderIndex;
+    int numVGHeaders;
 
-	int vglodheaderindex;
-    int numvglodheader;
+	int vgLODIndex;
+    int numVGLODs;
 
     float fadeDistance;
 	
@@ -1025,19 +1025,21 @@ struct studiohdr_t_v16
 
     unsigned short keyvalueindex;
 
-	unsigned short vgmeshindex;
-    short numvgmeshes;
+    // vg stuff 1
+	unsigned short numVGMeshes; // total number of meshes, not including LODs
+	short vgMeshIndex;
 
     short bonetablebynameindex;
 
-    unsigned short boneremapindex;
-    short numboneremaps;
+    // vg stuff 2
+    unsigned short boneStateIndex;
+    short numBoneStates;
 
-    unsigned short vgloddataindex;
-    short numvgloddata;
+    unsigned short vgHeaderIndex;
+    short numVGHeaders;
 
-	unsigned short vglodheaderindex;
-    short numvglodheader;
+	unsigned short vgLODIndex;
+    short numVGLODs;
 
     float fadeDistance;
 	
@@ -1047,7 +1049,7 @@ struct studiohdr_t_v16
     unsigned short srcbonetransformindex;
 
     // asset bakery strings if it has any
-	unsigned short sourceFilenameOffset;
+	short sourceFilenameOffset;
 
     unsigned short linearboneindex;
 
@@ -2421,68 +2423,50 @@ struct BVH4Node_t
 
 
 // lod related maybe
-struct ModelLODHeader_t_RMDL
+// look at hsprays for weird lods and confirmation on some of these vars
+struct ModelLODHeader_RMDL_t
 {
-    // observed to both be the same.
-    // lod level?
-    int16 unklodlevel;
-    int16 unklodlevel1;
+    short lodLevel;
+
+    short unklodlevel1; // has to do with the vg header? lod index?
 
     //Mesh array
-    int16 meshOffset;
-	int16 numMeshes;
+    short meshOffset;
+	short numMeshes;
 
 	float switchPoint;
 
-    int padding; // meshOffset from vglod probably
+    int pad; // meshOffset from vglod probably
 };
 
-// same as above but before renaming
-struct vgLoDdesc_t
-{
-    // observed to both be the same.
-    // lod level?
-    int16 unklodlevel;
-    int16 unklodlevel1;
-
-    int16 meshindex; // index offset into meshes
-    int16 nummeshes; // number of meshes in this lod set
-
-    float threshold;
-
-    // alignment?
-    int unk; 
-};
-
-struct vgLoDdata_t
+struct vgHeaderData_t
 {
     int vgoffset; // offset to this section in vg
     int vgsize; // size of data in vg
 
     // this could also be vg section index
-    int16 lodlevel; // 0, 1, 2, 3, etc
-    int16 numlods; // normally 1, stolen from vg structs
+    short lodLevel; // 0, 1, 2, 3, etc
+    short numLODs; // normally 1, stolen from vg structs. lods based off this header
 
-    // ids for something
-    int16 unk2; // powers of two
-    // alignment?
-    int16 unk3; // never filled, maybe this is int32 above should never exceed 128 so unsure
+    short numUnknown; // powers of two
+
+    short pad;
 };
 
-struct vgLoDdata_t_v16
+struct vgHeaderData_t_v16
 {
     int vgoffset; // offset to this section in compressed vg
     int vgsizecompressed; // compressed size of data in vg
     int vgsizedecompressed; // decompressed size of data in vg
 
-    byte numMeshes;
+    byte unk;
 
     // this could also be vg section index
-    byte lodlevel; // 0, 1, 2, 3, etc
-    byte numlods; // normally 1, stolen from vg structs
+    byte lodLevel; // 0, 1, 2, 3, etc
+    byte numLODs; // normally 1, stolen from vg structs. lods based off this header
 
     // ids for something
-    byte unk2; // powers of two
+    byte numUnknown; // powers of two
 };
 
 
