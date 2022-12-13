@@ -12,6 +12,7 @@
 //------------------------------------------------
 
 #define MAX_NUM_LODS 8
+typedef Vector Vector;
 
 //local int i = 0;
 
@@ -53,15 +54,15 @@ struct studiohdr_t_v54
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
  
-	Vector3 eyeposition;	// ideal eye position
+	Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
 	int flags <read=ReadHeaderFlags(this)>;
   
@@ -226,8 +227,8 @@ struct studiohdr_t_v54
     int unkindex3;
 
     // BVH4 size (?)
-    Vector3 mins;
-    Vector3 maxs; // seem to be the same as hull size
+    Vector mins;
+    Vector maxs; // seem to be the same as hull size
 
     int unk3_v54[3];
 
@@ -254,15 +255,15 @@ struct studiohdr_t_v54_v121
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
  
-	Vector3 eyeposition;	// ideal eye position
+	Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
 	int flags <read=ReadHeaderFlags(this)>;
   
@@ -355,7 +356,7 @@ struct studiohdr_t_v54_v121
     int vgSize;
 
     short vgUnk; // same as padding in vg header
-    int16 vgLODCount; // same as lod count in vg header
+    short vgLODCount; // same as lod count in vg header
 
     int vgNumUnknown; // same as unk1 in vg header
 
@@ -408,8 +409,8 @@ struct studiohdr_t_v54_v121
     int unkindex3;
 
     // BVH4 size (?)
-    Vector3 mins;
-    Vector3 maxs; // seem to be the same as hull size
+    Vector mins;
+    Vector maxs; // seem to be the same as hull size
 
     int bvh4index; // bvh4 tree
 
@@ -429,15 +430,15 @@ struct studiohdr_t_v54_v122
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
  
-	Vector3 eyeposition;	// ideal eye position
+	Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
 	int flags <read=ReadHeaderFlags(this)>;
   
@@ -530,7 +531,7 @@ struct studiohdr_t_v54_v122
     int vgSize;
 
     short vgUnk; // same as padding in vg header
-    int16 vgLODCount; // same as lod count in vg header
+    short vgLODCount; // same as lod count in vg header
 
     int vgNumUnknown; // same as unk1 in vg header
 
@@ -585,8 +586,8 @@ struct studiohdr_t_v54_v122
     int unkindex3;
 
     // BVH4 size (?)
-    Vector3 mins;
-    Vector3 maxs; // seem to be the same as hull size
+    Vector mins;
+    Vector maxs; // seem to be the same as hull size
 
     int bvh4index; // bvh4 tree
 
@@ -606,15 +607,15 @@ struct studiohdr_t_v54_v13
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
  
-	Vector3 eyeposition;	// ideal eye position
+	Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
 	int flags <read=ReadHeaderFlags(this)>;
   
@@ -707,7 +708,7 @@ struct studiohdr_t_v54_v13
     int vgSize;
 
     short vgUnk; // same as padding in vg header
-    int16 vgLODCount; // same as lod count in vg header
+    short vgLODCount; // same as lod count in vg header
 
     int vgNumUnknown; // same as unk1 in vg header
 
@@ -762,8 +763,8 @@ struct studiohdr_t_v54_v13
     int unkindex3;
 
     // BVH4 size (?)
-    Vector3 mins;
-    Vector3 maxs; // seem to be the same as hull size
+    Vector mins;
+    Vector maxs; // seem to be the same as hull size
 
     int bvh4index; // bvh4 tree
 
@@ -785,15 +786,15 @@ struct studiohdr_t_v54_v14
 	                // Typically "my_model.mdl" will have an internal name of "my_model"
 	int length; // Data size of MDL file in bytes.
  
-	Vector3 eyeposition;	// ideal eye position
+	Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
 	int flags <read=ReadHeaderFlags(this)>;
   
@@ -888,7 +889,7 @@ struct studiohdr_t_v54_v14
     int vgSize;
 
     short vgUnk; // same as padding in vg header
-    int16 vgLODCount; // same as lod count in vg header
+    short vgLODCount; // same as lod count in vg header
 
     int vgNumUnknown; // same as unk1 in vg header
 
@@ -943,8 +944,8 @@ struct studiohdr_t_v54_v14
     int unkindex3;
 
     // BVH4 size (?)
-    Vector3 mins;
-    Vector3 maxs; // seem to be the same as hull size
+    Vector mins;
+    Vector maxs; // seem to be the same as hull size
 
     int bvh4index; // bvh4 tree
 
@@ -976,13 +977,13 @@ struct studiohdr_t_v16
 
     byte illumpositionattachmentindex;
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
   
 	short numbones; // bones
 	unsigned short boneindex;
@@ -991,7 +992,13 @@ struct studiohdr_t_v16
     short numlocalseq; // sequences
 	unsigned short localseqindex;
 
-    byte unkfill[5];
+    //byte unkfill[5];
+
+    // needs to be confirmed
+    short unk_v54_v14[2]; // added in v13 -> v14
+ 
+    // needs to be confirmed
+	byte activitylistversion; // initialization flag - have the sequences been indexed?
 
     byte numlocalattachments;
 	unsigned short localattachmentindex;
@@ -1086,10 +1093,10 @@ struct mstudiobone_t_v54
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector pos;
 	Quaternion quat;
 	RadianEuler rot;
-	Vector3 scale; // bone scale(?)
+	Vector scale; // bone scale(?)
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1118,10 +1125,10 @@ struct mstudiobone_t_v54_v121
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos;
+	Vector pos;
 	Quaternion quat;
 	RadianEuler rot;	
-	Vector3 scale; // bone scale(?)
+	Vector scale; // bone scale(?)
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1163,10 +1170,10 @@ struct mstudiobonedata_t_v16
 	Quaternion qAlignment;
 
     // default values
-	Vector3 pos;
+	Vector pos;
 	Quaternion quat;
 	RadianEuler rot;
-    Vector3 scale; // bone scale(?)
+    Vector scale; // bone scale(?)
 
     short parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone;
 
@@ -1283,7 +1290,7 @@ struct mstudioikchain_t_v16
 struct mstudioiklink_t_v54
 {
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	Vector3	unused0; // no kneeDir in apex I think
+	Vector	unused0; // no kneeDir in apex I think
 };
 
 // linear bone
@@ -1365,8 +1372,8 @@ struct mstudiobbox_t_v54
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	hboxgroup group; // intersection group
 
-	Vector3 bbmin; // bounding box
-	Vector3 bbmax;	
+	Vector bbmin; // bounding box
+	Vector bbmax;	
 
 	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
@@ -1380,8 +1387,8 @@ struct mstudiobbox_t_v16
 	short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	hboxgroup_v16 group; // intersection group
 
-	Vector3 bbmin; // bounding box
-	Vector3 bbmax;	
+	Vector bbmin; // bounding box
+	Vector bbmax;	
 
 	unsigned short szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
 
@@ -1550,7 +1557,7 @@ struct boneflagarray_t_loose
 struct mstudioanim_valueptr_t_v54
 {
     int offset : 10;
-    int offset : 5;
+    int offset : 10;
     int offset : 5;
 };
 
@@ -1620,9 +1627,9 @@ string ReadAnimFlagsV54(byte flags)
 struct mstudio_rle_anim_t_v54
 {
 
-	int16 size : 12; // total size of all animation data, not next offset because even the last one has it
+	short size : 12; // total size of all animation data, not next offset because even the last one has it
 
-    int16 flags : 4 <read=ReadAnimFlagsV54(this)>;
+    short flags : 4 <read=ReadAnimFlagsV54(this)>;
     
     if(flags & STUDIO_ANIM_ANIMPOS_54)
         float posscale;
@@ -1656,13 +1663,20 @@ struct mstudio_rle_anim_t_v54
 struct mstudiocompressedikerror_t_v54
 {
 	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	int unk; // same as framemovement unk (I think). bone mayb?
+	int sectionframes; // frames per section, may not match animdesc
 };
 
 struct mstudiocompressedikerror_t_v16
 {
-    short unk;
+    short sectionframes; // frames per section, may not match animdesc
 	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+};
+
+struct mstudioframemovement_t_v54
+{
+	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
+	int sectionframes; // frames per section, may not match animdesc
+                       // may have more than one, even when not section anim
 };
 
 struct mstudioikrule_t_v54
@@ -1676,7 +1690,7 @@ struct mstudioikrule_t_v54
     float height;
     float radius;
     float floor;
-    Vector3 pos;
+    Vector pos;
     Quaternion q;
 
     // whar the heck
@@ -1723,21 +1737,24 @@ struct mstudioikrule_t_v16
     float drop; // how far down the foot should drop when reaching for IK
     float top; // top of the foot box
 
-    char placeholder[44];
+    //char placeholder[44];
 
     // if both of these ints become shorts then it would fit
 
-    //int szattachmentindex; // name of world attachment
+    // ORDER BELOW UNKNOWN
 
-    //float endHeight; // new in v52
+    // cut now?
+    //unsigned short szattachmentindex; // name of world attachment
+
+    float endHeight; // new in v52, bt uses this I think
 
     // this fits but I don't really know
-    /*int slot; // iktarget slot. Usually same as chain.
+    //short slot; // iktarget slot. Usually same as chain.
     float height;
     float radius;
     float floor;
-    Vector3 pos;
-    Quaternion q;*/
+    Vector pos;
+    Quaternion q;
 };
 
 // seq descriptions
@@ -1757,8 +1774,8 @@ struct mstudioseqdesc_t_v54
 	int numevents;
 	int eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	int numblends;
 
@@ -1829,8 +1846,8 @@ struct mstudioseqdesc_t_v16
 	short numevents;
 	short eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	short numblends;
 
@@ -2169,7 +2186,7 @@ struct mstudiomesh_t_v54
 	// a unique ordinal for this mesh
 	int meshid;
 
-	Vector3 center;
+	Vector center;
 
 	mstudio_meshvertexloddata_t vertexloddata;
     
@@ -2188,7 +2205,7 @@ struct mstudiomesh_t_v54_v121
 	// a unique ordinal for this mesh
 	int meshid;
 
-    Vector3 center;
+    Vector center;
 
     // depreciated in later versions?
 	mstudio_meshvertexloddata_t vertexloddata;
@@ -2205,7 +2222,7 @@ struct mstudiomesh_t_v16
 
     byte unk[4];
 
-    Vector3 center;
+    Vector center;
 };
 
 
@@ -2256,11 +2273,11 @@ struct mstudioruifourthvertv54_t
 
 struct mstudioruimesh_t_v54
 {
-    int16 numparents; // apparently you can have meshes parented to more than one bone(?)
-    int16 numvertices; // number of verts
-    int16 numfaces; // number of faces (quads)
+    short numparents; // apparently you can have meshes parented to more than one bone(?)
+    short numvertices; // number of verts
+    short numfaces; // number of faces (quads)
 
-    int16 unk; // num uvs? or this is num faces and current num faces is num uvs
+    short unk; // num uvs? or this is num faces and current num faces is num uvs
 
     int parentindex; // this gets padding out front of it to even off the struct
 
@@ -2428,7 +2445,7 @@ struct ModelLODHeader_RMDL_t
 {
     short lodLevel;
 
-    short unklodlevel1; // has to do with the vg header? lod index?
+    short headerIndex; // has to do with the vg header? lod index?
 
     //Mesh array
     short meshOffset;
@@ -2436,13 +2453,13 @@ struct ModelLODHeader_RMDL_t
 
 	float switchPoint;
 
-    int pad; // meshOffset from vglod probably
+    int pad; // not actually part of this struct, needs to be fixed
 };
 
 struct vgHeaderData_t
 {
-    int vgoffset; // offset to this section in vg
-    int vgsize; // size of data in vg
+    int dataOffset; // offset to this section in vg
+    int dataSize; // size of data in vg
 
     // this could also be vg section index
     short lodLevel; // 0, 1, 2, 3, etc
@@ -2455,9 +2472,9 @@ struct vgHeaderData_t
 
 struct vgHeaderData_t_v16
 {
-    int vgoffset; // offset to this section in compressed vg
-    int vgsizecompressed; // compressed size of data in vg
-    int vgsizedecompressed; // decompressed size of data in vg
+    int dataOffset; // offset to this section in compressed vg
+    int dataSizeCompressed; // compressed size of data in vg
+    int dataSizeDecompressed; // decompressed size of data in vg
 
     byte unk;
 
@@ -2465,7 +2482,6 @@ struct vgHeaderData_t_v16
     byte lodLevel; // 0, 1, 2, 3, etc
     byte numLODs; // normally 1, stolen from vg structs. lods based off this header
 
-    // ids for something
     byte numUnknown; // powers of two
 };
 

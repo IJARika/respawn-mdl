@@ -15,16 +15,18 @@
 #include "../mdl/mdl_structs.bt"
 #include "../rmdl/rmdl_structs.bt"
 
+local int g = 0;
 local int i = 0;
 local int j = 0;
 local int k = 1;
-local int g = 0;
+local int l = 0;
 local int si = 0;
 
 mstudioseqdesc_t_v16 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 local int numanims = seqdesc.groupsize[0] * seqdesc.groupsize[1];
 local int numbones = (seqdesc.activitymodifierindex - seqdesc.weightlistindex) / 4;
+local int numsections;
 
 if((seqdesc.unkindex - seqdesc.animindexindex) <= sizeof(mstudioanimdesc_t_v16))
     numanims = 0;
@@ -75,7 +77,8 @@ for(k = 0; k < numanims; k++)
                     // porter says this is ((numframes - unk - 1) / sectionframes) + 2
                     // however I have not found a case where that would give another result than what's seen below.
                     // infact, there have been anims that would actually break if using the above equation.
-                    local int sectionlength = ((animdesc.numframes - 1) / animdesc.sectionframes) + 2;
+                    // trying something new because 010 is weird
+                    local int sectionlength = Ceil(((float)animdesc.numframes) / (float)animdesc.sectionframes) + 1;
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v16 sectionindexes[sectionlength] <read=Str("idx %i", ReadSectionIndex(this.animindex)), bgcolor=cLtBlue>;
@@ -164,21 +167,87 @@ for(k = 0; k < numanims; k++)
         {
             FSeek(startof(animdesc[k]) + GetRMDLOffset(animdesc[k].ikruleindex));
             mstudioikrule_t_v16 animikrule[animdesc[k].numikrules] <bgcolor=cGreen>;
-        }
-    
-        /*for(j = -animdesc.numikrules; j < 0; j++)
-        {
-            if(animikrule[numikrule + j].compressedikerrorindex)
+
+            for(j = 0; j < animdesc[k].numikrules; j++)
             {
-                FSeek(startof(animikrule[numikrule + j]) + animikrule[numikrule + j].compressedikerrorindex);
-                mstudiocompressedikerror_t_v54 ikcompressederror <bgcolor=cDkGreen>;
+                if(animikrule[j].compressedikerror.sectionframes)
+                {
+                    numsections = Ceil((float)animdesc.numframes / (float)animikrule[j].compressedikerror.sectionframes);
+
+                    FSeek(startof(animikrule[j]) + animikrule[j].compressedikerrorindex);
+                    struct {
+                        unsigned short sectionindexes[numsections] <bgcolor=cDkGreen>; // sometimes only one
+
+                        for(l = 0; l < numsections; l++)
+                        {
+                            FSeek(startof(animikrule[j]) + sectionindexes[l]);
+                            struct {
+                                short offset[6] <bgcolor=0x779911>;
+
+                                for(g = 0; g < 6; g++)
+                                {
+                                    if(offset[g])
+                                    {
+                                        FSeek(startof(offset) + offset[g]);
+                                        struct {
+                                            mstudioanimvalue_t animvalue <bgcolor=0x228822>;
+                    
+                                            if(animvalue.num.valid > 0)
+                                                short value[animvalue.num.valid];
+                                        } animvalueik;
+                                    }
+                                }
+                            } compressedikerror_section;
+                        }
+                    } compressedikerror;
+                }
+
+                // cut?
+                /*if(animikrule[j].szattachmentindex)
+                {
+                    FSeek(startof(animikrule[j]) + animikrule[j].szattachmentindex);
+                    struct {
+                        string ikattachment <fgcolor=cGreen>;
+                    } attachmentstring;
+                }*/
             }
-        }*/
+        }
     
         if(animdesc[k].framemovementindex)
         {
             FSeek(startof(animdesc[k]) + GetRMDLOffset(animdesc[k].framemovementindex));
-            mstudioframemovement_t framemovement <bgcolor=cLtGreen>;
+            mstudioframemovement_t_v54 framemovement <bgcolor=cLtGreen>;
+
+            // it's impossible to tell if these are actual structs or just values, however
+            // they are offset from the start of their parent
+            struct {
+                numsections = Ceil((float)animdesc.numframes / (float)framemovement.sectionframes);
+
+                unsigned short sectionindexes[numsections] <bgcolor=0x99ffcc>; // sometimes only one
+
+                for(j = 0; j < numsections; j++)
+                {
+                    FSeek(startof(framemovement) + sectionindexes[j]);
+                    struct {
+                        short offset[4] <bgcolor=0x77ccbb>;
+
+                        for(g = 0; g < 4; g++)
+                        {
+                            if(offset[g])
+                            {
+                                FSeek(startof(offset) + offset[g]);
+                                struct {
+                                    mstudioanimvalue_t animvalue <bgcolor=0x99CC99>;
+                                
+                                    if(animvalue.num.valid > 0)
+                                        short value[animvalue.num.valid - 1];
+                                } animvalueframe;
+                            }
+                        }
+                        
+                    } framemovement_section;
+                }
+            } framemovement_data;
         }
     } animdesc_data;
 }

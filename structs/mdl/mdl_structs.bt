@@ -13,6 +13,7 @@
 
 #define MAX_NUM_LODS 8
 #define MAX_NUM_BONES_PER_VERT 3
+typedef Vector3 Vector;
 
 //local int i = 0;
 
@@ -396,15 +397,15 @@ struct studiohdr_t_v47
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
     int flags <read=ReadHeaderFlags(this)>;
   
@@ -528,15 +529,15 @@ struct studiohdr_t_v48
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
     int flags <read=ReadHeaderFlags(this)>;
   
@@ -673,15 +674,15 @@ struct studiohdr_t_v49
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
     int flags <read=ReadHeaderFlags(this)>;
   
@@ -817,15 +818,15 @@ struct studiohdr_t_v52
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
     int flags <read=ReadHeaderFlags(this)>;
   
@@ -963,15 +964,15 @@ struct studiohdr_t_v53
                     // Typically "my_model.mdl" will have an internal name of "my_model"
     int length; // Data size of MDL file in bytes.
  
-    Vector3 eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector3 illumposition;	// illumination center
+	Vector illumposition;	// illumination center
 	
-	Vector3 hull_min;		// ideal movement hull size
-	Vector3 hull_max;			
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
 
-	Vector3 view_bbmin;		// clipping bounding box
-	Vector3 view_bbmax;		
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
  
     int flags <read=ReadHeaderFlags(this)>;
   
@@ -1054,7 +1055,7 @@ struct studiohdr_t_v53
 	int numincludemodels;
 	int includemodelindex;
     
-    uint32 virtualModel;
+    int virtualModel; // should be void
 
     // animblock is either completely cut, this is because they no longer use .ani files.
 
@@ -1131,6 +1132,7 @@ struct studiohdr_t_v53
     int numunkmember1; // only seems to be used when phy has one solid
 
     // only seen on '_animated' suffixed models so far
+    // probably added during titanfall 2's life cycle, later models have idx always, early/r2tt models do not
     int unkcount3;
     int unkindex3;
 
@@ -1452,13 +1454,13 @@ struct mstudiobone_t_v47
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos; // base bone position
+	Vector pos; // base bone position
 	Quaternion quat;
 	RadianEuler rot; // base bone rotation
 
 	// compression scale
-	Vector3 posscale; // scale muliplier for bone position in animations
-	Vector3 rotscale; // scale muliplier for bone rotation in animations
+	Vector posscale; // scale muliplier for bone position in animations
+	Vector rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1483,13 +1485,13 @@ struct mstudiobone_t_v49
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos; // base bone position
+	Vector pos; // base bone position
 	Quaternion quat;
 	RadianEuler rot; // base bone rotation
 
 	// compression scale
-	Vector3 posscale; // scale muliplier for bone position in animations
-	Vector3 rotscale; // scale muliplier for bone rotation in animations
+	Vector posscale; // scale muliplier for bone position in animations
+	Vector rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1516,13 +1518,13 @@ struct mstudiobone_t_v52
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos; // base bone position
+	Vector pos; // base bone position
 	Quaternion quat;
 	RadianEuler rot; // base bone rotation
 	
 	// compression scale
-	Vector3 posscale; // scale muliplier for bone position in animations
-	Vector3 rotscale; // scale muliplier for bone rotation in animations
+	Vector posscale; // scale muliplier for bone position in animations
+	Vector rotscale; // scale muliplier for bone rotation in animations
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1539,8 +1541,8 @@ struct mstudiobone_t_v52
 	int surfacepropLookup; // this index must be cached by the loader, not saved in the file
 	
     // bone scale(?)
-	Vector3 scale;	
-	Vector3 scalescale;
+	Vector scale;	
+	Vector scalescale;
 	
 	int unused[1]; // remove as appropriate
 };
@@ -1553,15 +1555,15 @@ struct mstudiobone_t_v53
 	int bonecontroller[6]; // bone controller index, -1 == none
 
 	// default values
-	Vector3 pos; // base bone position
+	Vector pos; // base bone position
 	Quaternion quat;
 	RadianEuler rot; // base bone rotation
-	Vector3 scale; // bone scale(?)
+	Vector scale; // bone scale(?)
 	
 	// compression scale
-	Vector3 posscale; // scale muliplier for bone position in animations. depreciated in v53, as the posscale is stored in anim bone headers
-	Vector3 rotscale; // scale muliplier for bone rotation in animations
-	Vector3 scalescale; // scale muliplier for scale
+	Vector posscale; // scale muliplier for bone position in animations. depreciated in v53, as the posscale is stored in anim bone headers
+	Vector rotscale; // scale muliplier for bone rotation in animations
+	Vector scalescale; // scale muliplier for scale
 
 	matrix3x4_t poseToBone;
 	Quaternion qAlignment;
@@ -1765,8 +1767,8 @@ struct mstudioikchain_t_v53
 struct mstudioiklink_t
 {
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	Vector3	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
-	Vector3	unused0; // unused in v49
+	Vector	kneeDir; // ideal bending direction (per link, if applicable), unknown in v53
+	Vector	unused0; // unused in v49
 };
 
 // iklock
@@ -1915,8 +1917,8 @@ struct mstudiobbox_t
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	hboxgroup group; // intersection group
 
-	Vector3 bbmin; // bounding box
-	Vector3 bbmax;	
+	Vector bbmin; // bounding box
+	Vector bbmax;	
 
 	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
 	
@@ -1928,8 +1930,8 @@ struct mstudiobbox_t_v53
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 	hboxgroup group; // intersection group
 
-	Vector3 bbmin; // bounding box
-	Vector3 bbmax;	
+	Vector bbmin; // bounding box
+	Vector bbmax;	
 
 	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
@@ -1963,11 +1965,12 @@ struct mstudiobbox_t_v53
 #define STUDIO_NOFORCELOOP 0x8000	// do not force the animation loop
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
-#define STUDIO_ANIMDESC_53_UNK 0x20000 // actually first in v52
-#define STUDIO_ANIMDESC_52_UNK 0x40000
-
-
-#define STUDIO_ANIMDESC_53_UNK1 0x80000 // cherry blossom v53, levi in v54
+// new in respawn models
+#define STUDIO_ANIM_UNK3    0x0040  // used on something that is clearly not a frame anim in v54
+                                    // animseq/humans/class/heavy/mp_pilot_heavy_core/mp_pt_crypto_base_execution_heavy_victim.rseq
+#define STUDIO_ANIM_UNK		0x20000 // actually first in v52
+#define STUDIO_ANIM_UNK1	0x40000
+#define STUDIO_ANIM_UNK2	0x80000 // cherry blossom v53, levi in v54
 
 string ReadAnimDescFlags(int flags)
 {
@@ -2052,13 +2055,13 @@ string ReadAnimDescFlags(int flags)
             value += "STUDIO_EVENT_CLIENT";
             break;
         case 0x20000:
-            value += "STUDIO_ANIMDESC_53_UNK";
+            value += "STUDIO_ANIM_UNK";
             break;
         case 0x40000:
-            value += "STUDIO_ANIMDESC_52_UNK";
+            value += "STUDIO_ANIM_UNK1";
             break;
-        case STUDIO_ANIMDESC_53_UNK1:
-            value += "STUDIO_ANIMDESC_53_UNK1";
+        case STUDIO_ANIM_UNK2:
+            value += "STUDIO_ANIM_UNK2";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -2405,7 +2408,7 @@ string ReadAnimFlagsV53(byte flags)
 
 struct mstudioanim_valueptr_t
 {
-    int16 offset[3];
+    short offset[3];
 };
 
 /*
@@ -2487,26 +2490,27 @@ struct mstudio_rle_anim_t_v53
                // honestly might just be fake to get the size to a clean 8 bytes
                // since the lower members are not actually part of the struct, at least in pre v52
 	
+    // using func names for var names
     if(flags & STUDIO_ANIM_RAWROT_53)
-	    Quat64 rawrot; // pQuat64
+	    Quat64 pQuat64; // pQuat64
     else
     {
-        mstudioanim_valueptr_t animrot; // pRotV
+        mstudioanim_valueptr_t pRotV; // pRotV
         short pad;
     }
 
 	if (flags & STUDIO_ANIM_RAWPOS_53)
-	    Vector48 rawpos; // pPos
+	    Vector48 pPos; // pPos
     else
-        mstudioanim_valueptr_t animpos; // pPosV
+        mstudioanim_valueptr_t pPosV; // pPosV
 
     // scale track
     // a_Scaletest in pete_scripted for r1/2
     // drone_frag.mdl
     if (flags & STUDIO_ANIM_RAWSCALE_53)
-	    Vector48 rawscale;
+	    Vector48 pScale;
     else
-        mstudioanim_valueptr_t animscale;
+        mstudioanim_valueptr_t pScaleV;
 
 	int nextoffset;
 };
@@ -2720,7 +2724,7 @@ struct mstudioikrule_t
 	float height;
 	float radius;
 	float floor;
-	Vector3 pos;
+	Vector pos;
 	Quaternion q;
 
 	int compressedikerrorindex;
@@ -2762,7 +2766,7 @@ struct mstudioikrule_t_v52
 	float height;
 	float radius;
 	float floor;
-	Vector3 pos;
+	Vector pos;
 	Quaternion q;
 
 	int compressedikerrorindex;
@@ -2805,7 +2809,7 @@ struct mstudioikrule_t_v53
     float height;
     float radius;
     float floor;
-    Vector3 pos;
+    Vector pos;
     Quaternion q;
 
     int compressedikerrorindex;
@@ -2830,6 +2834,7 @@ struct mstudioikrule_t_v53
     int unused[8];
 };
 
+// really think you need to read two sets of values for each offset, always seems to be a pair after
 struct mstudiocompressedikerror_t
 {
 	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
@@ -2851,7 +2856,7 @@ struct mstudioframemovement_t
 
 struct mstudioikerror_t
 {
-	Vector3 pos;
+	Vector pos;
 	Quaternion q;
 };
 
@@ -2882,8 +2887,8 @@ struct mstudioseqdesc_t_v48
 	int numevents;
 	int eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	int numblends;
 
@@ -2949,8 +2954,8 @@ struct mstudioseqdesc_t_v49
 	int numevents;
 	int eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	int numblends;
 
@@ -3019,8 +3024,8 @@ struct mstudioseqdesc_t_v52
 	int numevents;
 	int eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	int numblends;
 
@@ -3092,8 +3097,8 @@ struct mstudioseqdesc_t_v53
 	int numevents;
 	int eventindex;
 	
-	Vector3 bbmin; // per sequence bounding box
-	Vector3 bbmax;		
+	Vector bbmin; // per sequence bounding box
+	Vector bbmax;		
 
 	int numblends;
 
@@ -3504,7 +3509,7 @@ struct mstudiomesh_t
 	// a unique ordinal for this mesh
 	int meshid;
 
-	Vector3 center;
+	Vector center;
 
 	mstudio_meshvertexdata_t vertexdata;
 
@@ -3533,7 +3538,7 @@ struct mstudiomesh_t_v52
 	// a unique ordinal for this mesh
 	int meshid;
 
-	Vector3 center;
+	Vector center;
 
 	mstudio_meshvertexloddata_t vertexloddata;
 
@@ -3562,7 +3567,7 @@ struct mstudiomesh_t_v53
 	// a unique ordinal for this mesh
 	int meshid;
 
-	Vector3 center;
+	Vector center;
 
 	mstudio_meshvertexloddata_t vertexloddata;
     
@@ -3656,7 +3661,7 @@ struct mstudioruivert_t
 {
     int parent; // relative to global mesh parent, assumed
 
-    Vector3 vertexpos; // position of vertex relative to bone
+    Vector vertexpos; // position of vertex relative to bone
 };
 
 struct mstudioruimeshface_t
@@ -3705,8 +3710,8 @@ struct mstudioaabbheader_t
                  // set to '2' for static prop.
     
     // aabb sizes, same as hulls
-    Vector3 bbmin;
-	Vector3 bbmax;		
+    Vector bbmin;
+	Vector bbmax;		
 
     int unused[8]; // hopefully, checks out with other mdl structs 
 };
@@ -3758,8 +3763,8 @@ struct unkphysectionhdr_t
 
 struct unkphysectiondatatype_t
 {
-    Vector3 unkvector; // min/max?
-    Vector3 unkvector1; // min/max?
+    Vector unkvector; // min/max?
+    Vector unkvector1; // min/max?
     
     ubyte unk[4]; // flags? four separate bytes?
 };
