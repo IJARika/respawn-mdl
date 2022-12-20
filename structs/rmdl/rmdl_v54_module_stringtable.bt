@@ -22,7 +22,7 @@ FSeek(mdlHeader.sznameindex - 1);
 local int64 stringtable_size; // size for string table
 
 // check if either of these is null
-if(mdlHeader.unkindex3 > 0 || mdlHeader.unkindex4 > 0)
+if(mdlHeader.unkindex3 > 0 || mdlHeader.bvh4index > 0)
 {
     // unkindex4 is sometimes nulled, check if it is
     if(mdlHeader.bvh4index > 0)
