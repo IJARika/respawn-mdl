@@ -47,14 +47,14 @@ struct vertexColorFileHeader_t
 	int uv2DataStart;
 };
 
-struct vertexWeightFileHeader_t
+struct vertexBoneWeightsExtraFileHeader_t
 {
 	int checksum; // same as studiohdr_t, ensures sync
-    int version;
+    int version; // should be 1
 
 	int numLODVertexes[MAX_NUM_LODS]; // maybe this but the others don't get filled?
 
-	int weightDataStart; // index into mstudioexternalboneweight_t array
+	int weightDataStart; // index into mstudioboneweightextra_t array
 };
 
 struct vertexFileFixup_t
@@ -72,10 +72,10 @@ struct mstudioboneweight_t
 };
 
 // v54 weight stuff
-struct mstudioexternalboneweight_t
+struct mstudioboneweightextra_t
 {
 	short	weight <read=Str("%f", this / 32767.0)>;
-	short	bone; 
+	short   bone; 
 };
 
 struct mstudiopackedweight_t
@@ -95,7 +95,7 @@ struct mstudioboneweight_t_v54
     } weights;
 
     unsigned char bone[MAX_NUM_BONES_PER_VERT]; // set to unsigned so we can read it
-    byte numbones;
+    byte numbones; // max is 16 in apex, 3 in titanfall 2 and before
 };
 
 struct mstudiovertex_t

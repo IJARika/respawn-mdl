@@ -42,18 +42,23 @@ struct phyheader_t_v16
 
 struct phyheader2_t
 {
-    // respawn using __int64 for some reason when it's absolutely unneeded
+    // respawn aligns to 8
 
-	__int64 size; // Size of this header section
-	__int64 numsolids; // Number of solids in file
-	__int64 id; // unsure but this would go with the theme of new stuff.
+	__int64 surfaceindex; // index into surfaces, 64bit for conversion into ptr
+	int numsolids; // Number of solids in file
 
-    __int64 keyvalueindex; // string block or size of data after this member
+    FSkip(4); // me when compilier alignment
+
+	int unk;
+
+    FSkip(4); // me when compilier alignment
+
+    int size; // size of surfaces
 };
 
 struct surfaceheader_t
 {
-	__int64 meshindex;
+	__int64 meshindex; // 64bit for conversion into ptr
     __int64 numsolids;    
 
     float unkfloat;
@@ -81,14 +86,14 @@ struct trianglefaceheader_t
 
     float unkfloat1;
 
-    __int64 vertoffset;
+    __int64 vertoffset; // 64bit for conversion into ptr
     __int64 numverts;
 
-    __int64 faceoffset;
+    __int64 faceoffset; // 64bit for conversion into ptr
     __int64 numfaces;    
 
     // numunk2
-    __int64 unk2offset;
+    __int64 unk2offset; // 64bit for conversion into ptr
     __int64 numunk2;  
 };
 
@@ -109,24 +114,24 @@ struct phynode_t
     int bboxsize; // volume?
 };
 
-phyheader_t vphy_header <bgcolor=cLtRed>;
-phyheader2_t vphy_subheader <bgcolor=cRed>;
+phyheader_t header <bgcolor=cLtRed>;
+phyheader2_t subheader <bgcolor=cRed>;
 
-for(i = 0; i < vphy_header.numsolids; i++)
+for(i = 0; i < header.numsolids; i++)
 {
-    FSeek(52 + sizeof(surfaceheader_t) * i);
+    FSeek(startof(subheader) + subheader.surfaceindex + sizeof(surfaceheader_t) * i);
     struct {
         surfaceheader_t surfaceheader <bgcolor=cLtRed, fgcolor=cLtYellow>;
 
         local int offset = 0;
 
-        FSeek(startof(vphy_subheader) + surfaceheader.meshindex);
+        FSeek(startof(subheader) + surfaceheader.meshindex);
         trianglefaceheader_t mesh <bgcolor=cBlue>;
 
-        FSeek(startof(vphy_subheader) + mesh.vertoffset);
+        FSeek(startof(subheader) + mesh.vertoffset);
         Vector3 vert[mesh.numverts] <bgcolor=cDkBlue, fgcolor=cLtYellow>;
 
-        FSeek(startof(vphy_subheader) + mesh.faceoffset);
+        FSeek(startof(subheader) + mesh.faceoffset);
         struct {
             byte vertex[32];
         } face[mesh.numfaces] <bgcolor=cBlue, fgcolor=cLtYellow>;
@@ -139,8 +144,8 @@ for(i = 0; i < vphy_header.numsolids; i++)
     } physection;
 }
 
-FSeek(vphy_header.keyvalueindex);
+FSeek(header.keyvalueindex);
 
-local int charSize = FileSize() - vphy_header.keyvalueindex;
+local int charSize = FileSize() - header.keyvalueindex;
 
 char vphy_stringdata[charSize] <fgcolor=cRed>;

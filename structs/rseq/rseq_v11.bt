@@ -104,38 +104,22 @@ for(k = 0; k < numanims; k++)
                                         
                                         if(sectionanimheader.flags & STUDIO_ANIM_ANIMPOS_54)
                                         {
-                                            for(g = 0; g < 3; g++)
-                                            {
-                                                if(sectionanimheader.animpos.offset[g])
-                                                {
-                                                    FSeek(startof(sectionanimheader.animpos) + sectionanimheader.animpos.offset[g]);
-                                                    mstudioanimvalue_t animvaluepos <bgcolor=0xFF6622>;
-                                                }
-                                            }
+                                            FSeek(startof(sectionanimheader.animpos) + (sectionanimheader.animpos.packed & 0x1FFF));
+                                            mstudioanimvalue_t posvalue <fgcolor=cLtGreen>;
                                         }
 
                                         if(sectionanimheader.flags & STUDIO_ANIM_ANIMROT_54)
                                         {
-                                            for(g = 0; g < 3; g++)
-                                            {
-                                                if(sectionanimheader.animrot.offset[g])
-                                                {
-                                                    FSeek(startof(sectionanimheader.animrot) + sectionanimheader.animrot.offset[g]);
-                                                    mstudioanimvalue_t animvaluerot <bgcolor=0xFF6622>;
-                                                }
-                                            }
+                                            FSeek(startof(sectionanimheader.animrot) + (sectionanimheader.animrot.packed & 0x1FFF));
+
+                                            mstudioanimvalue_t rotvalue <fgcolor=cLtRed>;
                                         }
-                                        
+
                                         if(sectionanimheader.flags & STUDIO_ANIM_ANIMSCALE_54)
                                         {
-                                            for(g = 0; g < 3; g++)
-                                            {
-                                                if(sectionanimheader.animscale.offset[g])
-                                                {
-                                                    FSeek(startof(sectionanimheader.animscale) + sectionanimheader.animscale.offset[g]);
-                                                    mstudioanimvalue_t animvaluescale <bgcolor=0xFF6622>;
-                                                }
-                                            }
+                                            FSeek(startof(sectionanimheader.animscale) + (sectionanimheader.animscale.packed & 0x1FFF));
+
+                                            mstudioanimvalue_t scalevalue <fgcolor=cLtRed>;
                                         }
 
                                         FSeek(startof(sectionanimheader) + sectionanimheader.size);

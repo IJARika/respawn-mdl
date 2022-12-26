@@ -58,17 +58,20 @@ mstudioattachment_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca
 
 // hitbox
 FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets] <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
+struct {
+    for (i = 0; i < mdlHeader.numhitboxsets; ++i)
+    {
+       FSeek(mdlHeader.hitboxsetindex + (sizeof(mstudiohitboxset_t) * i));
+       struct {
+            mstudiohitboxset_t hboxset <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
+    
+            FSeek(startof(hboxset) + hboxset.hitboxindex);
+            mstudiobbox_t_v53 hboxes[hboxset.numhitboxes] <bgcolor=0xa29418, read=Str("%s : %s : %i", ReadString(startof(this) + this.szhitboxnameindex), ReadString(startof(this) + this.keyvalueindex), this.critoverride)>;
+       } hitboxset <read=ReadString(startof(this.hboxset) + this.hboxset.sznameindex)>;
+    };
+} hboxes;
 
-// have to do this because some things actually do have more than one.
-local int hboxCount = 0;
-
-for (i = 0; i < mdlHeader.numhitboxsets; ++i)
-{
-   hboxCount += hboxset[i].numhitboxes;
-};
-
-mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=Str("%s : %s : %i", ReadString(startof(this) + this.szhitboxnameindex), ReadString(startof(this) + this.keyvalueindex), this.critoverride)>;
+//mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=Str("%s : %s : %i", ReadString(startof(this) + this.szhitboxnameindex), ReadString(startof(this) + this.keyvalueindex), this.critoverride)>;
 
 
 // more bones
@@ -287,17 +290,23 @@ if(mdlHeader.numlocalanim)
 
 
 // ik
-FSeek(mdlHeader.ikchainindex);
-mstudioikchain_t_v53 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int linkCount = 0;
-
-for (i = 0; i < mdlHeader.numikchains; ++i)
+if(mdlHeader.numikchains)
 {
-   linkCount += ikchains[i].numlinks;
-};
-
-mstudioiklink_t iklinks[linkCount] <bgcolor=0x7d3c98>;
+    FSeek(mdlHeader.ikchainindex);
+    struct {
+        for(i = 0; i < mdlHeader.numikchains; i++)
+        {
+            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t_v53) * i));
+            struct {
+                mstudioikchain_t_v53 ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                
+                FSeek(startof(ikchain) + ikchain.linkindex);
+                mstudioiklink_t iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
+            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
+            
+        }
+    } ikchains;
+}
 
 FSeek(mdlHeader.localikautoplaylockindex);
 mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;

@@ -18,10 +18,37 @@
 
 // setup nodes, not fully understood
 // nodes have names
+
+struct nodedata_t
+{
+    short unk; // uses count?
+    short unk1; // seq/anim idx?
+};
+
+struct node_t
+{
+    int count; // number of datas
+
+    if(count)
+    {
+        nodedata_t data[count];
+    }
+};
+
 if(mdlHeader.numlocalnodes > 0)
 {
     FSeek(mdlHeader.localnodenameindex);
-    mstudionodename_t nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
+    int nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
     
+    FSeek(mdlHeader.nodedataindexindex);
     int nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
+
+    struct {
+        for(i = 0; i < mdlHeader.numlocalnodes; i++)
+        {
+
+            FSeek(nodedataindex[i]);
+            node_t node <bgcolor=cDkYellow>;
+        }
+    } node_data;
 }

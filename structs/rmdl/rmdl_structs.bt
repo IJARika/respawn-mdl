@@ -87,7 +87,7 @@ struct studiohdr_t_v54
 	// mstudiotexture_t
 	// short rpak path
 	// raw textures
-    int materialtypesindex;
+    int materialtypesindex; // index into an array of byte sized material type enums for each material used by the model
 	int numtextures; // the material limit exceeds 128, probably 256.
 	int textureindex;
  
@@ -111,11 +111,12 @@ struct studiohdr_t_v54
 	int localnodeindex;
 	int localnodenameindex;
  
-	int numunknodes;
-	int unknodexindex;
+	int numunknodes; // ???
+	int nodedataindexindex; // index into an array of int sized offsets that read into the data for each node
  
 	int meshindex; // offset to model meshes
 
+    // all flex related model vars and structs are stripped in respawn source
 	int deprecated_numflexcontrollers;
 	int deprecated_flexcontrollerindex;
  
@@ -125,7 +126,7 @@ struct studiohdr_t_v54
 	int numikchains;
 	int ikchainindex;
 
-	// this is rui meshes
+	// mesh panels for using rui on models, primarily for weapons
 	int numruimeshes;
 	int ruimeshindex;
  
@@ -144,10 +145,11 @@ struct studiohdr_t_v54
 	int contents <read=ReadContents(this)>;
 	
 	// unused for packed models
+    // technically still functional though I am unsure why you'd want to use it
 	int numincludemodels;
 	int includemodelindex;
 	
-	uint32 virtualModel;
+	int virtualModel; // size placeholder
 
 	int bonetablebynameindex;
 	
@@ -189,9 +191,9 @@ struct studiohdr_t_v54
 	int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbonesunk;
-	int procbonearrayindex;	
-    int procbonemaskindex;
+	int numprocbones;
+    int procbonetableindex;
+    int linearprocboneindex;
 
     // depreciated as they are removed in 12.1
     int m_nBoneFlexDriverCount;
@@ -236,13 +238,9 @@ struct studiohdr_t_v54
 
 	short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
 
-    int vvwindex;
-    int vvwsize;
-
-    //int vgindex; // 0tVG
-    //int unksize; // might be offset
-    //int unksize1; // might be offset
-
+    // new in apex vertex weight file for verts that have more than three weights
+	int vvwindex; // index will come last after other vertex files
+	int vvwsize;
 };
 
 struct studiohdr_t_v54_v121
@@ -313,7 +311,7 @@ struct studiohdr_t_v54_v121
 	int localnodenameindex;
  
 	int numunknodes;
-	int unknodexindex;
+	int nodedataindexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -488,7 +486,7 @@ struct studiohdr_t_v54_v122
 	int localnodenameindex;
  
 	int numunknodes;
-	int unknodexindex;
+	int nodedataindexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -665,7 +663,7 @@ struct studiohdr_t_v54_v13
 	int localnodenameindex;
  
 	int numunknodes;
-	int unknodexindex;
+	int nodedataindexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -846,7 +844,7 @@ struct studiohdr_t_v54_v14
 	int localnodenameindex;
  
 	int numunknodes;
-	int unknodexindex;
+	int nodedataindexindex;
 
 	int numikchains;
 	int ikchainindex;
@@ -1005,7 +1003,7 @@ struct studiohdr_t_v16
 
     short numlocalnodes;
 	unsigned short localnodenameindex;
-    unsigned short localnodeindex;
+    unsigned short nodedataindexindex;
 
 	short numikchains;
 	unsigned short ikchainindex;
@@ -1290,7 +1288,7 @@ struct mstudioikchain_t_v16
 struct mstudioiklink_t_v54
 {
 	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	Vector	unused0; // no kneeDir in apex I think
+	Vector	kneeDir; // no kneeDir in apex I think
 };
 
 // linear bone
@@ -1531,6 +1529,11 @@ struct animflagarray_t_v54
     byte STUDIO_ANIM_UNK_54 : 1;    
 };
 
+// flags for the per bone array, in 4 bit sections (two sets of flags per byte)
+//#define STUDIO_ANIM_POS		0x1 // animation has pos values
+//#define STUDIO_ANIM_ROT		0x2	// animation has rot values
+//#define STUDIO_ANIM_SCALE	0x4	// animation has scale values
+
 struct boneflagarray_t
 {
 
@@ -1559,12 +1562,15 @@ struct mstudioanim_valueptr_t_v54
     int packed;
 };
 
-#define STUDIO_ANIM_DELTA_54	 0x01 // unverified
-
-// rle anim flags
 #define STUDIO_ANIM_ANIMSCALE_54 0x01 // mstudioanim_valueptr_t
 #define STUDIO_ANIM_ANIMROT_54	 0x02 // mstudioanim_valueptr_t
 #define STUDIO_ANIM_ANIMPOS_54	 0x04 // mstudioanim_valueptr_t
+
+/*// flags for the actually per bone animation headers
+// "mstudioanim_valueptr_t" indicates it has a set of offsets into anim tracks
+#define STUDIO_ANIM_ANIMSCALE	0x01 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMROT		0x02 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMPOS		0x04 // mstudioanim_valueptr_t*/
 
 string ReadAnimFlagsV54(byte flags)
 {
@@ -1644,7 +1650,7 @@ struct mstudio_rle_anim_t_v54
         if(flags & STUDIO_ANIM_ANIMROT_54)
             mstudioanim_valueptr_t_v54 animrot;
         else
-            Quat64 rawrot;
+            Quaternion64	rawrot;
     }
 
     if(flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
@@ -1669,6 +1675,7 @@ struct mstudiocompressedikerror_t_v16
 	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
 };
 
+// basically compressedikerrors and frame movements will have an array of offsets that leads into the traditional 'short offset' array, allowing it to have per section (if the anim uses sections) data
 struct mstudioframemovement_t_v54
 {
 	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
@@ -1690,7 +1697,7 @@ struct mstudioikrule_t_v54
     Vector pos;
     Quaternion q;
 
-    // whar the heck
+    // apex does this oddly
     mstudiocompressedikerror_t_v54 compressedikerror;
     int compressedikerrorindex;
 
@@ -1909,7 +1916,7 @@ struct mstudioseqdesc_t_v16
 struct mstudioautolayer_t_v54
 {
     // this needs to have a guid descriptor in rpak
-    int64 guidSequence <read=Str("%s - %LX", "aseq", this)>; // hashed aseq guid asset
+    __int64 guidSequence <read=Str("%s - %LX", "aseq", this)>; // hashed aseq guid asset
 
 	short iSequence; // only used within an rmdl I would imagine
 	short iPose;
@@ -2023,7 +2030,7 @@ struct mstudiomodel_t_v54
 {
 	char name[64];
 
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes
+	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes, string index
 
     int type;
 
@@ -2187,7 +2194,7 @@ struct mstudiomesh_t_v54
 
 	mstudio_meshvertexloddata_t vertexloddata;
     
-	int unk[2]; // these are suposed to be filled on load, however this isn't true??
+	char unk[8]; // these are suposed to be filled on load, however this isn't true??
 };
 
 struct mstudiomesh_t_v54_v121
@@ -2207,7 +2214,7 @@ struct mstudiomesh_t_v54_v121
     // depreciated in later versions?
 	mstudio_meshvertexloddata_t vertexloddata;
     
-	int unk[2]; // these are suposed to be filled on load, however this isn't true??
+	char unk[8]; // these are suposed to be filled on load, however this isn't true??
 };
 
 struct mstudiomesh_t_v16
@@ -2232,7 +2239,7 @@ struct mstudiotexture_t_v54
 {
 	int sznameindex <read=ReadString(startof(this) + this)>;
 
-	__int64 guid <read=Str("%s - %LX", "matl", this)>;
+	__int64 guid <read=Str("%s - %LX", "matl", this)>; // guid of the material it references
 };
 
 struct mstudiotexture_t_v16

@@ -98,6 +98,7 @@ typedef Vector3 Vector;
 #define STUDIOHDR_FLAGS_SUBDIVISION_SURFACE		0x80000
 
 // flagged on load to indicate no animation events on this model
+// might be a different thing on v54
 #define STUDIOHDR_FLAGS_NO_ANIM_EVENTS			0x100000
 
 // If flag is set then studiohdr_t.flVertAnimFixedPointScale contains the
@@ -107,15 +108,17 @@ typedef Vector3 Vector;
 #define STUDIOHDR_FLAGS_VERT_ANIM_FIXED_POINT_SCALE	0x200000
 
 
-// added in v54
-#define STUDIOHDR_FLAGS_COMPLEX_WEIGHTS		        0x4000 // don't really know what to name this one
+// This flag indicates that the model has complex weights, which allows it to have 3< weights per bone.
+#define STUDIOHDR_FLAGS_USES_EXTRA_BONE_WEIGHTS     0x4000 // don't really know what to name this one
 
-// added in v52
 #define STUDIOHDR_FLAGS_RESPAWN_UNK                 0x800000
 
 // "colorindex is only shifted if 0x1000000 flag is set on the studiohdr" talking about colorindex in mstudiomodel struct
-#define STUDIOHDR_FLAGS_USES_VERTEX_COLOR	        0x1000000 // model has/uses vertex color
-#define STUDIOHDR_FLAGS_USES_UV2			        0x2000000 // model has/uses secondary uv layer
+// If this flag is present the model has vertex color, and by extension (previously) a VVC (IDVC) file.
+#define STUDIOHDR_FLAGS_USES_VERTEX_COLOR	        0x1000000
+
+// If this flag is present the model has a secondary UV layer, and by extension (previously) a VVC (IDVC) file.
+#define STUDIOHDR_FLAGS_USES_UV2			        0x2000000
 
 string ReadHeaderFlags(int flags)
 {
@@ -906,19 +909,23 @@ struct studiohdr_t_v52
 	int numincludemodels;
 	int includemodelindex;
     
-    uint32 virtualModel;
+	// implementation specific back pointer to virtual data
+	int /* mutable void* */ virtualModel;
 
-	int szanimblocknameindex <read=ReadString(this)>;	
+	// for demand loaded animation blocks
+	int szanimblocknameindex <read=ReadString(this)>;
+
 	int numanimblocks;
 	int animblockindex;
-	uint32 animblockModel;
+
+	int /* mutable void* */ animblockModel;
 
 	int bonetablebynameindex;
-    
-    // used by tools only that don't cache, but persist mdl's peer data
+
+	// used by tools only that don't cache, but persist mdl's peer data
 	// engine uses virtualModel to back link to cache pointers
-	uint32 pVertexBase;
-	uint32 pIndexBase;
+	int /* void* */ pVertexBase;
+	int /* void* */ pIndexBase;
     
     // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
 	// this value is used to calculate directional components of lighting 
@@ -1287,7 +1294,7 @@ string ReadProcFlags(uint flags)
 #define BONE_USED_BY_VERTEX_LOD7	0x00020000
 #define BONE_USED_BY_BONE_MERGE		0x00040000	// bone is available for bone merge to occur against it
 
-#define BONE_FLAG_UNK_53            0x00080000
+#define BONE_FLAG_UNK_53            0x00080000 // where?
 
 //#define BONE_USED_BY_VERTEX_AT_LOD(lod) ( BONE_USED_BY_VERTEX_LOD0 << (lod) )
 //#define BONE_USED_BY_ANYTHING_AT_LOD(lod) ( ( BONE_USED_BY_ANYTHING & ~BONE_USED_BY_VERTEX_MASK ) | BONE_USED_BY_VERTEX_AT_LOD(lod) )
@@ -1300,7 +1307,7 @@ string ReadProcFlags(uint flags)
 #define BONE_HAS_SAVEFRAME_ROT64	0x00400000	// Quaternion64
 #define BONE_HAS_SAVEFRAME_ROT32	0x00800000	// Quaternion32
 
-#define BONE_FLAG_UNK_52            0x01000000
+#define BONE_FLAG_UNK_52            0x01000000 // where?
 
 string ReadBoneFlags(uint flags)
 {
@@ -1968,7 +1975,8 @@ struct mstudiobbox_t_v53
 // new in respawn models
 #define STUDIO_ANIM_UNK3    0x0040  // used on something that is clearly not a frame anim in v54
                                     // animseq/humans/class/heavy/mp_pilot_heavy_core/mp_pt_crypto_base_execution_heavy_victim.rseq
-#define STUDIO_ANIM_UNK		0x20000 // actually first in v52
+#define STUDIO_ANIM_UNK		0x20000 // actually first in v52, from where??
+                                    // this may actually be something different in apex, as all anims need this or else it does not read values
 #define STUDIO_ANIM_UNK1	0x40000
 #define STUDIO_ANIM_UNK2	0x80000 // cherry blossom v53, levi in v54
 
@@ -2250,11 +2258,6 @@ struct mstudioanimsections_t_v53
 	int animindex;
 };
 
-struct sectionindexes_t
-{
-    mstudioanimsections_t sectionoffsets[(animdesc[i].numframes / animdesc[i].sectionframes) + 2] <bgcolor=cLtBlue>;
-};
-
 // v48/49/52 flags
 // v52 might've added flags for scale
 #define STUDIO_ANIM_RAWPOS	0x01 // Vector48
@@ -2460,7 +2463,7 @@ struct mstudio_rle_anim_t
 	ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // alien swarm/csgo says this is a signed int but that doesn't work well for our purposes.
 	byte flags <read=ReadAnimFlags(this)>; // weighing options
 
-    int16 nextoffset;
+    short nextoffset;
 
     if(flags & STUDIO_ANIM_ANIMROT)
         mstudioanim_valueptr_t animrot; // pRotV
@@ -2469,10 +2472,10 @@ struct mstudio_rle_anim_t
 	    mstudioanim_valueptr_t animpos; // pPosV
 
 	if(flags & STUDIO_ANIM_RAWROT)
-	    Quat48 rawrot; // pQuat48
+	    Quaternion48 rawrot; // pQuat48
 
 	if(flags & STUDIO_ANIM_RAWROT2)
-	    Quat64 rawrot2; // pQuat64
+	    Quaternion64	rawrot2; // pQuat64
 
 	if (flags & STUDIO_ANIM_RAWPOS)
 	    Vector48 rawpos; // pPos
@@ -2492,7 +2495,7 @@ struct mstudio_rle_anim_t_v53
 	
     // using func names for var names
     if(flags & STUDIO_ANIM_RAWROT_53)
-	    Quat64 pQuat64; // pQuat64
+	    Quaternion64	pQuat64; // pQuat64
     else
     {
         mstudioanim_valueptr_t pRotV; // pRotV
@@ -2630,9 +2633,16 @@ struct mstudio_frame_anim_t_v52
 
     int fixedOldBoneflags;
 
-    int unkdataindex;
+    int unkdataindex; // indexes into array of values that somewhat relate to flags
 
 	int unused;
+};
+
+// per bone
+struct unkframeanimdata_t
+{
+    short unkframe; // advances by six when bone has flags for frame data
+    short unkconstant; // advances by six when bone has flags for constant data
 };
 
 // func to read these
@@ -3076,7 +3086,7 @@ struct mstudioseqdesc_t_v52
 	int numactivitymodifiers;
 
     int ikResetMask; // new in v52
-    int unk1; // count? STUDIO_ANIMDESC_52_UNK??
+    int unk1; // count? STUDIO_ANIMDESC_52_UNK?? ikReset (what above var is masking)
 
 	int unused[3];
 };
@@ -3571,7 +3581,7 @@ struct mstudiomesh_t_v53
 
 	mstudio_meshvertexloddata_t vertexloddata;
     
-    int unk[2]; // set on load
+    char unk[8]; // set on load
 
 	int unused[6]; // remove as appropriate
 };
@@ -3635,11 +3645,11 @@ struct mstudiotexture_t_v53
 
 struct mstudiorruiheader_t
 {
-    int unk; // unsure, it doesn't line up
-    int ruimeshindex;
+    int namehash; // uses rui hash algo
+    int ruimeshindex; // offset to the actual rui mesh
 };
 
-// vertex map for a quad
+// vertex map for a face
 struct mstudioruivertmap_t
 {
     // order of vertices for triangles:
@@ -3654,7 +3664,7 @@ struct mstudioruivertmap_t
     // in v53 the first two are an array like such:
     // 1-3
     // while the third is the fourth vert.
-    int16 vertid[3];
+    short vertid[3];
 };
 
 struct mstudioruivert_t
@@ -3718,8 +3728,8 @@ struct mstudioaabbheader_t
 
 struct mstudioaabbnode_t
 {
-    int16 unk[3];
-    int16 unk1[3];
+    short unk[3];
+    short unk1[3];
     
     // sometimes negative
     int unk2[2];
@@ -3727,13 +3737,13 @@ struct mstudioaabbnode_t
 
 struct aabbtype
 {
-    int16 unk[3];
-    int16 unk1;
+    short unk[3];
+    short unk1;
 };
 
 struct mstudioaabbleaf_t
 {
-    int16 unk[6];
+    short unk[6];
 
     int unk1;
     

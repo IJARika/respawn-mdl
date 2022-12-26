@@ -170,9 +170,7 @@ if(mdlHeader.numlocalanim)
                                                 if(mdlHeader.version == 52)
                                                 {
                                                     FSeek(startof(frameanim) + frameanim.unkdataindex);
-                                                    struct {
-                                                        short unk[2];
-                                                    } unkdatatype[mdlHeader.numbones];
+                                                    unkframeanimdata_t unkdatatype[mdlHeader.numbones];
                                                 }
                         
                                                 FSeek(startof(frameanim) + frameanim.constantsoffset);
@@ -185,7 +183,7 @@ if(mdlHeader.numlocalanim)
                                                                 local int boneidx = j;
 
                                                                 if(boneflagarray[j] & STUDIO_FRAME_RAWROT)
-                                                                    Quat48 rawrot;
+                                                                    Quaternion48 rawrot;
             
                                                                 if(boneflagarray[j] & STUDIO_FRAME_RAWPOS)
                                                                     Vector48 rawpos;
@@ -214,7 +212,7 @@ if(mdlHeader.numlocalanim)
                                                                         local int boneidx = j;
 
                                                                         if(boneflagarray[j] & STUDIO_FRAME_ANIMROT_52)
-                                                                            Quat48 animrot;
+                                                                            Quaternion48 animrot;
                             
                                                                         if(boneflagarray[j] & STUDIO_FRAME_ANIMPOS_52)
                                                                             Vector48 animpos;                                            
@@ -232,7 +230,7 @@ if(mdlHeader.numlocalanim)
                                                                         local int boneidx = j;
 
                                                                         if(boneflagarray[j] & STUDIO_FRAME_ANIMROT)
-                                                                            Quat48 animrot;
+                                                                            Quaternion48 animrot;
                             
                                                                         if(boneflagarray[j] & STUDIO_FRAME_ANIMPOS)
                                                                             Vector48 animpos;                                            
@@ -266,9 +264,7 @@ if(mdlHeader.numlocalanim)
                                     if(mdlHeader.version == 52)
                                     {
                                         FSeek(startof(frameanim) + frameanim.unkdataindex);
-                                        struct {
-                                            short unk[2];
-                                        } unkdatatype[mdlHeader.numbones];
+                                        unkframeanimdata_t unkdatatype[mdlHeader.numbones];
                                     }
             
                                     FSeek(startof(frameanim) + frameanim.constantsoffset);
@@ -281,7 +277,7 @@ if(mdlHeader.numlocalanim)
                                                     local int boneidx = j;
 
                                                     if(boneflagarray[j] & STUDIO_FRAME_RAWROT)
-                                                        Quat48 rawrot;
+                                                        Quaternion48 rawrot;
 
                                                     if(boneflagarray[j] & STUDIO_FRAME_RAWPOS)
                                                         Vector48 rawpos;
@@ -311,7 +307,7 @@ if(mdlHeader.numlocalanim)
                                                             local int boneidx = j;
 
                                                             if(boneflagarray[j] & STUDIO_FRAME_ANIMROT_52)
-                                                                Quat48 animrot;
+                                                                Quaternion48 animrot;
                             
                                                             if(boneflagarray[j] & STUDIO_FRAME_ANIMPOS_52)
                                                                 Vector48 animpos;                                            
@@ -329,7 +325,7 @@ if(mdlHeader.numlocalanim)
                                                             local int boneidx = j;
 
                                                             if(boneflagarray[j] & STUDIO_FRAME_ANIMROT)
-                                                                Quat48 animrot;
+                                                                Quaternion48 animrot;
                             
                                                             if(boneflagarray[j] & STUDIO_FRAME_ANIMPOS)
                                                                 Vector48 animpos;                                            
@@ -372,7 +368,7 @@ if(mdlHeader.numlocalanim)
                                                         Assert(!(sectionanimheader.flags & 0x40), "flag 0x40");
                                                         Assert(!(sectionanimheader.flags & 0x80), "flag 0x80");
 
-                                                        if(animheader.flags & STUDIO_ANIM_ANIMROT)
+                                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMROT)
                                                         {
                                                             for(g = 0; g < 3; g++)
                                                             {
@@ -384,7 +380,7 @@ if(mdlHeader.numlocalanim)
                                                             }
                                                         }
                                                         
-                                                        if(animheader.flags & STUDIO_ANIM_ANIMPOS)
+                                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMPOS)
                                                         {
                                                             for(g = 0; g < 3; g++)
                                                             {
@@ -458,7 +454,10 @@ if(mdlHeader.numlocalanim)
                     if(animdesc[i].numikrules && animdesc[i].ikruleindex)
                     {
                         FSeek(startof(animdesc[i]) + animdesc[i].ikruleindex);
-                        mstudioikrule_t animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
+                        if(mdlHeader.version == 52)
+                            mstudioikrule_t_v52 animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
+                        else
+                            mstudioikrule_t animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
                     
                         for(j = 0; j < animdesc[i].numikrules; j++)
                         {
@@ -541,10 +540,10 @@ if(mdlHeader.numlocalanim)
                                                     Vector48 pos;
 
                                                 if(bones[j].flags & BONE_HAS_SAVEFRAME_ROT64)
-                                                    Quat64 rot;
+                                                    Quaternion64 rot;
 
                                                 if(bones[j].flags & BONE_HAS_SAVEFRAME_ROT32)
-                                                    Quat32 rot;
+                                                    Quaternion32 rot;
                                             } bonedata <read=ReadString(startof(bones[boneidx]) + bones[boneidx].sznameindex), bgcolor=0xffaa88>;
                                         }
                                     }
@@ -613,17 +612,23 @@ if(mdlHeader.version < 52)
 
 
 // ik
-FSeek(mdlHeader.ikchainindex);
-mstudioikchain_t ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int linkCount = 0;
-
-for (i = 0; i < mdlHeader.numikchains; ++i)
+if(mdlHeader.numikchains)
 {
-   linkCount += ikchains[i].numlinks;
+    FSeek(mdlHeader.ikchainindex);
+    struct {
+        for(i = 0; i < mdlHeader.numikchains; i++)
+        {
+            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t) * i));
+            struct {
+                mstudioikchain_t ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                
+                FSeek(startof(ikchain) + ikchain.linkindex);
+                mstudioiklink_t iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
+            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
+            
+        }
+    } ikchains;
 }
-
-mstudioiklink_t iklinks[linkCount] <bgcolor=0x7d3c98>;
 
 FSeek(mdlHeader.localikautoplaylockindex);
 mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;

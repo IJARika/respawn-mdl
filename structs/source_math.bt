@@ -65,7 +65,7 @@ struct Quaternion
 };
 
 // packed quaternion
-struct Quat32
+struct Quaternion32
 {
 	uint x : 11 <read=Str("%f", (this - 1024) * (1 / 1024.0))>;
 	uint y : 10 <read=Str("%f", (this - 512) * (1 / 512.0))>;
@@ -73,7 +73,7 @@ struct Quat32
 	uint wneg : 1;
 };
 
-struct Quat48
+struct Quaternion48
 {
 	uint16 x : 16 <read=Str("%f", (this - 32768) * (1 / 32768.5))>;
 	uint16 y : 16 <read=Str("%f", (this - 32768) * (1 / 32768.5))>;
@@ -81,7 +81,7 @@ struct Quat48
 	uint16 wneg : 1;
 };
 
-struct Quat64
+struct Quaternion64
 {
     uint64 x : 21 <read=Str("%f", (this - 1048576) * (1 / 1048576.5))>;
     uint64 y : 21 <read=Str("%f", (this - 1048576) * (1 / 1048576.5))>;

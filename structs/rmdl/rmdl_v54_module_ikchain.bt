@@ -16,17 +16,20 @@
 /*V54 IKCHAIN MODULE*/
 
 
-// do ikchains
-FSeek(mdlHeader.ikchainindex);
-mstudioikchain_t_v54 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
-
-local int linkCount = 0;
-
-// get link count
-for (i = 0; i < mdlHeader.numikchains; ++i)
+if(mdlHeader.numikchains)
 {
-   linkCount += ikchains[i].numlinks;
+    FSeek(mdlHeader.ikchainindex);
+    struct {
+        for(i = 0; i < mdlHeader.numikchains; i++)
+        {
+            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t_v54) * i));
+            struct {
+                mstudioikchain_t_v54 ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                
+                FSeek(startof(ikchain) + ikchain.linkindex);
+                mstudioiklink_t_v54 iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
+            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
+            
+        }
+    } ikchains;
 }
-
-// do links
-mstudioiklink_t_v54 iklinks[linkCount] <bgcolor=0x7d3c98>;
