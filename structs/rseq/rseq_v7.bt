@@ -132,7 +132,7 @@ for(k = 0; k < numanims; k++)
                                         {
                                             FSeek(startof(sectionanimheader.animscale) + (sectionanimheader.animscale.packed & 0x1FFF));
 
-                                            mstudioanimvalue_t scalevalue <fgcolor=cLtRed>;
+                                            mstudioanimvalue_t scalevalue <fgcolor=cLtYellow>;
                                         }
 
                                         FSeek(startof(sectionanimheader) + sectionanimheader.size);
