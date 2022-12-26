@@ -1556,10 +1556,82 @@ struct boneflagarray_t_loose
         byte padd[(4 - (numbones % 4)) / 2] <bgcolor=0xaaaa22>;
 };
 
-// not correct
+
+#define STUDIO_ANIMPTR_X 0x01 // mstudioanimvalue_t
+#define STUDIO_ANIMPTR_Y 0x02 // mstudioanimvalue_t
+#define STUDIO_ANIMPTR_Z 0x04 // mstudioanimvalue_t
+
+string ReadAnimPtrFlagsV54(byte flags)
+{
+    string value = "";
+
+    if(flags == 0)
+        return "NONE";
+
+    int i = 0;
+    byte flag = 0;
+
+    int flagsFound = 0;
+
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        if(flag != 0)
+        {
+            flagsFound++;
+        }
+    }
+
+    int flagCounter = 0;
+    for(i = 0; i < 8; i++)
+    {
+        flag = flags & (1 << i);
+
+        switch(flag)
+        {
+        case 0:
+            break;
+        case STUDIO_ANIMPTR_X:
+            value += "STUDIO_ANIMPTR_X";
+            break;
+        case STUDIO_ANIMPTR_Y:
+            value += "STUDIO_ANIMPTR_Y";
+            break;
+        case STUDIO_ANIMPTR_Z:
+            value += "STUDIO_ANIMPTR_Z";
+            break;
+        }
+
+        if(flag != 0)
+        {
+            flagCounter++;
+            if(flagCounter < flagsFound)
+            {
+                value += " | ";
+            }
+        }
+    }
+
+    return value;
+}
+
+// to get mstudioanim_value_t for each axis:
+// if 1 flag, only read from offset
+// if 2 flags (e.g. y,z):
+// y @ offset;
+// z @ offset + (idx1 * sizeof(mstudioanimvalue_t));
+
+// if 3 flags:
+// x @ offset;
+// y @ offset + (idx1 * sizeof(mstudioanimvalue_t));
+// z @ offset + (idx2 * sizeof(mstudioanimvalue_t));
 struct mstudioanim_valueptr_t_v54
 {
-    int packed;
+    int offset : 13;
+    int flags : 3 <read=ReadAnimPtrFlagsV54>;
+    int idx1 : 8;
+    int idx2 : 8; 
 };
 
 #define STUDIO_ANIM_ANIMSCALE_54 0x01 // mstudioanim_valueptr_t
