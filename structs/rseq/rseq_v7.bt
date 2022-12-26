@@ -114,7 +114,27 @@ for(k = 0; k < numanims; k++)
                                     if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                                     {
                                         mstudio_rle_anim_t_v54 sectionanimheader <bgcolor=0x771122>;
-                                        mstudioanimvalue_t test;
+                                        
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMPOS_54)
+                                        {
+                                            FSeek(startof(sectionanimheader.animpos) + (sectionanimheader.animpos.packed & 0x1FFF));
+                                            mstudioanimvalue_t posvalue <fgcolor=cLtGreen>;
+                                        }
+
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMROT_54)
+                                        {
+                                            FSeek(startof(sectionanimheader.animrot) + (sectionanimheader.animrot.packed & 0x1FFF));
+
+                                            mstudioanimvalue_t rotvalue <fgcolor=cLtRed>;
+                                        }
+
+                                        if(sectionanimheader.flags & STUDIO_ANIM_ANIMSCALE_54)
+                                        {
+                                            FSeek(startof(sectionanimheader.animscale) + (sectionanimheader.animscale.packed & 0x1FFF));
+
+                                            mstudioanimvalue_t scalevalue <fgcolor=cLtRed>;
+                                        }
+
                                         FSeek(startof(sectionanimheader) + sectionanimheader.size);
                                     }
                                 }

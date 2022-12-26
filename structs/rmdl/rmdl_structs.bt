@@ -1556,15 +1556,15 @@ struct boneflagarray_t_loose
 // not correct
 struct mstudioanim_valueptr_t_v54
 {
-    int offset : 10;
-    int offset : 10;
-    int offset : 5;
+    int packed;
 };
 
 #define STUDIO_ANIM_DELTA_54	 0x01 // unverified
-#define STUDIO_ANIM_ANIMSCALE_54 0x02 // mstudioanim_valueptr_t
-#define STUDIO_ANIM_ANIMROT_54	 0x04 // mstudioanim_valueptr_t
-#define STUDIO_ANIM_ANIMPOS_54	 0x08 // mstudioanim_valueptr_t
+
+// rle anim flags
+#define STUDIO_ANIM_ANIMSCALE_54 0x01 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMROT_54	 0x02 // mstudioanim_valueptr_t
+#define STUDIO_ANIM_ANIMPOS_54	 0x04 // mstudioanim_valueptr_t
 
 string ReadAnimFlagsV54(byte flags)
 {
@@ -1597,9 +1597,6 @@ string ReadAnimFlagsV54(byte flags)
         {
         case 0:
             break;
-        case STUDIO_ANIM_DELTA_54:
-            value += "STUDIO_ANIM_DELTA_54";
-            break;
         case STUDIO_ANIM_ANIMSCALE_54:
             value += "STUDIO_ANIM_ANIMSCALE_54";
             break;
@@ -1627,9 +1624,9 @@ string ReadAnimFlagsV54(byte flags)
 struct mstudio_rle_anim_t_v54
 {
 
-	short size : 12; // total size of all animation data, not next offset because even the last one has it
+	short size : 13; // total size of all animation data, not next offset because even the last one has it
 
-    short flags : 4 <read=ReadAnimFlagsV54(this)>;
+    short flags : 3 <read=ReadAnimFlagsV54(this)>;
     
     if(flags & STUDIO_ANIM_ANIMPOS_54)
         float posscale;
