@@ -1557,9 +1557,9 @@ struct boneflagarray_t_loose
 };
 
 
-#define STUDIO_ANIMPTR_X 0x01 // mstudioanimvalue_t
+#define STUDIO_ANIMPTR_Z 0x01 // mstudioanimvalue_t
 #define STUDIO_ANIMPTR_Y 0x02 // mstudioanimvalue_t
-#define STUDIO_ANIMPTR_Z 0x04 // mstudioanimvalue_t
+#define STUDIO_ANIMPTR_X 0x04 // mstudioanimvalue_t
 
 string ReadAnimPtrFlagsV54(byte flags)
 {
