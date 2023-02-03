@@ -62,25 +62,21 @@ for (i = 0; i < vtx_header.numBodyParts; ++i)
                                     for(n = 0; n < vtx_stripgrphdr.numStrips; n++)
                                     {
                                         FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.stripOffset + (sizeof(StripHeader_t) * n));
-                                        StripHeader_t vtx_strip <bgcolor=cLtPurple>;
+                                        struct {
+                                            StripHeader_t vtx_strip <bgcolor=cLtPurple>;
+                        
+                                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.vertOffset + (vtx_strip.vertOffset * sizeof(Vertex_t)));
+                                            Vertex_t vtx_stripverts[vtx_strip.numVerts] <bgcolor=cPurple>;
                     
-                                        FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.vertOffset);
-                                        struct {
-                                            Vertex_t vtx_stripverts[vtx_stripgrphdr.numVerts] <bgcolor=cPurple>;
-                                        } vert_group;
-                
-                                        FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.indexOffset);
-                                        struct {
-                                             unsigned short indice[vtx_stripgrphdr.numIndices] <bgcolor=cDkPurple>;
-                                        } indice_group;
-                
-                                        if(vtx_strip.boneStateChangeOffset)
-                                        {
-                                            FSeek(startof(vtx_strip) + vtx_strip.boneStateChangeOffset);
-                                            struct {
-                                                 BoneStateChangeHeader_t bonestate[vtx_strip.numBoneStateChanges] <bgcolor=cLtPurple, optimize=false>;
-                                            } bonestate_group;
-                                        }
+                                            FSeek(startof(vtx_stripgrphdr) + vtx_stripgrphdr.indexOffset + (vtx_strip.indexOffset * 2));
+                                            unsigned short indice[vtx_strip.numIndices] <bgcolor=cDkPurple>;
+                    
+                                            if(vtx_strip.boneStateChangeOffset)
+                                            {
+                                                FSeek(startof(vtx_strip) + vtx_strip.boneStateChangeOffset);
+                                                BoneStateChangeHeader_t bonestate[vtx_strip.numBoneStateChanges] <bgcolor=cLtPurple>;
+                                            }
+                                        } strip;
                                     }
                                 }
                             } mesh;

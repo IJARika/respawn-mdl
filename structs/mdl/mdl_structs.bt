@@ -1766,6 +1766,7 @@ struct mstudioikchain_t_v53
     
     float unk; // no clue what this does tbh, tweaking it does nothing
                // default value: 0.707f
+               // this value is similar to default source engine ikchain values
     
     int unused[3]; // these get cut in apex so I can't imagine this is used
 };

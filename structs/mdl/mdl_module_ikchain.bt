@@ -1,0 +1,39 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl, rmdl
+//   Authors: Rika
+//   Version: 48/49/52/53
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl, *.rmdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*IK CHAIN MODULE*/
+
+
+local int ikChainSize = mdlHeader.version > 52 ? sizeof(mstudioikchain_t_v53) : sizeof(mstudioikchain_t);
+
+if(mdlHeader.numikchains)
+{
+    FSeek(mdlHeader.ikchainindex);
+    struct {
+        for(i = 0; i < mdlHeader.numikchains; i++)
+        {
+            FSeek(mdlHeader.ikchainindex + (ikChainSize * i));
+            struct {
+                if(mdlHeader.version == 53)
+                    mstudioikchain_t_v53 ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                else
+                    mstudioikchain_t ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                
+                FSeek(startof(ikchain) + ikchain.linkindex);
+                mstudioiklink_t iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
+            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
+            
+        }
+    } ikchains <read=Str("%i ikchains", mdlHeader.numikchains)>;
+}

@@ -83,21 +83,10 @@ for(k = 0; k < numanims; k++)
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v54_v121 sectionindexes[sectionlength] <read=Str("idx %i", this.animindex), bgcolor=cLtBlue>;
-        
-                    local int nullsections = 0;
-
-                    // respawn really needs to cut this out
-                    if(numanims > 1 && numanims > (k + 1))
-                    {
-                        if((blends[k] + sectionindexes[0].animindex) >= blends[k + 1])
-                        {
-                            nullsections = 1;
-                        }
-                    }
 
                     for(i = 0; i < sectionlength; i++)
                     {
-                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && (blends[k] + sectionindexes[i].animindex) < seqdesc.szlabelindex && !nullsections)
+                        if(sectionindexes[i].animindex && !sectionindexes[i].isExternal && (animdesc[k].flags & STUDIO_ANIM_UNK))
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);

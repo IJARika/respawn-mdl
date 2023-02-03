@@ -83,15 +83,10 @@ for(k = 0; k < numanims; k++)
     
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v16 sectionindexes[sectionlength] <read=Str("idx %i", ReadSectionIndex(this.animindex)), bgcolor=cLtBlue>;
-                
-                    local int nullsection = 0;
-
-                    if((sectionindexes[1].animindex - sectionindexes[0].animindex) <= 4)
-                        nullsection = 1;
-
+                    
                     for(i = 0; i < sectionlength; i++)
                     {
-                        if(sectionindexes[i].animindex && sectionindexes[i].animindex > 0)
+                        if(sectionindexes[i].animindex && sectionindexes[i].animindex > 0 && (animdesc[k].flags & STUDIO_ANIM_UNK))
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);

@@ -71,9 +71,6 @@ struct {
     };
 } hboxes;
 
-//mstudiobbox_t_v53 hboxes[hboxCount] <bgcolor=0xa29418, read=Str("%s : %s : %i", ReadString(startof(this) + this.szhitboxnameindex), ReadString(startof(this) + this.keyvalueindex), this.critoverride)>;
-
-
 // more bones
 FSeek(mdlHeader.bonetablebynameindex);
 ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
@@ -281,32 +278,14 @@ if(mdlHeader.numlocalanim)
 // sequence stuff
 #include "../mdl/mdl_module_sequences.bt"
 
-
 // unchanged until v54
 #include "../mdl/mdl_module_nodes.bt"
 
 // models
 #include "../mdl/mdl_module_bodyparts.bt"
 
-
 // ik
-if(mdlHeader.numikchains)
-{
-    FSeek(mdlHeader.ikchainindex);
-    struct {
-        for(i = 0; i < mdlHeader.numikchains; i++)
-        {
-            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t_v53) * i));
-            struct {
-                mstudioikchain_t_v53 ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
-                
-                FSeek(startof(ikchain) + ikchain.linkindex);
-                mstudioiklink_t iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
-            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
-            
-        }
-    } ikchains;
-}
+#include "../mdl/mdl_module_ikchain.bt"
 
 FSeek(mdlHeader.localikautoplaylockindex);
 mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;

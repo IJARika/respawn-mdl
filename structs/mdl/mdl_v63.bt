@@ -3,8 +3,8 @@
 //
 //      File: mdl
 //   Authors: Rika
-//   Version: 48/49/52
-//   Purpose: Valve/Respawn MDL Files
+//   Version: 63
+//   Purpose: Bluepoint/Respawn MDL Files
 //  Category: Model
 // File Mask: *.mdl
 //  ID Bytes: 
@@ -24,46 +24,190 @@ local int g = 0;
 local int n = 0;
 
 
-
-// version before the header is created.
-local int pre_version = ReadInt(4);
-
-
 // headers
-if (pre_version == 52)
-{ 
-    studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
-    FSeek(mdlHeader.studiohdr2index);
-    studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
-
-    // funny strings that work the same always
-    #include "../mdl/mdl_v52_module_mayastrings.bt"
-}
-else if (pre_version == 49)
+struct studiohdr_t_v63
 {
-    studiohdr_t_v49 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
-    FSeek(mdlHeader.studiohdr2index);
-    studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
-}
-else
-{
-    studiohdr_t_v48 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
-    if(mdlHeader.version == 48)
-    {
-        FSeek(mdlHeader.studiohdr2index);
-        studiohdr2_t mdlSubHeader <bgcolor=cDkBlue>;
-    }
-}
+	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
+ 
+    Vector eyeposition;	// ideal eye position
 
+	Vector illumposition;	// illumination center
+	
+	Vector hull_min;		// ideal movement hull size
+	Vector hull_max;			
+
+	Vector view_bbmin;		// clipping bounding box
+	Vector view_bbmax;		
+ 
+    int flags <read=ReadHeaderFlags(this)>;
+  
+    // highest observed: 250
+    int numbones; // bones
+	int boneindex;
+ 
+    int numbonecontrollers; // bone controllers
+	int bonecontrollerindex;
+ 
+    int numhitboxsets;
+	int hitboxsetindex;
+ 
+    int numlocalanim; // animations/poses
+	int localanimindex; // animation descriptions
+ 
+    int numlocalseq; // sequences
+	int	localseqindex;
+ 
+	int activitylistversion; // initialization flag - have the sequences been indexed?
+	int eventsindexed;
+ 
+    // raw textures
+	int numtextures;
+	int textureindex;
+ 
+    /// raw textures search paths
+	int numcdtextures;
+	int cdtextureindex;
+ 
+    // replaceable textures tables
+	int numskinref;
+	int numskinfamilies;
+	int skinindex;
+ 
+	int numbodyparts;		
+	int bodypartindex;
+ 
+    int numlocalattachments;
+	int localattachmentindex;
+ 
+    int numlocalnodes;
+	int localnodeindex;
+	int localnodenameindex;
+ 
+    int deprecated_numflexdesc;
+	int deprecated_flexdescindex;
+ 
+    int deprecated_numflexcontrollers;
+	int deprecated_flexcontrollerindex;
+ 
+    int deprecated_numflexrules;
+	int deprecated_flexruleindex;
+ 
+    int numikchains;
+	int ikchainindex;
+	
+    int deprecated_nummouths;
+	int deprecated_mouthindex;
+ 
+    int numlocalposeparameters;
+	int localposeparamindex;
+ 
+    int surfacepropindex <read=ReadString(this)>;
+ 
+    int keyvalueindex;
+	int keyvaluesize;
+ 
+    int numlocalikautoplaylocks;
+	int localikautoplaylockindex;
+ 
+ 
+    float mass;
+	int contents <read=ReadContents(this)>;
+ 
+    // external animations, models, etc.
+	int numincludemodels;
+	int includemodelindex;
+    
+	// implementation specific back pointer to virtual data
+	int /* mutable void* */ virtualModel;
+
+	// for demand loaded animation blocks
+	int szanimblocknameindex <read=ReadString(this)>;
+
+	int numanimblocks;
+	int animblockindex;
+
+	int /* mutable void* */ animblockModel;
+
+	int bonetablebynameindex;
+
+	// used by tools only that don't cache, but persist mdl's peer data
+	// engine uses virtualModel to back link to cache pointers
+	int /* void* */ pVertexBase;
+	int /* void* */ pIndexBase;
+    
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+	// this value is used to calculate directional components of lighting 
+	// on static props
+	byte constdirectionallightdot;
+
+	// set during load of mdl data to track *desired* lod configuration (not actual)
+	// the *actual* clamped root lod is found in studiohwdata
+	// this is stored here as a global store to ensure the staged loading matches the rendering
+	byte rootLOD;
+	
+	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+	// to be set as root LOD:
+	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+	byte numAllowedRootLODs;
+
+	byte unused;
+
+	float fadeDistance;
+
+	int deprecated_numflexcontrollerui;
+	int deprecated_flexcontrolleruiindex;
+
+    float flVertAnimFixedPointScale;
+    int surfacepropLookup;	// this index must be cached by the loader, not saved in the file
+    
+	int linearboneindex;
+	
+	int sourceFilenameOffset; // in v52 not every model has these strings, only four bytes when not present.
+};
+
+/*struct studiohdr2_t_v52
+{
+    int numsrcbonetransform;
+	int srcbonetransformindex;
+
+	int	illumpositionattachmentindex;
+
+	float flMaxEyeDeflection; // default to cos(30) if not set
+	
+	int linearboneindex;
+
+	int sznameindex <read=ReadString(startof(mdlSubHeader) + this)>;
+
+	int m_nBoneFlexDriverCount;
+	int m_nBoneFlexDriverIndex;
+    
+    // for static props (and maybe others)
+    // Precomputed Per-Triangle AABB data
+    int m_nPerTriAABBIndex;
+    int m_nPerTriAABBNodeCount;
+    int m_nPerTriAABBLeafCount;
+    int m_nPerTriAABBVertCount;
+
+    // always "" or "Titan"
+    int unkstringindex <read=ReadString(startof(mdlSubHeader) + mdlSubHeader.unkstringindex)>;
+
+	int reserved[39];
+};*/
+
+studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
+
+FSeek(mdlHeader.studiohdr2index);
+studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
 
 // bones
 FSeek(mdlHeader.boneindex);
-if (mdlHeader.version == 52)
-    mstudiobone_t_v52 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
-else if (mdlHeader.version == 49)
-    mstudiobone_t_v49 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
-else
-    mstudiobone_t_v47 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+mstudiobone_t_v52 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int jigglebonecount = 0;
 
@@ -103,7 +247,7 @@ ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bon
 
 
 // animation
-FSeek(mdlHeader.localanimindex);
+/*FSeek(mdlHeader.localanimindex);
 if (mdlHeader.version < 49)
     mstudioanimdesc_t_v48 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 else if(mdlHeader.version == 49)
@@ -570,13 +714,14 @@ if(mdlHeader.numlocalanim)
 
 
 // sequence stuff
-#include "../mdl/mdl_module_sequences.bt"
+#include "../mdl/mdl_module_sequences.bt"*/
 
 // unchanged until v54
 #include "../mdl/mdl_module_nodes.bt"
 
 // models
 #include "../mdl/mdl_module_bodyparts.bt"
+
 
 // flexes
 // depreciated in v52+
@@ -614,8 +759,25 @@ if(mdlHeader.version < 52)
     }
 }
 
+
 // ik
-#include "../mdl/mdl_module_ikchain.bt"
+if(mdlHeader.numikchains)
+{
+    FSeek(mdlHeader.ikchainindex);
+    struct {
+        for(i = 0; i < mdlHeader.numikchains; i++)
+        {
+            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t) * i));
+            struct {
+                mstudioikchain_t ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+                
+                FSeek(startof(ikchain) + ikchain.linkindex);
+                mstudioiklink_t iklinks[ikchain.numlinks] <bgcolor=0x7d3c98>;
+            } chain <read=ReadString(startof(this.ikchain) + this.ikchain.sznameindex)>;
+            
+        }
+    } ikchains;
+}
 
 FSeek(mdlHeader.localikautoplaylockindex);
 mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
@@ -638,8 +800,8 @@ FSeek(mdlHeader.keyvalueindex);
 char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
 
 
-FSeek(mdlSubHeader.srcbonetransformindex);
-mstudiosrcbonetransform_t srcbonetransform[mdlSubHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
+//FSeek(mdlSubHeader.srcbonetransformindex);
+//mstudiosrcbonetransform_t srcbonetransform[mdlSubHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // linear bone table

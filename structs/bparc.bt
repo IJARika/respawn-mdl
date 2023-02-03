@@ -1,0 +1,68 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: 
+//   Authors: 
+//   Version: 
+//   Purpose: 
+//  Category: 
+// File Mask: 
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+struct bpkhdr_t
+{
+    int id; // 'XBAR' (Xbox Archive)
+    int version; // '6', previously '0' (MGS)
+    int fileCount;
+
+    if (version == 6)
+        int unk;
+
+    int chunkSize;
+    int chunkCount;
+
+    if (version == 6)
+    {
+        int dataOffset;
+        int dataSize;
+        int unk1;
+    }
+};
+
+struct bpkfileentry_t_v0
+{
+    int NAME_CRC;
+    char HASH[16];
+    int chunkIndex; // chunk idx?
+    int fileSize; // decompressed size
+    int unk[2];
+    int OFFSET;
+};
+
+struct bpkfileentry_t
+{
+    int unk; // crc/part of hash?
+    int unk1; // hash of the filename?
+    int unk2; // flags?
+    int chunkIndex; // chunk idx?
+    int fileSize; // decompressed size
+    int dataStart; // start of compressed data
+    int dataEnd; // end of compressed data
+};
+
+bpkhdr_t pakhdr <fgcolor=0x5533AA>;
+
+bpkfileentry_t file_entry[pakhdr.fileCount] <fgcolor=0x5588DD>;
+
+int unkidx[pakhdr.fileCount + pakhdr.chunkCount] <fgcolor=0x6DDFF>;
+
+//21472
+
+if (pakhdr.version == 6)
+{
+    FSeek(pakhdr.dataOffset);
+    char data[pakhdr.dataSize] <fgcolor=0x5555DD, hidden=true>;
+}

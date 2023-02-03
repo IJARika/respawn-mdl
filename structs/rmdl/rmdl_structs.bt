@@ -1628,10 +1628,10 @@ string ReadAnimPtrFlagsV54(byte flags)
 // z @ offset + (idx2 * sizeof(mstudioanimvalue_t));
 struct mstudioanim_valueptr_t_v54
 {
-    int offset : 13;
-    int flags : 3 <read=ReadAnimPtrFlagsV54>;
-    int idx1 : 8;
-    int idx2 : 8; 
+    short offset : 13;
+    short flags : 3 <read=ReadAnimPtrFlagsV54>;
+    char axisIdx1;
+    char axisIdx2; 
 };
 
 #define STUDIO_ANIM_ANIMSCALE_54 0x01 // mstudioanim_valueptr_t

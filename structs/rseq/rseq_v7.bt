@@ -81,30 +81,10 @@ for(k = 0; k < numanims; k++)
 
                     FSeek(startof(animdesc[k]) + animdesc[k].sectionindex);
                     mstudioanimsections_t_v53 sectionindexes[sectionlength] <bgcolor=cLtBlue>;
-        
-                    // this is awful and I love it
-                    /*if((blendgroup.blends[k] + sectionindexes[0].animindex) >= (seqdesc.szlabelindex - 1))
-                        nullsection = 1;
-                    else if(numanims > 1 && k < (numanims - 1) && blendgroup.blends[k + 1] < (blendgroup.blends[k] + sizeof(mstudioanimdesc_t_v54) + sizeof(sectionindexes) + (numbones / 2)))
-                        nullsection = 1;
-                    else
-                        nullsection = 0;*/
-
-                    local int nullsections = 0;
-
-                    // respawn really needs to cut this out
-                    if(numanims > 1 && numanims > (k + 1))
-                    {
-                        if((blends[k] + sectionindexes[0].animindex) >= blends[k + 1])
-                        {
-                            nullsections = 1;
-                        }
-                    }
 
                     for(i = 0; i < sectionlength; i++)
                     {
-                        // gotta check here because apparently it can have sections but no data???    /*subtract 1 for potential null terminator*/
-                        if(sectionindexes[i].animindex && (blends[k] + sectionindexes[i].animindex) < (seqdesc.szlabelindex - 1) && !nullsections)
+                        if(sectionindexes[i].animindex && (animdesc[k].flags & STUDIO_ANIM_UNK))
                         {
                             struct {
                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
@@ -125,12 +105,12 @@ for(k = 0; k < numanims; k++)
                                                 if(sectionanimheader.animpos.flags & STUDIO_ANIMPTR_X)
                                                     mstudioanimvalue_t x <fgcolor=cLtGreen>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animpos.idx1 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animpos.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animpos.flags & STUDIO_ANIMPTR_Y)
                                                     mstudioanimvalue_t y <fgcolor=cLtGreen>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animpos.idx2 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animpos.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animpos.flags & STUDIO_ANIMPTR_Z)
                                                     mstudioanimvalue_t z <fgcolor=cLtGreen>;
@@ -148,12 +128,12 @@ for(k = 0; k < numanims; k++)
                                                 if(sectionanimheader.animrot.flags & STUDIO_ANIMPTR_X)
                                                     mstudioanimvalue_t x <fgcolor=cLtRed>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animrot.idx1 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animrot.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animrot.flags & STUDIO_ANIMPTR_Y)
                                                     mstudioanimvalue_t y <fgcolor=cLtRed>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animrot.idx2 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animrot.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animrot.flags & STUDIO_ANIMPTR_Z)
                                                     mstudioanimvalue_t z <fgcolor=cLtRed>;
@@ -170,12 +150,12 @@ for(k = 0; k < numanims; k++)
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_X)
                                                     mstudioanimvalue_t x <fgcolor=cLtYellow>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animscale.idx1 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animscale.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_Y)
                                                     mstudioanimvalue_t y <fgcolor=cLtYellow>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animscale.idx2 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animscale.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_Z)
                                                     mstudioanimvalue_t z <fgcolor=cLtYellow>;
@@ -212,12 +192,12 @@ for(k = 0; k < numanims; k++)
                                     if(animheader.animpos.flags & STUDIO_ANIMPTR_X)
                                         mstudioanimvalue_t x <fgcolor=cLtGreen>;
 
-                                    FSeek(valueOffset + (animheader.animpos.idx1 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animpos.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animpos.flags & STUDIO_ANIMPTR_Y)
                                         mstudioanimvalue_t y <fgcolor=cLtGreen>;
 
-                                    FSeek(valueOffset + (animheader.animpos.idx2 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animpos.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animpos.flags & STUDIO_ANIMPTR_Z)
                                         mstudioanimvalue_t z <fgcolor=cLtGreen>;
@@ -235,12 +215,12 @@ for(k = 0; k < numanims; k++)
                                     if(animheader.animrot.flags & STUDIO_ANIMPTR_X)
                                         mstudioanimvalue_t x <fgcolor=cLtRed>;
 
-                                    FSeek(valueOffset + (animheader.animrot.idx1 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animrot.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animrot.flags & STUDIO_ANIMPTR_Y)
                                         mstudioanimvalue_t y <fgcolor=cLtRed>;
 
-                                    FSeek(valueOffset + (animheader.animrot.idx2 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animrot.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animrot.flags & STUDIO_ANIMPTR_Z)
                                         mstudioanimvalue_t z <fgcolor=cLtRed>;
@@ -257,12 +237,12 @@ for(k = 0; k < numanims; k++)
                                     if(animheader.animscale.flags & STUDIO_ANIMPTR_X)
                                         mstudioanimvalue_t x <fgcolor=cLtYellow>;
 
-                                    FSeek(valueOffset + (animheader.animscale.idx1 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animscale.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animscale.flags & STUDIO_ANIMPTR_Y)
                                         mstudioanimvalue_t y <fgcolor=cLtYellow>;
 
-                                    FSeek(valueOffset + (animheader.animscale.idx2 * sizeof(mstudioanimvalue_t)));
+                                    FSeek(valueOffset + (animheader.animscale.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                     if(animheader.animscale.flags & STUDIO_ANIMPTR_Z)
                                         mstudioanimvalue_t z <fgcolor=cLtYellow>;
