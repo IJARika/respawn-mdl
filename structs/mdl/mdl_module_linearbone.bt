@@ -1,7 +1,7 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: File: mdl
+//      File: mdl
 //   Authors: Rika
 //   Version: 48/49/52/53
 // Increment: All
@@ -16,18 +16,17 @@
 /*LINEARBONE MODULE*/
 
 
-
 // do linear bone table
-if (mdlHeader.linearboneindex)
+if (hdr.linearboneindex)
 {
-    FSeek(mdlHeader.linearboneindex);
+    FSeek(hdr.linearboneindex);
     mstudiolinearbone_t linearbone <bgcolor=cGreen>;
     
     struct {
         int bone_flags[linearbone.numbones] <read=ReadBoneFlags(this)>;
         int bone_parents[linearbone.numbones] <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>;
         
-        Vector3 bone_pos[linearbone.numbones];
+        Vector bone_pos[linearbone.numbones];
         Quaternion bone_quat[linearbone.numbones];
         RadianEuler bone_rot[linearbone.numbones];
         
@@ -35,8 +34,8 @@ if (mdlHeader.linearboneindex)
         
         // only check this because all others should (as far as I know) be filled out no matter what version (version < 53)
         if(linearbone.posscaleindex)
-            Vector3 bone_posscale[linearbone.numbones];
-        Vector3 bone_rotscale[linearbone.numbones];
+            Vector bone_posscale[linearbone.numbones];
+        Vector bone_rotscale[linearbone.numbones];
                 
         Quaternion bone_qAlignment[linearbone.numbones];
     } linearbonedata <bgcolor=cLtGreen>;

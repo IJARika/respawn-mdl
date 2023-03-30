@@ -18,42 +18,42 @@
 
 local int64 stringtable_size; // size for string table
 
-if(mdlHeader.sznameindex > 16)
+if(hdr.sznameindex > 16)
 {
     // seek to string table (this is the best way to do it)
-    FSeek(mdlHeader.sznameindex);
+    FSeek(hdr.sznameindex);
     
     // check if either of these is null
-    if(mdlHeader.unkindex3 > 0 || mdlHeader.bvh4index > 0)
+    if(hdr.unkindex3 > 0 || hdr.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
-        if(mdlHeader.bvh4index > 0)
-            stringtable_size = mdlHeader.bvh4index - (mdlHeader.sznameindex);
+        if(hdr.bvh4index > 0)
+            stringtable_size = hdr.bvh4index - (hdr.sznameindex);
         else
-            stringtable_size = mdlHeader.unkindex3 - (mdlHeader.sznameindex);
+            stringtable_size = hdr.unkindex3 - (hdr.sznameindex);
     }
     // if null use length, this normally only gets used in rrigs and potentially viewmodels
     else
-       stringtable_size = mdlHeader.length - (mdlHeader.sznameindex);
+       stringtable_size = hdr.length - (hdr.sznameindex);
 }
 
 else
 {
     // seek to string table (this is the best way to do it)
-    FSeek(mdlHeader.surfacepropindex);
+    FSeek(hdr.surfacepropindex);
     
     // check if either of these is null
-    if(mdlHeader.unkindex3 > 0 || mdlHeader.bvh4index > 0)
+    if(hdr.unkindex3 > 0 || hdr.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
-        if(mdlHeader.bvh4index > 0)
-            stringtable_size = mdlHeader.bvh4index - mdlHeader.surfacepropindex;
+        if(hdr.bvh4index > 0)
+            stringtable_size = hdr.bvh4index - hdr.surfacepropindex;
         else
-            stringtable_size = mdlHeader.unkindex3 - mdlHeader.surfacepropindex;
+            stringtable_size = hdr.unkindex3 - hdr.surfacepropindex;
     }
     // if null use length, this normally only gets used in rrigs and potentially viewmodels
     else
-        stringtable_size = mdlHeader.length - mdlHeader.surfacepropindex;
+        stringtable_size = hdr.length - hdr.surfacepropindex;
 }
 
 char stringtable[stringtable_size] <fgcolor=cLtRed>;

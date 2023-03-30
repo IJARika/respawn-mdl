@@ -1,0 +1,412 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: source_dmx.bt
+//   Authors: Rika
+//   Version: 0.1
+//   Purpose: Source Engine Data Model eXchange files
+//  Category: Model
+// File Mask: *.dmx,*.pcf
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+#include "../source_math.bt"
+
+struct DmxHeader_t
+{
+    string version; // real DmxHeader_t
+};
+
+struct StringDict_t
+{
+    int numStrings;
+
+    struct {
+        local int i;
+        for(i = 0; i < numStrings; i++)
+        {
+            struct {
+                string entry;
+            } stringEntry <read=Str(this.entry)>;
+        }
+    }  stringEntries/* <read=Str("%i string entries", numStrings)>*/;
+};
+
+string ReadStringDict(int idx)
+{
+    return stringdict.stringEntries.stringEntry[idx].entry;
+}
+
+enum <char> DmAttributeType_t
+{
+	AT_UNKNOWN = 0,
+
+	AT_FIRST_VALUE_TYPE = 1,
+
+	AT_ELEMENT = AT_FIRST_VALUE_TYPE,
+	AT_INT = 2,
+	AT_FLOAT = 3,
+	AT_BOOL = 4,
+	AT_STRING = 5,
+	AT_VOID = 6,
+	AT_TIME = 7,
+	AT_COLOR = 8, //rgba
+	AT_VECTOR2 = 9,
+	AT_VECTOR3 = 10,
+	AT_VECTOR4 = 11,
+	AT_QANGLE = 12,
+	AT_QUATERNION = 13,
+	AT_VMATRIX = 14,
+
+	AT_FIRST_ARRAY_TYPE = 15,
+
+	AT_ELEMENT_ARRAY = AT_FIRST_ARRAY_TYPE,
+	AT_INT_ARRAY = 16,
+	AT_FLOAT_ARRAY = 17,
+	AT_BOOL_ARRAY = 18,
+	AT_STRING_ARRAY = 19,
+	AT_VOID_ARRAY = 20,
+	AT_TIME_ARRAY = 21,
+	AT_COLOR_ARRAY = 22,
+	AT_VECTOR2_ARRAY = 23,
+	AT_VECTOR3_ARRAY = 24,
+	AT_VECTOR4_ARRAY = 25,
+	AT_QANGLE_ARRAY = 26,
+	AT_QUATERNION_ARRAY = 27,
+	AT_VMATRIX_ARRAY = 28,
+	AT_TYPE_COUNT = 29,
+
+	AT_TYPE_INVALID = 0xff // whar
+};
+
+string ReadAttributeType(char type)
+{
+    string out = "";
+
+    switch (type)
+    {
+        case AT_UNKNOWN:
+            out = "AT_UNKNOWN";
+            break;
+        case AT_ELEMENT:
+            out = "AT_ELEMENT"; // AT_FIRST_VALUE_TYPE
+            break;
+        case AT_INT:
+            out = "AT_INT";
+            break;
+        case AT_FLOAT:
+            out = "AT_FLOAT";
+            break;
+        case AT_BOOL:
+            out = "AT_BOOL";
+            break;
+        case AT_STRING:
+            out = "AT_STRING";
+            break;
+        case AT_VOID:
+            out = "AT_VOID";
+            break;
+        case AT_TIME:
+            out = "AT_TIME";
+            break;
+        case AT_COLOR:
+            out = "AT_COLOR";
+            break;
+        case AT_VECTOR2:
+            out = "AT_VECTOR2";
+            break;
+        case AT_VECTOR3:
+            out = "AT_VECTOR3";
+            break;
+        case AT_VECTOR4:
+            out = "AT_VECTOR4";
+            break;
+        case AT_QANGLE:
+            out = "AT_QANGLE";
+            break;
+        case AT_QUATERNION:
+            out = "AT_QUATERNION";
+            break;
+        case AT_VMATRIX:
+            out = "AT_VMATRIX";
+            break;
+        case AT_ELEMENT_ARRAY:
+            out = "AT_ELEMENT_ARRAY";
+            break;
+        case AT_INT_ARRAY:
+            out = "AT_INT_ARRAY";
+            break;
+        case AT_FLOAT_ARRAY:
+            out = "AT_FLOAT_ARRAY";
+            break;
+        case AT_BOOL_ARRAY:
+            out = "AT_BOOL_ARRAY";
+            break;
+        case AT_STRING_ARRAY:
+            out = "AT_STRING_ARRAY";
+            break;
+        case AT_VOID_ARRAY:
+            out = "AT_VOID_ARRAY";
+            break;
+        case AT_TIME_ARRAY:
+            out = "AT_TIME_ARRAY";
+            break;
+        case AT_COLOR_ARRAY:
+            out = "AT_COLOR_ARRAY";
+            break;
+        case AT_VECTOR2_ARRAY:
+            out = "AT_VECTOR2_ARRAY";
+            break;
+        case AT_VECTOR3_ARRAY:
+            out = "AT_VECTOR3_ARRAY";
+            break;
+        case AT_VECTOR4_ARRAY:
+            out = "AT_VECTOR4_ARRAY";
+            break;
+        case AT_QANGLE_ARRAY:
+            out = "AT_QANGLE_ARRAY";
+            break;
+        case AT_QUATERNION_ARRAY:
+            out = "AT_QUATERNION_ARRAY";
+            break;
+        case AT_VMATRIX_ARRAY:
+            out = "AT_VMATRIX_ARRAY";
+            break;
+        case AT_TYPE_COUNT:
+            out = "AT_TYPE_COUNT";
+            break;
+        default:
+            out = "AT_TYPE_INVALID";
+            break;       
+    }
+
+    return out;
+}
+
+void CreateAttributeValue(char type)
+{
+    switch (type)
+    {
+        case AT_UNKNOWN:
+            break;
+        case AT_ELEMENT:
+            int value <read=ReadStringDict(elementlist.element_group[this].element.name)>; // whar, element idx?
+            // size of 0, do nothing
+            break;
+        case AT_INT:
+            int value;
+            break;
+        case AT_FLOAT:
+            float value;
+            break;
+        case AT_BOOL:
+            char value; // bool is size of char
+            break;
+        case AT_STRING:
+            int value <read=ReadStringDict(this)>;
+            break;
+        case AT_VOID:
+            int value;
+            break;
+        case AT_TIME:
+            int value; // DmeTime_t
+            break;
+        case AT_COLOR:
+            VertexColor_t value; // should be "color" but the struct is the same
+            break;
+        case AT_VECTOR2:
+            Vector2 value;
+            break;
+        case AT_VECTOR3:
+            Vector value;
+            break;
+        case AT_VECTOR4:
+            Vector4 value;
+            break;
+        case AT_QANGLE:
+            QAngle value;
+            break;
+        case AT_QUATERNION:
+            Quaternion value;
+            break;
+        case AT_VMATRIX:
+            char value; // VMatrix, need this struct
+            break;
+        case AT_ELEMENT_ARRAY:
+            int numValues;
+            int values[numValues] <read=ReadStringDict(elementlist.element_group[this].element.name)>;
+            break;
+        case AT_INT_ARRAY:
+            int numValues;
+            int values[numValues];
+            break;
+        case AT_FLOAT_ARRAY:
+            int numValues;
+            float values[numValues];
+            break;
+        case AT_BOOL_ARRAY:
+            int numValues;
+            int values[numValues];
+            break;
+        case AT_STRING_ARRAY:
+            int numValues;
+            struct { string s; } value[numValues] <optimize=false, read=this.s>;
+            break;
+        case AT_VOID_ARRAY:
+            int numValues;
+            break;
+        case AT_TIME_ARRAY:
+            int numValues;
+            int values[numValues]; // DmeTime_t
+            break;
+        case AT_COLOR_ARRAY:
+            int numValues;
+            VertexColor_t values[numValues];
+            break;
+        case AT_VECTOR2_ARRAY:
+            int numValues;
+            Vector2 values[numValues];
+            break;
+        case AT_VECTOR3_ARRAY:
+            int numValues;
+            Vector values[numValues];
+            break;
+        case AT_VECTOR4_ARRAY:
+            int numValues;
+            Vector4 values[numValues];
+            break;
+        case AT_QANGLE_ARRAY:
+            int numValues;
+            QAngle values[numValues];
+            break;
+        case AT_QUATERNION_ARRAY:
+            int numValues;
+            Quaternion values[numValues];
+            break;
+        case AT_VMATRIX_ARRAY:
+            int numValues;
+            char values[numValues]; // VMatrix, need this struct
+            break;
+        case AT_TYPE_COUNT:
+            break;
+        default:
+            break;       
+    }
+}
+
+struct DmxAttribute_t
+{
+    int name <read=ReadStringDict(this)>; // string dictionary index
+	char type <read=ReadAttributeType(this)>; // DmAttributeType_t
+	//int value; // see below
+    CreateAttributeValue(type);
+};
+
+struct AttributeList_t
+{
+    int numAttributes;
+
+    DmxAttribute_t attribute[numAttributes] <optimize=false, read=Str("Name: %s; Type: %s;", ReadStringDict(this.name), ReadAttributeType(this.type))>;   
+};
+
+// DmeModel is the skeleton/model/animation (tldr base)
+// DmeJoint is a bone
+// DmeTransform is a rotation/position for a bone(?), if so scale will be added.
+
+struct DmxElement_t
+{
+	int type <read=ReadStringDict(this)>; // string dictionary index
+	int name <read=ReadStringDict(this)>; // string dictionary index
+	GUID guid; // little-endian, this is GUID/UUID type I think
+};
+
+struct ElementList_t
+{
+    int numElements;
+
+    //i = CreateDMXElement(i, pElement, pAttribute);
+
+    for(i = 0; i < numElements; i++)
+    {
+        FSeek(pElement + (sizeof(DmxElement_t) * i));
+        struct {
+            DmxElement_t element;
+
+            FSeek(pAttribute);
+            AttributeList_t attributes <fgcolor=0x779922, read=Str("%i attributes", this.numAttributes)>;
+
+            pAttribute = FTell();
+        } element_group<read=Str("Type: %s; Name: %s;", ReadStringDict(this.element.type), ReadStringDict(this.element.name))>;
+    }
+};
+
+void CreateElementTree(int pElement, int rootElementIdx)
+{
+    FSeek(pElement + (sizeof(DmxElement_t) * rootElementIdx));
+    struct {
+        local int elementIdx = (FTell() - pElement) / sizeof(DmxElement_t);
+        
+        //FSeek(pElement + (sizeof(DmxElement_t) * elementIdx));
+        DmxElement_t element <fgcolor=0x77cc22, read=Str("Type: %s; Name: %s;", ReadStringDict(this.type), ReadStringDict(this.name))>;
+
+        FSeek(startof(attributelist_group.attributelist[elementIdx]));
+        AttributeList_t attributes <fgcolor=0x779922, read=Str("%i attributes", this.numAttributes)>;
+
+        local int attributeIdx = 0;
+        struct {
+            local int arrayIdx = 0;
+            for(attributeIdx = 0; attributeIdx < attributes.numAttributes; attributeIdx++)
+            {
+                switch(attributes.attribute[attributeIdx].type)
+                {
+                case AT_ELEMENT:
+                    if(attributes.attribute[attributeIdx].value < 0)
+                        break;
+
+                    CreateElementTree(pElement, attributes.attribute[attributeIdx].value);
+                    break;
+                case AT_ELEMENT_ARRAY:
+                    for(arrayIdx = 0; arrayIdx < attributes.attribute[attributeIdx].numValues; arrayIdx++)
+                    {
+                        if(attributes.attribute[attributeIdx].values[arrayIdx] < 0)
+                            break;
+                        CreateElementTree(pElement, attributes.attribute[attributeIdx].values[arrayIdx]);
+                    }
+                    break;
+                default:
+                    break;
+                }
+            }
+        } children;
+    } element_branch <read=Str("Type: %s; Name: %s;", ReadStringDict(this.element.type), ReadStringDict(this.element.name))>;
+    FSeek(FileSize());
+}
+
+struct ElementTree_t (int pElement)
+{
+    CreateElementTree(pElement, 0);
+};
+
+DmxHeader_t dmxhdr <fgcolor=0xccef33>;
+StringDict_t stringdict <fgcolor=0x44ef66>;
+
+local int pElement = FTell() + 4;
+local int pAttribute = pElement + (sizeof(DmxElement_t) * ReadInt(FTell()));
+local int pBaseAttribute = pAttribute;
+local int i;
+
+// linear data
+ElementList_t elementlist;
+
+FSeek(pBaseAttribute);
+struct {
+    for(i = 0; i < elementlist.numElements; i++)
+    {
+        AttributeList_t attributelist;
+    }
+} attributelist_group;
+
+// actual tree structure
+FSeek(pElement);
+ElementTree_t elementtree(pElement);

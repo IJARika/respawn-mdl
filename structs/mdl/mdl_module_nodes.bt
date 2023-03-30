@@ -18,11 +18,11 @@
 
 // setup nodes, not fully understood
 // nodes have names
-if(mdlHeader.numlocalnodes > 0)
+if(hdr.numlocalnodes > 0)
 {
-    FSeek(mdlHeader.localnodenameindex);
-    int localnodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this)>;
+    FSeek(hdr.localnodenameindex);
+    int localnodename[hdr.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(hdr) + this)>;
 
-    FSeek(mdlHeader.localnodeindex);
-    mstudionodedata nodedata[mdlHeader.numlocalnodes] <bgcolor=cLtYellow>;
+    FSeek(hdr.localnodeindex);
+    mstudionodedata nodedata[hdr.numlocalnodes] <bgcolor=cLtYellow>;
 }

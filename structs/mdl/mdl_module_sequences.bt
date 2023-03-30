@@ -15,63 +15,70 @@
 /*SEQUENCE MODULE*/
 
 
-FSeek(mdlHeader.localseqindex);
-if(mdlHeader.version == 53)
-    mstudioseqdesc_t_v53 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-else if(mdlHeader.version == 52)
-    mstudioseqdesc_t_v52 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-else if(mdlHeader.version == 49)
-    mstudioseqdesc_t_v49 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-else
-    mstudioseqdesc_t_v48 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
-
-if(mdlHeader.numlocalseq)
+if(hdr.numlocalseq)
 {
     struct {
-        for(i = 0; i < mdlHeader.numlocalseq; i++)
+        for(i = 0; i < hdr.numlocalseq; i++)
         {
+            FSeek(hdr.localseqindex + ((hdr.version == 53 ? sizeof(mstudioseqdesc_t_v53) : sizeof(mstudioseqdesc_t_v49)) * i));
             struct {
+                switch(hdr.version)
+                {
+                    case 53:
+                        mstudioseqdesc_t_v53 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                        break;
+                    case 52:
+                        mstudioseqdesc_t_v52 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                        break;
+                    case 49:
+                        mstudioseqdesc_t_v49 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                        break;
+                    default:
+                        mstudioseqdesc_t_v48 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                        break;
+                    
+                }
                 local int seqidx = i;
 
-                FSeek(startof(seqdesc[i]) + seqdesc[i].posekeyindex);
-                if(seqdesc[i].posekeyindex)
-                    float posekey[seqdesc[i].groupsize[0] + seqdesc[i].groupsize[1]] <bgcolor=0x55ee00>;
+                FSeek(startof(seqdesc) + seqdesc.posekeyindex);
+                if(seqdesc.posekeyindex)
+                    float posekey[seqdesc.groupsize[0] + seqdesc.groupsize[1]] <bgcolor=0x55ee00>;
                 
-                FSeek(startof(seqdesc[i]) + seqdesc[i].eventindex);
-                mstudioevent_t seqevent[seqdesc[i].numevents] <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
+                FSeek(startof(seqdesc) + seqdesc.eventindex);
+                mstudioevent_t seqevent[seqdesc.numevents] <bgcolor=0x21fe7a, read=ReadString(startof(this) + this.szeventindex)>;
                 
-                FSeek(startof(seqdesc[i]) + seqdesc[i].autolayerindex);
-                mstudioautolayer_t autolayers[seqdesc[i].numautolayers] <bgcolor=0x226600>;
+                FSeek(startof(seqdesc) + seqdesc.autolayerindex);
+                mstudioautolayer_t autolayers[seqdesc.numautolayers] <bgcolor=0x226600>;
             
-                FSeek(startof(seqdesc[i]) + seqdesc[i].weightlistindex);
-                float weightlist[mdlHeader.numbones] <bgcolor=0xe1f27a>;
+                FSeek(startof(seqdesc) + seqdesc.weightlistindex);
+                float weightlist[hdr.numbones] <bgcolor=0xe1f27a>;
             
-                FSeek(startof(seqdesc[i]) + seqdesc[i].iklockindex);
-                mstudioiklock_t iklock[seqdesc[i].numiklocks] <bgcolor=0x88CC22>;
+                FSeek(startof(seqdesc) + seqdesc.iklockindex);
+                mstudioiklock_t iklock[seqdesc.numiklocks] <bgcolor=0x88CC22>;
 
-                FSeek(startof(seqdesc[i]) + seqdesc[i].animindexindex);
-                short blendgroup[seqdesc[i].groupsize[0] * seqdesc[i].groupsize[1]] <read=ReadString(startof(animdesc[this]) + animdesc[this].sznameindex), bgcolor=0xffff00>;
+                FSeek(startof(seqdesc) + seqdesc.animindexindex);
+                short blendgroup[seqdesc.groupsize[0] * seqdesc.groupsize[1]] <read=ReadString(startof(animdesc[this]) + animdesc[this].sznameindex), bgcolor=0xffff00>;
 
-                if(mdlHeader.version > 48)
+                if(hdr.version > 48)
                 {
-                    FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex);
-                    if(mdlHeader.version >= 52)
+                    FSeek(startof(seqdesc) + seqdesc.activitymodifierindex);
+                    if(hdr.version >= 52)
                     {
-                        for(j = 0; j < seqdesc[i].numactivitymodifiers; j++)
+                        for(j = 0; j < seqdesc.numactivitymodifiers; j++)
                         {
                             mstudioactivitymodifier_t_v52 activitymodifier <bgcolor=0x119900, read=Str("%s : %i", ReadString(startof(this) + this.sznameindex), this.negate)>;
-                            FSeek(startof(seqdesc[i]) + seqdesc[i].activitymodifierindex + ((sizeof(activitymodifier.sznameindex) * 2) * (j + 1)));
+                            FSeek(startof(seqdesc) + seqdesc.activitymodifierindex + ((sizeof(activitymodifier.sznameindex) * 2) * (j + 1)));
                         }
                     }
                     else
                     {
-                        mstudioactivitymodifier_t activitymodifier[seqdesc[i].numactivitymodifiers] <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
+                        mstudioactivitymodifier_t activitymodifier[seqdesc.numactivitymodifiers] <bgcolor=0x119900, read=ReadString(startof(this) + this.sznameindex)>;
                     }
                 }
-            } sequence <read=ReadString(startof(seqdesc[seqidx]) + seqdesc[seqidx].szlabelindex)>;
 
-            if(mdlHeader.version >= 52)
-                Assert(seqdesc[i].ikResetMask == 0 || seqdesc[i].ikResetMask == 3, "the funny");
+                if(hdr.version >= 52)
+                    Assert(seqdesc.ikResetMask == 0 || seqdesc.ikResetMask == 3, "the funny");
+            } seqdesc <read=ReadString(startof(seqdesc) + seqdesc.szlabelindex)>;
         }
-    } seq_data;
+    } seqdescs <read=Str("%i sequences", hdr.numlocalseq)>;
 }

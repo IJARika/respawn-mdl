@@ -22,14 +22,14 @@ struct Vector2
     float y;
 };
 
-struct Vector3
+struct Vector
 {
     float x;
     float y;
     float z;
 };
 
-typedef Vector3 Vector;
+typedef Vector QAngle;
 
 struct Vector4
 {

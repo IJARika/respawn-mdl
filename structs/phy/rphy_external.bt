@@ -74,8 +74,8 @@ struct surfaceheader_t
 
     // differs slightly from model but should be the mostly same assuming it is one solid.
     // this is PER SOLID so on multi-solid phys this will be smaller than the models
-    Vector3 bbmin;
-    Vector3 bbmax;
+    Vector bbmin;
+    Vector bbmax;
 
     int unk2[2];
 };
@@ -99,7 +99,7 @@ struct trianglefaceheader_t
 
 struct phyvertex_t
 {
-    Vector3 pos; // relative to bone
+    Vector pos; // relative to bone
     int unk;
 };
 
@@ -108,7 +108,7 @@ struct phynode_t
     int rightnodeindex;
     int convexindex;
 
-    Vector3 center;
+    Vector center;
     float radius;
 
     int bboxsize; // volume?
@@ -129,7 +129,7 @@ for(i = 0; i < header.numsolids; i++)
         trianglefaceheader_t mesh <bgcolor=cBlue>;
 
         FSeek(startof(subheader) + mesh.vertoffset);
-        Vector3 vert[mesh.numverts] <bgcolor=cDkBlue, fgcolor=cLtYellow>;
+        Vector vert[mesh.numverts] <bgcolor=cDkBlue, fgcolor=cLtYellow>;
 
         FSeek(startof(subheader) + mesh.faceoffset);
         struct {

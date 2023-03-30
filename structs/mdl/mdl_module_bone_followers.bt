@@ -13,11 +13,11 @@
 //------------------------------------------------
 
 
-/*UNK3 MODULE*/
+/*BONE FOLLOWERS MODULE*/
 
 
-if(mdlHeader.unkcount3)
+if(hdr.numbonefollowers)
 {
-    FSeek(mdlHeader.unkindex3);
-    int unk3[mdlHeader.unkcount3] <bgcolor=cLtYellow>;
+    FSeek(hdr.bonefollowerindex);
+    int bone_follower[hdr.numbonefollowers] <bgcolor=cLtYellow, read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 }

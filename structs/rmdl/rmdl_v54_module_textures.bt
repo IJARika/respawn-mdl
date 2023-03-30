@@ -17,37 +17,37 @@
 
 
 // do textures
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t_v54 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.textureindex);
+mstudiotexture_t_v54 textures[hdr.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 // do material types if they exist
-if(mdlHeader.materialtypesindex > 0)
+if(hdr.materialtypesindex > 0)
 {
-    FSeek(mdlHeader.materialtypesindex);
-    MaterialShaderType_t material_types[mdlHeader.numtextures] <bgcolor=cDkGray>;
+    FSeek(hdr.materialtypesindex);
+    MaterialShaderType_t material_types[hdr.numtextures] <bgcolor=cDkGray>;
 }
 
 // do cdmaterials
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
+FSeek(hdr.cdtextureindex);
+mstudiotexturedir_t cdmaterials[hdr.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
 
 // do skingroups
-FSeek(mdlHeader.skinindex);
-if(mdlHeader.numskinfamilies)
+FSeek(hdr.skinindex);
+if(hdr.numskinfamilies)
 {
     struct {
-        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
-    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+        short texture[hdr.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[hdr.numskinfamilies] <bgcolor=cDkGreen>;
 }
 
-if(mdlHeader.numskinfamilies > 0)
+if(hdr.numskinfamilies > 0)
 {
     //pading because sometimes there's an odd amount of textures per skin
     char skin_padding[sizeof(skingroup) % 4];
 }
 
 // do skingroup names if they exist
-if(mdlHeader.numskinfamilies > 1)
+if(hdr.numskinfamilies > 1)
 {
-    int skingroupnames[mdlHeader.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
+    int skingroupnames[hdr.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
 }

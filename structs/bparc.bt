@@ -53,6 +53,7 @@ struct bpkfileentry_t
     int dataEnd; // end of compressed data
 };
 
+BigEndian();
 bpkhdr_t pakhdr <fgcolor=0x5533AA>;
 
 bpkfileentry_t file_entry[pakhdr.fileCount] <fgcolor=0x5588DD>;

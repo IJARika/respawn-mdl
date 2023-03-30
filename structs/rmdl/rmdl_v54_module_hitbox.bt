@@ -17,13 +17,13 @@
 
 
 // do hitboxsets
-FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets]  <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.hitboxsetindex);
+mstudiohitboxset_t hboxset[hdr.numhitboxsets]  <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
 
 // have to do this because some things actually do have more than one hitboxset.
 local int bboxCount = 0;
 
-for (i = 0; i < mdlHeader.numhitboxsets; ++i)
+for (i = 0; i < hdr.numhitboxsets; ++i)
 {
    bboxCount += hboxset[i].numhitboxes;
 }

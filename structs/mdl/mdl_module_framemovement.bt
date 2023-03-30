@@ -1,0 +1,36 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl
+//   Authors: Rika
+//   Version: 0.1
+// Increment: All
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*FRAMEMOVEMENT MODULE*/
+
+
+if(hdr.version >= 52 && animdesc.framemovementindex)
+{
+    FSeek(startof(animdesc) + animdesc.framemovementindex);
+    struct {
+        mstudioframemovement_t framemovement <bgcolor=cLtGreen>;
+
+        for(g = 0; g < 4; g++)
+        {
+            if(framemovement.offset[g])
+            {
+                FSeek(startof(framemovement) + framemovement.offset[g]);
+                struct {
+                    GenerateAnimValues(FTell(), animdesc.numframes);
+                } animvaluetrack;
+            }
+        }
+    } framemovement;
+}

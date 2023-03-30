@@ -205,7 +205,7 @@ struct studiohdr_t_v54
     int m_nPerTriAABBVertCount;
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
 	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
 	// the indexes are added to the offset in the rpak mdl_ header.
@@ -224,9 +224,10 @@ struct studiohdr_t_v54
     int unkmemberindex1;
     int numunkmember1;
 
-    // only seen on '_animated' suffixed models so far
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    int numbonefollowers; // numBoneFollowers
+    int bonefollowerindex;
 
     // BVH4 size (?)
     Vector mins;
@@ -387,7 +388,7 @@ struct studiohdr_t_v54_v121
     int procbonemaskindex;
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -402,9 +403,10 @@ struct studiohdr_t_v54_v121
 	int vvcsize;
 	int vphysize;
 
-    // only seen on '_animated' suffixed models so far
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    int numbonefollowers; // numBoneFollowers
+    int bonefollowerindex;
 
     // BVH4 size (?)
     Vector mins;
@@ -564,7 +566,7 @@ struct studiohdr_t_v54_v122
     int procbonemaskindex;
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -579,9 +581,10 @@ struct studiohdr_t_v54_v122
 	int vvcsize;
 	int vphysize;
 
-    // only seen on '_animated' suffixed models so far
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    int numbonefollowers; // numBoneFollowers
+    int bonefollowerindex;
 
     // BVH4 size (?)
     Vector mins;
@@ -741,7 +744,7 @@ struct studiohdr_t_v54_v13
     int procbonemaskindex;
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -756,9 +759,10 @@ struct studiohdr_t_v54_v13
 	int vvcsize;
 	int vphysize;
 
-    // only seen on '_animated' suffixed models so far
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    int numbonefollowers; // numBoneFollowers
+    int bonefollowerindex;
 
     // BVH4 size (?)
     Vector mins;
@@ -922,7 +926,7 @@ struct studiohdr_t_v54_v14
     int procbonemaskindex;
 
 	// always "" or "Titan"
-    int unkstringindex <read=ReadString(mdlHeader.unkstringindex)>;
+    int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
 	// the indexes are added to the offset in the rpak mdl_ header.
 	// vphy isn't vphy, looks like a heavily modified vphy.
@@ -937,9 +941,10 @@ struct studiohdr_t_v54_v14
 	int vvcsize;
 	int vphysize;
 
-    // only seen on '_animated' suffixed models so far
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    int numbonefollowers; // numBoneFollowers
+    int bonefollowerindex;
 
     // BVH4 size (?)
     Vector mins;
@@ -1059,12 +1064,14 @@ struct studiohdr_t_v16
     unsigned short linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	short numprocbonesunk;
-	unsigned short procbonearrayindex;	
-    unsigned short procbonemaskindex;
+	unsigned short numprocbones;
+    unsigned short procbonetableindex;
+    unsigned short linearprocboneindex;
 
-    short unkcount3; // same as v54
-    unsigned short unkindex3; // same as v54
+    // mostly seen on '_animated' suffixed models
+    // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+    short numbonefollowers; // numBoneFollowers
+    unsigned short bonefollowerindex;
 
     unsigned short bvh4index; // same as v54
 
@@ -1332,7 +1339,7 @@ struct mstudiolinearbone_t_v16
 // bone remaps
 struct mstudioboneremaptable_t
 {
-    for(i = 0; i < mdlHeader.numboneremaps; i++)
+    for(i = 0; i < hdr.numboneremaps; i++)
         ubyte bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
 };
 
@@ -1449,7 +1456,7 @@ struct mstudioanimdesc_t_v54_v121
 	int ikruleindex; // non-zero when IK data is stored in the mdl
 
 	int sectionindex;
-    int unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
+    int sectionstaticframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
     int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
     int unk1[4]; // is this even real?
@@ -1487,7 +1494,7 @@ struct mstudioanimdesc_t_v16
     short unk1[5];
 
 	short sectionindex;
-    short unk; // what, obviously section related as it's wedged between sectionindex and sectiom frames
+    short sectionstaticframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
     short sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
@@ -1538,14 +1545,14 @@ struct boneflagarray_t
 {
 
     BitfieldDisablePadding();
-    animflagarray_t_v54 boneflag[mdlHeader.numbones] <bgcolor=0xaa8822, optimize=false>;
+    animflagarray_t_v54 boneflag[hdr.numbones] <bgcolor=0xaa8822, optimize=false>;
     BitfieldEnablePadding();
     
-    if(mdlHeader.numbones % 4)
-        byte padd[(4 - (mdlHeader.numbones % 4)) / 2] <bgcolor=0xaaaa22>;
+    if(hdr.numbones % 4)
+        byte padd[(4 - (hdr.numbones % 4)) / 2] <bgcolor=0xaaaa22>;
 };
 
-// for rseq templates because no mdlHeader
+// for rseq templates because no hdr
 struct boneflagarray_t_loose
 {
     BitfieldDisablePadding();
@@ -1630,8 +1637,8 @@ struct mstudioanim_valueptr_t_v54
 {
     short offset : 13;
     short flags : 3 <read=ReadAnimPtrFlagsV54>;
-    char axisIdx1;
-    char axisIdx2; 
+    unsigned char axisIdx1; // these two are definitely unsigned
+    unsigned char axisIdx2; 
 };
 
 #define STUDIO_ANIM_ANIMSCALE_54 0x01 // mstudioanim_valueptr_t

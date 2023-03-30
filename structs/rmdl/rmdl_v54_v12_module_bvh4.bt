@@ -15,9 +15,9 @@
 
 
 // unkdata
-if(mdlHeader.bvh4index > 0)
+if(hdr.bvh4index > 0)
 {
-    FSeek(mdlHeader.bvh4index);
+    FSeek(hdr.bvh4index);
     unkheader_v54 unkhdr <bgcolor=cDkBlue>;
     unksectionheader_v54_v12 unksecthdr[unkhdr.numsections] <bgcolor=cBlue>;
     //unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;

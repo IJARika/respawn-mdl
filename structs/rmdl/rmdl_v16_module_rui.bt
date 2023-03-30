@@ -15,13 +15,13 @@
 /*RUI MESH MODULE*/
 
 
-if (mdlHeader.numruimeshes)
+if (hdr.numruimeshes)
 {
-    FSeek(mdlHeader.ruimeshindex);
-    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
+    FSeek(hdr.ruimeshindex);
+    mstudiorruiheader_t ruiheader[hdr.numruimeshes] <fgcolor=cLtGreen>;
     
     struct {
-        for(i = 0; i < mdlHeader.numruimeshes; i++)
+        for(i = 0; i < hdr.numruimeshes; i++)
         {
             FSeek(startof(ruiheader[i]) + ruiheader[i].ruimeshindex);
             struct {

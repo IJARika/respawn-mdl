@@ -17,8 +17,8 @@
 
 
 // this is a check for non shipped models, or others that may not have maya strings.
-if (mdlHeader.boneindex > mdlHeader.sourceFilenameOffset && mdlHeader.sourceFilenameOffset != 0)
+if (hdr.boneindex > hdr.sourceFilenameOffset && hdr.sourceFilenameOffset != 0)
 {
-    FSeek(mdlHeader.sourceFilenameOffset);
-    char source_files[mdlHeader.boneindex - mdlHeader.sourceFilenameOffset] <fgcolor=cRed>;
+    FSeek(hdr.sourceFilenameOffset);
+    char source_files[hdr.boneindex - hdr.sourceFilenameOffset] <fgcolor=cRed>;
 }

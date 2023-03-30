@@ -37,7 +37,7 @@ struct compactsurfaceheader_t
 
 	int surfacesize;
 
-	Vector3 dragaxisareas;
+	Vector dragaxisareas;
 
 	int axismaparea;
 };
@@ -55,8 +55,8 @@ struct swapcompactsurfaceheader_t
 
 struct legacysurfaceheader_t
 {
-	Vector3 mass_center;
-	Vector3 rotation_inertia;
+	Vector mass_center;
+	Vector rotation_inertia;
 
 	float upper_limit_radius;
 
@@ -102,7 +102,7 @@ struct trianglevertmap_t
 
 struct phyvertex_t
 {
-    Vector3 pos; // relative to bone
+    Vector pos; // relative to bone
     float unk;
 };
 
@@ -111,7 +111,7 @@ struct phynode_t
     int rightnodeindex;
     int convexindex;
 
-    Vector3 center;
+    Vector center;
     float radius;
 
     int bboxsize; // volume?

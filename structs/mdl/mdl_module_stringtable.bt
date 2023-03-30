@@ -17,34 +17,34 @@
 
 
 struct {
-    if (mdlHeader.version >= 53)
+    if (hdr.version >= 53)
     {
-        if (mdlHeader.sznameindex > sizeof(mdlHeader))
+        if (hdr.sznameindex > sizeof(hdr))
         {
-            FSeek(mdlHeader.sznameindex);
+            FSeek(hdr.sznameindex);
             string mdl_name <fgcolor=cLtBlue>;
         }
     }
-    else if (mdlHeader.version <= 52 && mdlSubHeader.sznameindex > (sizeof(mdlHeader) + sizeof(mdlSubHeader)))
+    else if (hdr.version <= 52 && mdlSubHeader.sznameindex > (sizeof(hdr) + sizeof(mdlSubHeader)))
     {
         FSeek(startof(mdlSubHeader) + mdlSubHeader.sznameindex);
         string mdl_name <fgcolor=cDkBlue>;
     }
     
-    FSeek(mdlHeader.surfacepropindex);
+    FSeek(hdr.surfacepropindex);
     string mdl_surfaceprop <fgcolor=cLtBlue>;
 
-    if (mdlHeader.version <= 52)
+    if (hdr.version <= 52)
     {
-        FSeek(mdlHeader.szanimblocknameindex);
+        FSeek(hdr.szanimblocknameindex);
         string mdl_animblockname <fgcolor=cLtBlue>;
     }
     
-    if (mdlHeader.version >= 52)
+    if (hdr.version >= 52)
     {
-        if (mdlHeader.version >= 53)
+        if (hdr.version >= 53)
         {
-            FSeek(mdlHeader.unkstringindex);
+            FSeek(hdr.unkstringindex);
             string mdl_unkstring <fgcolor=cLtBlue>;
         }
         else
@@ -57,9 +57,9 @@ struct {
 } header_strings <read=this.mdl_name>;
 
 // help with struct starting pos
-FSeek(mdlHeader.surfacepropindex);
+FSeek(hdr.surfacepropindex);
 struct {
-    for (i = 0; i < mdlHeader.numbones; i++)
+    for (i = 0; i < hdr.numbones; i++)
     {
         struct {
             FSeek(startof(bones[i]) + bones[i].sznameindex);
@@ -72,9 +72,9 @@ struct {
 } bone_strings;
 
 // help with struct starting pos
-FSeek(mdlHeader.surfacepropindex);
+FSeek(hdr.surfacepropindex);
 struct {
-    for (i = 0; i < mdlHeader.numlocalattachments; i++)
+    for (i = 0; i < hdr.numlocalattachments; i++)
     {
         struct {
             FSeek(startof(attachments[i]) + attachments[i].sznameindex);

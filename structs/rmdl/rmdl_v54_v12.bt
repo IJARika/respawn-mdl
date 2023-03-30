@@ -24,7 +24,7 @@ local int x = 0;
 
 
 // headers
-studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+studiohdr_t_v54 hdr <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // funny strings that work the same always
@@ -39,8 +39,8 @@ studiohdr_t_v54 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this
 #include "../rmdl/rmdl_v54_module_hitbox.bt"
 
 
-FSeek(mdlHeader.bonetablebynameindex);
-ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
+FSeek(hdr.bonetablebynameindex);
+ubyte bonebyname[hdr.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 
 
 // global sequences, unchanged across all v54 so far.
@@ -54,8 +54,8 @@ ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bon
 #include "../rmdl/rmdl_v54_module_nodes.bt"
 
 
-FSeek(mdlHeader.localposeparamindex);
-mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.localposeparamindex);
+mstudioposeparamdesc_t poseparm[hdr.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // unchanged between subversions
@@ -76,12 +76,12 @@ mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYell
 
 
 // do keyvalues, this remains unchanged in all models since it's just char data.
-FSeek(mdlHeader.keyvalueindex);
-char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
+FSeek(hdr.keyvalueindex);
+char keyvalues_char[hdr.keyvaluesize] <fgcolor=cLtBlue>;
 
 
-FSeek(mdlHeader.srcbonetransformindex);
-mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.srcbonetransformindex);
+mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // unchanged between subversions
@@ -97,7 +97,7 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 
 
 // unsure what this is for, same as v53
-#include "../mdl/mdl_v53_module_unk3.bt"
+#include "../mdl/mdl_module_bone_followers.bt"
 
 
 // related data chunks here

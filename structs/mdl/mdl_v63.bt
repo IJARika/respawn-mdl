@@ -200,20 +200,20 @@ struct studiohdr_t_v63
 	int reserved[39];
 };*/
 
-studiohdr_t_v52 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
+studiohdr_t_v52 hdr <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
 
-FSeek(mdlHeader.studiohdr2index);
+FSeek(hdr.studiohdr2index);
 studiohdr2_t_v52 mdlSubHeader <bgcolor=cDkBlue>;
 
 // bones
-FSeek(mdlHeader.boneindex);
-mstudiobone_t_v52 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.boneindex);
+mstudiobone_t_v52 bones[hdr.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int jigglebonecount = 0;
 
 local char s_jigglebonename;
 
-for (i = 0; i < mdlHeader.numbones; ++i)
+for (i = 0; i < hdr.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
         jigglebonecount++;
@@ -222,18 +222,18 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 
 mstudiojigglebone_t jigglebones[jigglebonecount] <bgcolor=cGreen>;
 
-FSeek(mdlHeader.localattachmentindex);
-mstudioattachment_t attachments[mdlHeader.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
+FSeek(hdr.localattachmentindex);
+mstudioattachment_t attachments[hdr.numlocalattachments] <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
 
 
 // hitbox
-FSeek(mdlHeader.hitboxsetindex);
-mstudiohitboxset_t hboxset[mdlHeader.numhitboxsets] <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.hitboxsetindex);
+mstudiohitboxset_t hboxset[hdr.numhitboxsets] <bgcolor=0xf2e46a, read=ReadString(startof(this) + this.sznameindex)>;
 
 // have to do this because some things actually do have more than one.
 local int hboxCount = 0;
 
-for (i = 0; i < mdlHeader.numhitboxsets; ++i)
+for (i = 0; i < hdr.numhitboxsets; ++i)
 {
    hboxCount += hboxset[i].numhitboxes;
 };
@@ -242,18 +242,18 @@ mstudiobbox_t bboxes[hboxCount] <bgcolor=0xa29418, read=ReadString(startof(this)
 
 
 // more bones
-FSeek(mdlHeader.bonetablebynameindex);
-ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
+FSeek(hdr.bonetablebynameindex);
+ubyte bonebyname[hdr.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 
 
 // animation
-/*FSeek(mdlHeader.localanimindex);
-if (mdlHeader.version < 49)
-    mstudioanimdesc_t_v48 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
-else if(mdlHeader.version == 49)
-    mstudioanimdesc_t_v49 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+/*FSeek(hdr.localanimindex);
+if (hdr.version < 49)
+    mstudioanimdesc_t_v48 animdesc[hdr.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+else if(hdr.version == 49)
+    mstudioanimdesc_t_v49 animdesc[hdr.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 else
-    mstudioanimdesc_t_v52 animdesc[mdlHeader.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
+    mstudioanimdesc_t_v52 animdesc[hdr.numlocalanim] <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // Animation Data
@@ -263,10 +263,10 @@ local int numikrule = 0;
 local int numsections = 0;
 local int sectionlength = 0;
 
-if(mdlHeader.numlocalanim)
+if(hdr.numlocalanim)
 {
     struct {
-        for (i = 0; i < mdlHeader.numlocalanim; ++i)
+        for (i = 0; i < hdr.numlocalanim; ++i)
         {
             if((animdesc[i].animblock && animdesc[i].nummovements) || (animdesc[i].animblock && animdesc[i].ikruleindex) || (animdesc[i].animblock && animdesc[i].zeroframeindex) || !animdesc[i].animblock)
             {
@@ -302,12 +302,12 @@ if(mdlHeader.numlocalanim)
                                         {
                                             struct {
                                                 FSeek(startof(animdesc[i]) + sectionindexes[k].animindex);
-                                                if(mdlHeader.version == 52)
+                                                if(hdr.version == 52)
                                                     mstudio_frame_anim_t_v52 frameanim <bgcolor=0x632970>;
                                                 else
                                                     mstudio_frame_anim_t frameanim <bgcolor=0x632970>;
                             
-                                                byte boneflagarray[mdlHeader.numbones] <read=ReadFrameAnimFlags(this), bgcolor=0xaaaa22>;
+                                                byte boneflagarray[hdr.numbones] <read=ReadFrameAnimFlags(this), bgcolor=0xaaaa22>;
                         
                                                 local int sectionframes = 0;
     
@@ -316,17 +316,17 @@ if(mdlHeader.numlocalanim)
                                                 else
                                                     sectionframes = animdesc[i].sectionframes + 1;
     
-                                                if(mdlHeader.version == 52)
+                                                if(hdr.version == 52)
                                                 {
                                                     FSeek(startof(frameanim) + frameanim.unkdataindex);
-                                                    unkframeanimdata_t unkdatatype[mdlHeader.numbones];
+                                                    unkframeanimdata_t unkdatatype[hdr.numbones];
                                                 }
                         
                                                 FSeek(startof(frameanim) + frameanim.constantsoffset);
                                                 struct {
-                                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                                    for(j = 0; j < hdr.numbones; j++)
                                                     {
-                                                        if((boneflagarray[j] & STUDIO_FRAME_RAWPOS) || (boneflagarray[j] & STUDIO_FRAME_RAWROT) || (mdlHeader.version == 52 && (boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)))
+                                                        if((boneflagarray[j] & STUDIO_FRAME_RAWPOS) || (boneflagarray[j] & STUDIO_FRAME_RAWROT) || (hdr.version == 52 && (boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)))
                                                         {
                                                             struct {
                                                                 local int boneidx = j;
@@ -337,7 +337,7 @@ if(mdlHeader.numlocalanim)
                                                                 if(boneflagarray[j] & STUDIO_FRAME_RAWPOS)
                                                                     Vector48 rawpos;
             
-                                                                if(mdlHeader.version == 52)
+                                                                if(hdr.version == 52)
                                                                 {
                                                                     if(boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)
                                                                         Vector48 rawscale;
@@ -351,9 +351,9 @@ if(mdlHeader.numlocalanim)
                                                 if(frameanim.framelength)
                                                 {
                                                     struct {
-                                                        for(j = 0; j < mdlHeader.numbones; j++)
+                                                        for(j = 0; j < hdr.numbones; j++)
                                                         {
-                                                            if(mdlHeader.version == 52)
+                                                            if(hdr.version == 52)
                                                             {
                                                                 if((boneflagarray[j] & STUDIO_FRAME_ANIMPOS_52) || (boneflagarray[j] & STUDIO_FRAME_ANIMROT_52) || (boneflagarray[j] & STUDIO_FRAME_ANIMSCALE_52))
                                                                 {
@@ -403,24 +403,24 @@ if(mdlHeader.numlocalanim)
                             {
                                 struct {
                                     FSeek(startof(animdesc[i]) + animdesc[i].animindex);
-                                    if(mdlHeader.version == 52)
+                                    if(hdr.version == 52)
                                         mstudio_frame_anim_t_v52 frameanim <bgcolor=0x632970>;
                                     else
                                         mstudio_frame_anim_t frameanim <bgcolor=0x632970>;
                 
-                                    byte boneflagarray[mdlHeader.numbones] <read=ReadFrameAnimFlags(this), bgcolor=0xaaaa22>;
+                                    byte boneflagarray[hdr.numbones] <read=ReadFrameAnimFlags(this), bgcolor=0xaaaa22>;
             
-                                    if(mdlHeader.version == 52)
+                                    if(hdr.version == 52)
                                     {
                                         FSeek(startof(frameanim) + frameanim.unkdataindex);
-                                        unkframeanimdata_t unkdatatype[mdlHeader.numbones];
+                                        unkframeanimdata_t unkdatatype[hdr.numbones];
                                     }
             
                                     FSeek(startof(frameanim) + frameanim.constantsoffset);
                                     struct {
-                                        for(j = 0; j < mdlHeader.numbones; j++)
+                                        for(j = 0; j < hdr.numbones; j++)
                                         {
-                                            if((boneflagarray[j] & STUDIO_FRAME_RAWPOS) || (boneflagarray[j] & STUDIO_FRAME_RAWROT) || (mdlHeader.version == 52 && (boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)))
+                                            if((boneflagarray[j] & STUDIO_FRAME_RAWPOS) || (boneflagarray[j] & STUDIO_FRAME_RAWROT) || (hdr.version == 52 && (boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)))
                                             {
                                                 struct {
                                                     local int boneidx = j;
@@ -431,7 +431,7 @@ if(mdlHeader.numlocalanim)
                                                     if(boneflagarray[j] & STUDIO_FRAME_RAWPOS)
                                                         Vector48 rawpos;
 
-                                                    if(mdlHeader.version == 52)
+                                                    if(hdr.version == 52)
                                                     {
                                                         if(boneflagarray[j] & STUDIO_FRAME_RAWSCALE_52)
                                                             Vector48 rawscale;
@@ -446,9 +446,9 @@ if(mdlHeader.numlocalanim)
                                     if(frameanim.framelength)
                                     {
                                         struct {
-                                            for(j = 0; j < mdlHeader.numbones; j++)
+                                            for(j = 0; j < hdr.numbones; j++)
                                             {
-                                                if(mdlHeader.version == 52)
+                                                if(hdr.version == 52)
                                                 {
                                                     if((boneflagarray[j] & STUDIO_FRAME_ANIMPOS_52) || (boneflagarray[j] & STUDIO_FRAME_ANIMROT_52) || (boneflagarray[j] & STUDIO_FRAME_ANIMSCALE_52))
                                                     {
@@ -509,7 +509,7 @@ if(mdlHeader.numlocalanim)
                                             struct {
                                                 FSeek(startof(animdesc[i]) + sectionindexes[k].animindex);
                                         
-                                                for(j = 0; j < mdlHeader.numbones; j++)
+                                                for(j = 0; j < hdr.numbones; j++)
                                                 {
                                                     struct {
                                                         mstudio_rle_anim_t sectionanimheader <read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex), bgcolor=0x771122>;
@@ -557,7 +557,7 @@ if(mdlHeader.numlocalanim)
                                 struct {
                                     FSeek(startof(animdesc[i]) + animdesc[i].animindex);
                 
-                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                    for(j = 0; j < hdr.numbones; j++)
                                     {
                                         struct {
                                             mstudio_rle_anim_t animheader <read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex), bgcolor=cBlue>;
@@ -603,7 +603,7 @@ if(mdlHeader.numlocalanim)
                     if(animdesc[i].numikrules && animdesc[i].ikruleindex)
                     {
                         FSeek(startof(animdesc[i]) + animdesc[i].ikruleindex);
-                        if(mdlHeader.version == 52)
+                        if(hdr.version == 52)
                             mstudioikrule_t_v52 animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
                         else
                             mstudioikrule_t animikrule[animdesc[i].numikrules] <bgcolor=cGreen>;
@@ -642,7 +642,7 @@ if(mdlHeader.numlocalanim)
                         }
                     }
                     
-                    if(mdlHeader.version >= 52 && animdesc[i].framemovementindex)
+                    if(hdr.version >= 52 && animdesc[i].framemovementindex)
                     {
                         FSeek(startof(animdesc[i]) + animdesc[i].framemovementindex);
                         mstudioframemovement_t framemovement <bgcolor=cLtGreen>;
@@ -678,7 +678,7 @@ if(mdlHeader.numlocalanim)
                             for(k = 0; k < animdesc[i].zeroframecount; k++)
                             {
                                 struct {
-                                    for (j = 0; j < mdlHeader.numbones; j++)
+                                    for (j = 0; j < hdr.numbones; j++)
                                     {
                                         if (bones[j].flags & BONE_HAS_SAVEFRAME_POS || bones[j].flags & BONE_HAS_SAVEFRAME_ROT64 || bones[j].flags & BONE_HAS_SAVEFRAME_ROT32)
 	                                    {
@@ -725,49 +725,49 @@ if(mdlHeader.numlocalanim)
 
 // flexes
 // depreciated in v52+
-if(mdlHeader.version < 52)
+if(hdr.version < 52)
 {
-    if(mdlHeader.numflexdesc)
+    if(hdr.numflexdesc)
     {
-        FSeek(mdlHeader.flexdescindex);
-        mstudioflexdesc_t flexdesc[mdlHeader.numflexdesc] <bgcolor=0x55aaff, read=ReadString(startof(this) + this.szFACSindex)>;
+        FSeek(hdr.flexdescindex);
+        mstudioflexdesc_t flexdesc[hdr.numflexdesc] <bgcolor=0x55aaff, read=ReadString(startof(this) + this.szFACSindex)>;
     }
     
-    if(mdlHeader.numflexcontrollers)
+    if(hdr.numflexcontrollers)
     {
-        FSeek(mdlHeader.flexcontrollerindex);
-        mstudioflexcontroller_t flexcontroller[mdlHeader.numflexcontrollers] <bgcolor=0x00aaff, read=ReadString(startof(this) + this.sznameindex)>;
+        FSeek(hdr.flexcontrollerindex);
+        mstudioflexcontroller_t flexcontroller[hdr.numflexcontrollers] <bgcolor=0x00aaff, read=ReadString(startof(this) + this.sznameindex)>;
     }
     
-    if(mdlHeader.numflexrules)
+    if(hdr.numflexrules)
     {
-        FSeek(mdlHeader.flexruleindex);
-        mstudioflexrule_t flexrule[mdlHeader.numflexrules] <bgcolor=0x00ccdd>;
+        FSeek(hdr.flexruleindex);
+        mstudioflexrule_t flexrule[hdr.numflexrules] <bgcolor=0x00ccdd>;
     
         local int flexopcount = 0;
     
-        for(i = 0; i < mdlHeader.numflexrules; i++)
+        for(i = 0; i < hdr.numflexrules; i++)
             flexopcount += flexrule[i].numops;
     
         mstudioflexop_t flexop[flexopcount] <bgcolor=0x88aadd>;
     }
     
-    if(mdlHeader.numflexcontrollerui)
+    if(hdr.numflexcontrollerui)
     {
-        FSeek(mdlHeader.flexcontrolleruiindex);
-        mstudioflexcontrollerui_t flexcontrollerui[mdlHeader.numflexcontrollerui] <bgcolor=0x00aaff, read=ReadString(startof(this) + this.sznameindex)>;
+        FSeek(hdr.flexcontrolleruiindex);
+        mstudioflexcontrollerui_t flexcontrollerui[hdr.numflexcontrollerui] <bgcolor=0x00aaff, read=ReadString(startof(this) + this.sznameindex)>;
     }
 }
 
 
 // ik
-if(mdlHeader.numikchains)
+if(hdr.numikchains)
 {
-    FSeek(mdlHeader.ikchainindex);
+    FSeek(hdr.ikchainindex);
     struct {
-        for(i = 0; i < mdlHeader.numikchains; i++)
+        for(i = 0; i < hdr.numikchains; i++)
         {
-            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t) * i));
+            FSeek(hdr.ikchainindex + (sizeof(mstudioikchain_t) * i));
             struct {
                 mstudioikchain_t ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
                 
@@ -779,16 +779,16 @@ if(mdlHeader.numikchains)
     } ikchains;
 }
 
-FSeek(mdlHeader.localikautoplaylockindex);
-mstudioiklock_t iklocks[mdlHeader.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
+FSeek(hdr.localikautoplaylockindex);
+mstudioiklock_t iklocks[hdr.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
 
-FSeek(mdlHeader.localposeparamindex);
-mstudioposeparamdesc_t poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.localposeparamindex);
+mstudioposeparamdesc_t poseparm[hdr.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // the funny animblocks
-FSeek(mdlHeader.animblockindex);
-mstudioanimblock_t animblocks[mdlHeader.numanimblocks] <bgcolor=0xdc7633>;
+FSeek(hdr.animblockindex);
+mstudioanimblock_t animblocks[hdr.numanimblocks] <bgcolor=0xdc7633>;
 
 // I do an include file because these are mostly the same across all mdl versions,
 // and I really don't wanna have to update every template every time I change something.
@@ -796,8 +796,8 @@ mstudioanimblock_t animblocks[mdlHeader.numanimblocks] <bgcolor=0xdc7633>;
 
 
 // do keyvalues, this remains unchanged in all models since it's just char data.
-FSeek(mdlHeader.keyvalueindex);
-char keyvalues_char[mdlHeader.keyvaluesize] <fgcolor=cLtBlue>;
+FSeek(hdr.keyvalueindex);
+char keyvalues_char[hdr.keyvaluesize] <fgcolor=cLtBlue>;
 
 
 //FSeek(mdlSubHeader.srcbonetransformindex);
@@ -831,7 +831,7 @@ if (mdlSubHeader.linearboneindex)
 };
 
 
-if (mdlHeader.version == 52)
+if (hdr.version == 52)
 {
     // per tri aabb data
     FSeek(startof(mdlSubHeader) + mdlSubHeader.m_nPerTriAABBIndex);
@@ -852,11 +852,11 @@ if (mdlHeader.version == 52)
 //#include "../mdl/mdl_module_stringtable.bt"
 if(mdlSubHeader.sznameindex == 0)
 {        
-    FSeek((mdlHeader.surfacepropindex - 1)  + startof(mdlHeader));
-    char stringtable[mdlHeader.length - ((mdlHeader.surfacepropindex - 1)  + startof(mdlHeader))] <fgcolor=cLtRed>;
+    FSeek((hdr.surfacepropindex - 1)  + startof(hdr));
+    char stringtable[hdr.length - ((hdr.surfacepropindex - 1)  + startof(hdr))] <fgcolor=cLtRed>;
 }
 else
 {
     FSeek((mdlSubHeader.sznameindex - 1)  + startof(mdlSubHeader));
-    char stringtable[mdlHeader.length - ((mdlSubHeader.sznameindex - 1)  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
+    char stringtable[hdr.length - ((mdlSubHeader.sznameindex - 1)  + startof(mdlSubHeader))] <fgcolor=cLtRed>;
 }

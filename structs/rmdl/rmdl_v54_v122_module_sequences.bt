@@ -17,18 +17,18 @@
 
 
 // do sequences.
-FSeek(mdlHeader.localseqindex);
-mstudioseqdesc_t_v54 seqdesc[mdlHeader.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+FSeek(hdr.localseqindex);
+mstudioseqdesc_t_v54 seqdesc[hdr.numlocalseq] <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
 
 local int si = 0;
 local int numanims = 0;
 local int animsDone = 0;
 
 // generate all the sequences data structures
-if(mdlHeader.numlocalseq)
+if(hdr.numlocalseq)
 {
     struct {
-        for(si = 0; si < mdlHeader.numlocalseq; si++)
+        for(si = 0; si < hdr.numlocalseq; si++)
         {
             numanims = seqdesc[si].groupsize[0] * seqdesc[si].groupsize[1];
         
@@ -54,7 +54,7 @@ if(mdlHeader.numlocalseq)
                 }
                 
                 FSeek(startof(seqdesc[si]) + seqdesc[si].weightlistindex);
-                float weightlist[mdlHeader.numbones] <bgcolor=0xe1f27a>;
+                float weightlist[hdr.numbones] <bgcolor=0xe1f27a>;
                 
                 for(j = 0; j < seqdesc[si].numactivitymodifiers; j++)
                 {
@@ -95,7 +95,7 @@ if(mdlHeader.numlocalseq)
                                                 FSeek(startof(animdesc[k]) + sectionindexes[i].animindex);
                                                 boneflagarray_t flagarray;
                                         
-                                                for(j = 0; j < mdlHeader.numbones; j++)
+                                                for(j = 0; j < hdr.numbones; j++)
                                                 {
                                                     if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                                                     {
@@ -114,7 +114,7 @@ if(mdlHeader.numlocalseq)
                                     FSeek(startof(animdesc[k]) + animdesc[k].animindex);
                                     boneflagarray_t flagarray;
                 
-                                    for(j = 0; j < mdlHeader.numbones; j++)
+                                    for(j = 0; j < hdr.numbones; j++)
                                     {
                                         if(flagarray.boneflag[j].STUDIO_ANIM_POS_54 || flagarray.boneflag[j].STUDIO_ANIM_ROT_54 || flagarray.boneflag[j].STUDIO_ANIM_SCALE_54)
                                         {

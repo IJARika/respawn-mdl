@@ -16,13 +16,13 @@
 /*V54 IKCHAIN MODULE*/
 
 
-if(mdlHeader.numikchains)
+if(hdr.numikchains)
 {
-    FSeek(mdlHeader.ikchainindex);
+    FSeek(hdr.ikchainindex);
     struct {
-        for(i = 0; i < mdlHeader.numikchains; i++)
+        for(i = 0; i < hdr.numikchains; i++)
         {
-            FSeek(mdlHeader.ikchainindex + (sizeof(mstudioikchain_t_v54) * i));
+            FSeek(hdr.ikchainindex + (sizeof(mstudioikchain_t_v54) * i));
             struct {
                 mstudioikchain_t_v54 ikchain <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
                 

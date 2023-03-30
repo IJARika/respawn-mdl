@@ -1,0 +1,65 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl
+//   Authors: Rika
+//   Version: 0.1
+// Increment: All
+//   Purpose: Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl
+//  ID Bytes: 
+//   History: 
+//------------------------------------------------
+
+
+/*IKRULE MODULE*/
+
+
+
+if(animdesc.numikrules && animdesc.ikruleindex)
+{
+    FSeek(startof(animdesc) + animdesc.ikruleindex);
+    switch(hdr.version)
+    {
+        case 53:
+            mstudioikrule_t_v53 animikrule[animdesc.numikrules] <bgcolor=cGreen>;
+            break;
+        case 52:
+            mstudioikrule_t_v52 animikrule[animdesc.numikrules] <bgcolor=cGreen>;
+            break;
+        default:
+            mstudioikrule_t animikrule[animdesc.numikrules] <bgcolor=cGreen>;
+            break;
+    }
+
+    for(j = 0; j < animdesc.numikrules; j++)
+    {
+        if(animikrule[j].compressedikerrorindex)
+        {
+            FSeek(startof(animikrule[j]) + animikrule[j].compressedikerrorindex);
+            struct {
+                mstudiocompressedikerror_t ikcompressederror <bgcolor=cDkGreen>;
+      
+                for(g = 0; g < 6; g++)
+                {
+                    if(ikcompressederror.offset[g])
+                    {
+                        FSeek(startof(ikcompressederror) + ikcompressederror.offset[g]);
+                        struct {
+                            GenerateAnimValues(startof(ikcompressederror) + ikcompressederror.offset[g], animdesc.numframes);
+                        } animvaluetrack;
+                    }
+                }
+            } ikcompressederror;
+        }
+
+        if(animikrule[j].szattachmentindex)
+        {
+            FSeek(startof(animikrule[j]) + animikrule[j].szattachmentindex);
+            struct {
+                string ikattachment <fgcolor=cGreen>;
+            } attachmentstring;
+        }
+    }
+}

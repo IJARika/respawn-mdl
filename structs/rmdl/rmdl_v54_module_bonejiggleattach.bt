@@ -18,13 +18,13 @@
 
 
 // do bones
-FSeek(mdlHeader.boneindex);
-mstudiobone_t_v54 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.boneindex);
+mstudiobone_t_v54 bones[hdr.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int jigglebonecount = 0;
 
 // get jiggle bone count
-for (i = 0; i < mdlHeader.numbones; ++i)
+for (i = 0; i < hdr.numbones; ++i)
 {
     if (bones[i].proctype == 5) {
         jigglebonecount++;
@@ -35,15 +35,15 @@ for (i = 0; i < mdlHeader.numbones; ++i)
 mstudiojigglebone_t_v54 jigglebones[jigglebonecount] <bgcolor=cGreen, read=ReadString(startof(bones[this.bone]) + bones[this.bone].sznameindex)>;
 
 // related to physics bones?
-if(mdlHeader.numprocbones)
+if(hdr.numprocbones)
 {
-    FSeek(mdlHeader.procbonetableindex);
-    byte unkboneindex[mdlHeader.numprocbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
+    FSeek(hdr.procbonetableindex);
+    byte procbonetable[hdr.numprocbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
     
-    FSeek(mdlHeader.linearprocboneindex);
-    byte unkbonearray[mdlHeader.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
+    FSeek(hdr.linearprocboneindex);
+    byte linearprocbones[hdr.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
 }
 
 // do attachements
-FSeek(mdlHeader.localattachmentindex);
-mstudioattachment_t_v54 attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
+FSeek(hdr.localattachmentindex);
+mstudioattachment_t_v54 attachments[hdr.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;

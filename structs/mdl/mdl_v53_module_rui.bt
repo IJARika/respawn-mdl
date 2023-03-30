@@ -16,19 +16,19 @@
 /*RUI MESH MODULE*/
 
 
-if (mdlHeader.numruimeshes)
+if (hdr.numruimeshes)
 {
-    FSeek(mdlHeader.ruimeshindex);
-    mstudiorruiheader_t ruiheader[mdlHeader.numruimeshes] <fgcolor=cLtGreen>;
+    FSeek(hdr.ruimeshindex);
+    mstudiorruiheader_t ruiheader[hdr.numruimeshes] <fgcolor=cLtGreen>;
     
     struct {
-        for(i = 0; i < mdlHeader.numruimeshes; i++)
+        for(i = 0; i < hdr.numruimeshes; i++)
         {
             FSeek(startof(ruiheader[i]) + ruiheader[i].ruimeshindex);
             struct {
-                if(mdlHeader.version == 53)
+                if(hdr.version == 53)
                     mstudioruimesh_t ruimeshheader;
-                else if(mdlHeader.version == 54)
+                else if(hdr.version == 54)
                     mstudioruimesh_t_v54 ruimeshheader;
 
                 string szmeshname;
@@ -40,7 +40,7 @@ if (mdlHeader.numruimeshes)
 
                 mstudioruivertmap_t vertexmap[ruimeshheader.numfaces]; // vertex map for each face  
                 
-                if(mdlHeader.version == 54)
+                if(hdr.version == 54)
                     mstudioruifourthvertv54_t fourthvertmap[ruimeshheader.numfaces];
                 
                 mstudioruivert_t vertex[ruimeshheader.numvertices];

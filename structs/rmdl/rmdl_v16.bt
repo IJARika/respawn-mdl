@@ -23,7 +23,7 @@ local int x = 0;
 
 
 // header
-studiohdr_t_v16 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+studiohdr_t_v16 hdr <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // funny strings that work the same always
@@ -31,21 +31,21 @@ studiohdr_t_v16 mdlHeader <bgcolor=cLtBlue, read=ReadString(startof(this) + this
 
 
 // do bones
-FSeek(mdlHeader.boneindex);
-mstudiobone_t_v16 bones[mdlHeader.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.boneindex);
+mstudiobone_t_v16 bones[hdr.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // do attachements
-FSeek(mdlHeader.localattachmentindex);
-mstudioattachment_t_v16 attachments[mdlHeader.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
+FSeek(hdr.localattachmentindex);
+mstudioattachment_t_v16 attachments[hdr.numlocalattachments]  <bgcolor=0xcff5ca, read=Str("%s : %s", ReadString(startof(this) + this.sznameindex), ReadString(startof(bones[this.localbone]) + bones[this.localbone].sznameindex))>;
 
 
 // global hitbox for v54 since it doesn't change
 #include "../rmdl/rmdl_v16_module_hitbox.bt"
 
 
-FSeek(mdlHeader.bonetablebynameindex);
-ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
+FSeek(hdr.bonetablebynameindex);
+ubyte bonebyname[hdr.numbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=cDkGreen>;
 
 
 
@@ -56,14 +56,14 @@ ubyte bonebyname[mdlHeader.numbones] <read=ReadString(startof(bones[this]) + bon
 
 // models
 // these change between v12.1/v13/v14 because Respawn.
-FSeek(mdlHeader.bodypartindex);
-if(mdlHeader.numbodyparts)
+FSeek(hdr.bodypartindex);
+if(hdr.numbodyparts)
 {
     struct {
     
-        for(i = 0; i < mdlHeader.numbodyparts; i++)
+        for(i = 0; i < hdr.numbodyparts; i++)
         {
-            FSeek(mdlHeader.bodypartindex + (sizeof(mstudiobodyparts_t_v16) * i));
+            FSeek(hdr.bodypartindex + (sizeof(mstudiobodyparts_t_v16) * i));
             struct {
                 mstudiobodyparts_t_v16 bodypart <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
         
@@ -81,33 +81,33 @@ if(mdlHeader.numbodyparts)
             } bodypart <read=ReadString(startof(this.bodypart) + this.bodypart.sznameindex)>;
         }
     
-    } bodyparts <read=Str("%i bodyparts", mdlHeader.numbodyparts)>;
+    } bodyparts <read=Str("%i bodyparts", hdr.numbodyparts)>;
 }
 
 
 // setup nodes, not fully understood
 // nodes have names
-if(mdlHeader.numlocalnodes > 0)
+if(hdr.numlocalnodes > 0)
 {
-    FSeek(mdlHeader.localnodenameindex);
-    short nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(mdlHeader.localnodenameindex + this)>;
+    FSeek(hdr.localnodenameindex);
+    short nodename[hdr.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(hdr.localnodenameindex + this)>;
     
-    short nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
+    short nodedataindex[hdr.numlocalnodes] <bgcolor=cYellow>;
 }
 
 
-FSeek(mdlHeader.localposeparamindex);
-mstudioposeparamdesc_t_v16 poseparm[mdlHeader.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.localposeparamindex);
+mstudioposeparamdesc_t_v16 poseparm[hdr.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;
 
 
 // do ikchains
-FSeek(mdlHeader.ikchainindex);
-mstudioikchain_t_v16 ikchains[mdlHeader.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.ikchainindex);
+mstudioikchain_t_v16 ikchains[hdr.numikchains] <bgcolor=0xe8daef, read=ReadString(startof(this) + this.sznameindex)>;
 
 local int linkCount = 0;
 
 // get link count
-for (i = 0; i < mdlHeader.numikchains; ++i)
+for (i = 0; i < hdr.numikchains; ++i)
 {
    linkCount += ikchains[i].numlinks;
 }
@@ -122,52 +122,52 @@ mstudioiklink_t_v54 iklinks[linkCount] <bgcolor=0x7d3c98>;
 
 
 // do textures
-FSeek(mdlHeader.textureindex);
-mstudiotexture_t_v16 textures[mdlHeader.numtextures] <bgcolor=cGreen>;
+FSeek(hdr.textureindex);
+mstudiotexture_t_v16 textures[hdr.numtextures] <bgcolor=cGreen>;
 
 // do skingroups
-FSeek(mdlHeader.skinindex);
-if(mdlHeader.numskinfamilies)
+FSeek(hdr.skinindex);
+if(hdr.numskinfamilies)
 {
     struct {
-        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
-    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+        short texture[hdr.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[hdr.numskinfamilies] <bgcolor=cDkGreen>;
 }
 
 // do skingroup names if they exist
-if(mdlHeader.numskinfamilies > 1)
+if(hdr.numskinfamilies > 1)
 {
-    short skingroupnames[mdlHeader.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
+    short skingroupnames[hdr.numskinfamilies - 1] <fgcolor=cDkGreen, read=ReadString(this)>;
 }
 
 // do keyvalues, this remains unchanged in all models since it's just char data.
-if(mdlHeader.keyvalueindex)
+if(hdr.keyvalueindex)
 {
-    FSeek(mdlHeader.keyvalueindex);
+    FSeek(hdr.keyvalueindex);
     string keyvalues_char <fgcolor=cLtBlue>;
 }
 
 // basically if the name is small enough to fit into 32 bytes it isn't stored in the string block
-if(mdlHeader.sznameindex > sizeof(studiohdr_t_v16))
+if(hdr.sznameindex > sizeof(studiohdr_t_v16))
 {
-    FSeek(mdlHeader.sznameindex);
-    char stringtable[mdlHeader.bonedataindex - mdlHeader.sznameindex] <fgcolor=cLtRed>;
+    FSeek(hdr.sznameindex);
+    char stringtable[hdr.bonedataindex - hdr.sznameindex] <fgcolor=cLtRed>;
 }
 else
 { 
-    FSeek(mdlHeader.surfacepropindex);
-    char stringtable[mdlHeader.bonedataindex - mdlHeader.surfacepropindex] <fgcolor=cLtRed>;
+    FSeek(hdr.surfacepropindex);
+    char stringtable[hdr.bonedataindex - hdr.surfacepropindex] <fgcolor=cLtRed>;
 }
 
 
-FSeek(mdlHeader.bonedataindex);
-mstudiobonedata_t_v16 bonedata[mdlHeader.numbones] <bgcolor=cLtGreen>;
+FSeek(hdr.bonedataindex);
+mstudiobonedata_t_v16 bonedata[hdr.numbones] <bgcolor=cLtGreen>;
 
 
 local int jigglebonecount = 0;
 
 // get jiggle bone count
-for (i = 0; i < mdlHeader.numbones; ++i)
+for (i = 0; i < hdr.numbones; ++i)
 {
     if (bonedata[i].proctype == 5) {
         jigglebonecount++;
@@ -179,17 +179,17 @@ mstudiojigglebone_t_v54 jigglebones[jigglebonecount] <bgcolor=cGreen, read=ReadS
 
 
 // related to physics bones?
-if(mdlHeader.numprocbonesunk)
+if(hdr.numprocbones)
 {
-    FSeek(mdlHeader.procbonearrayindex);
-    ubyte unkboneindex[mdlHeader.numprocbonesunk] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
+    FSeek(hdr.procbonetableindex);
+    ubyte procbonetable[hdr.numprocbones] <read=ReadString(startof(bones[this]) + bones[this].sznameindex), bgcolor=0x33AA22>; // index of bone??
     
-    FSeek(mdlHeader.procbonemaskindex);
-    byte unkbonearray[mdlHeader.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
+    FSeek(hdr.linearprocboneindex);
+    byte linearprocbones[hdr.numbones] <bgcolor=0x558822>; // used bones are not nulled here. number is index of "flex"
 }
 
-FSeek(mdlHeader.srcbonetransformindex);
-mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.srcbonetransformindex);
+mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDkGreen, read=ReadString(startof(this) + this.sznameindex)>;
 
 #include "../rmdl/rmdl_v16_module_linearbone.bt"
 
@@ -206,13 +206,13 @@ mstudiosrcbonetransform_t srcbonetransform[mdlHeader.numsrcbonetransform] <bgcol
 
 
 // unsure what this is for, same as v53
-#include "../mdl/mdl_v53_module_unk3.bt"
+#include "../mdl/mdl_module_bone_followers.bt"
 */
 
-if(mdlHeader.unkcount3)
+if(hdr.numbonefollowers)
 {
-    FSeek(GetRMDLOffset(mdlHeader.unkindex3));
-    short unk3[mdlHeader.unkcount3] <bgcolor=cLtYellow>;
+    FSeek(GetRMDLOffset(hdr.bonefollowerindex));
+    short bone_follower[hdr.numbonefollowers] <bgcolor=cLtYellow, read=ReadString(startof(bones[this]) + GetRMDLOffset(bones[this].sznameindex))>;
 }
 
 // third set of core parts, done like this for spacing.
@@ -220,9 +220,9 @@ if(mdlHeader.unkcount3)
 
 
 // unkdata
-if(mdlHeader.bvh4index)
+if(hdr.bvh4index)
 {
-    FSeek(GetRMDLOffset(mdlHeader.bvh4index));
+    FSeek(GetRMDLOffset(hdr.bvh4index));
     unkheader_v54 unkhdr <bgcolor=cDkBlue>;
     unksectionheader_v54_v12 unksecthdr[unkhdr.numsections] <bgcolor=cBlue>;
     //unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;

@@ -17,17 +17,17 @@
 
 local int modelSize = sizeof(mstudiomodel_t);
 
-if(mdlHeader.version == 54)
+if(hdr.version == 54)
     modelSize = sizeof(mstudiomodel_t_v54);
 
-FSeek(mdlHeader.bodypartindex);
-if(mdlHeader.numbodyparts)
+FSeek(hdr.bodypartindex);
+if(hdr.numbodyparts)
 {
     struct {
     
-        for(i = 0; i < mdlHeader.numbodyparts; i++)
+        for(i = 0; i < hdr.numbodyparts; i++)
         {
-            FSeek(mdlHeader.bodypartindex + (sizeof(mstudiobodyparts_t) * i));
+            FSeek(hdr.bodypartindex + (sizeof(mstudiobodyparts_t) * i));
             struct {
                 mstudiobodyparts_t bodypart <bgcolor=cGray, read=ReadString(startof(this) + this.sznameindex)>;
         
@@ -36,19 +36,19 @@ if(mdlHeader.numbodyparts)
                 {
                     FSeek(startof(bodypart) + bodypart.modelindex + (modelSize * j));
                     struct {
-                        if(mdlHeader.version == 54)
+                        if(hdr.version == 54)
                             mstudiomodel_t_v54 model <read=this.name>;
-                        else if(mdlHeader.version == 52 || mdlHeader.version == 53)
+                        else if(hdr.version == 52 || hdr.version == 53)
                             mstudiomodel_t_v52 model <read=this.name>;
                         else
                             mstudiomodel_t model <read=this.name>;
     
                         FSeek(startof(model) + model.meshindex);
-                        if(mdlHeader.version == 54)
+                        if(hdr.version == 54)
                             mstudiomesh_t_v54 meshes[model.nummeshes] <read=ReadString(startof(textures[this.material]) + textures[this.material].sznameindex), bgcolor=cLtGray>;
-                        else if(mdlHeader.version == 53)
+                        else if(hdr.version == 53)
                             mstudiomesh_t_v53 meshes[model.nummeshes] <read=ReadString(startof(textures[this.material]) + textures[this.material].sznameindex), bgcolor=cLtGray>;
-                        else if(mdlHeader.version == 52)
+                        else if(hdr.version == 52)
                             mstudiomesh_t_v52 meshes[model.nummeshes] <read=ReadString(startof(textures[this.material]) + textures[this.material].sznameindex), bgcolor=cLtGray>;
                         else
                             mstudiomesh_t meshes[model.nummeshes] <read=ReadString(startof(textures[this.material]) + textures[this.material].sznameindex), bgcolor=cLtGray>;
@@ -57,5 +57,5 @@ if(mdlHeader.numbodyparts)
             } bodypart <read=ReadString(startof(this.bodypart) + this.bodypart.sznameindex)>;
         }
     
-    } bodyparts <read=Str("%i bodyparts", mdlHeader.numbodyparts)>;
+    } bodyparts <read=Str("%i bodyparts", hdr.numbodyparts)>;
 }

@@ -1,0 +1,28 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: mdl.bt
+//   Authors: Rika
+//   Version: 0.1
+//   Purpose: Value/Respawn MDL Files
+//  Category: Model
+// File Mask: *.mdl
+//  ID Bytes: 49 44 53 54
+//   History: 
+//------------------------------------------------
+
+#define MODEL_FILE_ID   ((0x54<<24)+(0x53<<16)+(0x44<<8)+0x49)
+
+Assert(ReadInt(0) == MODEL_FILE_ID, "file is not a valid 'MDL' file");
+
+local int mdlVersion = ReadInt(4);
+
+switch(mdlVersion)
+{
+    case 53:
+        #include "./mdl_v53.bt"
+        break;
+    default:
+        Printf("!!!UNSUPPORTED VERSION!!!");
+        break;
+}

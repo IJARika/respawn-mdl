@@ -13,29 +13,35 @@
 
 
 // do included models
-FSeek(mdlHeader.includemodelindex);
-mstudiomodelgroup_t includemodels[mdlHeader.numincludemodels] <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
+FSeek(hdr.includemodelindex);
+mstudiomodelgroup_t includemodels[hdr.numincludemodels] <bgcolor=cLtBlue, read=ReadString(startof(this) + this.sznameindex)>;
 
 // seek to textures
-FSeek(mdlHeader.textureindex);
+FSeek(hdr.textureindex);
 
 // do textures and version checks
-if(mdlHeader.version == 53)
-    mstudiotexture_t_v53 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
-else if(mdlHeader.version == 52)
-    mstudiotexture_t_v52 textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
-else
-    mstudiotexture_t textures[mdlHeader.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+switch(hdr.version)
+{
+    case 53:
+        mstudiotexture_t_v53 textures[hdr.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+        break;
+    case 52:
+        mstudiotexture_t_v52 textures[hdr.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+        break;
+    default:
+        mstudiotexture_t textures[hdr.numtextures] <bgcolor=cGreen, read=ReadString(startof(this) + this.sznameindex)>;
+        break;
+}
 
 // do cdmaterials
-FSeek(mdlHeader.cdtextureindex);
-mstudiotexturedir_t cdmaterials[mdlHeader.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
+FSeek(hdr.cdtextureindex);
+mstudiotexturedir_t cdmaterials[hdr.numcdtextures] <bgcolor=cDkGreen, read=ReadString(this.sznameindex)>;
 
 // do skingroups
-FSeek(mdlHeader.skinindex);
-if(mdlHeader.numskinfamilies)
+FSeek(hdr.skinindex);
+if(hdr.numskinfamilies)
 {
     struct {
-        short texture[mdlHeader.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
-    } skingroup[mdlHeader.numskinfamilies] <bgcolor=cDkGreen>;
+        short texture[hdr.numskinref] <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    } skingroup[hdr.numskinfamilies] <bgcolor=cDkGreen>;
 }

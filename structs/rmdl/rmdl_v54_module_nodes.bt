@@ -35,16 +35,16 @@ struct node_t
     }
 };
 
-if(mdlHeader.numlocalnodes > 0)
+if(hdr.numlocalnodes > 0)
 {
-    FSeek(mdlHeader.localnodenameindex);
-    int nodename[mdlHeader.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(mdlHeader) + this.sznameindex)>;
+    FSeek(hdr.localnodenameindex);
+    int nodename[hdr.numlocalnodes] <bgcolor=cDkYellow, read=ReadString(startof(hdr) + this.sznameindex)>;
     
-    FSeek(mdlHeader.nodedataindexindex);
-    int nodedataindex[mdlHeader.numlocalnodes] <bgcolor=cYellow>;
+    FSeek(hdr.nodedataindexindex);
+    int nodedataindex[hdr.numlocalnodes] <bgcolor=cYellow>;
 
     struct {
-        for(i = 0; i < mdlHeader.numlocalnodes; i++)
+        for(i = 0; i < hdr.numlocalnodes; i++)
         {
 
             FSeek(nodedataindex[i]);

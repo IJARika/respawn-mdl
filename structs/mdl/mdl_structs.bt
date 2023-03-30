@@ -13,7 +13,7 @@
 
 #define MAX_NUM_LODS 8
 #define MAX_NUM_BONES_PER_VERT 3
-typedef Vector3 Vector;
+//typedef Vector3 Vector;
 
 //local int i = 0;
 
@@ -194,8 +194,8 @@ string ReadHeaderFlags(int flags)
             value += "STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT";
             break;
         case 0x4000:
-            if(mdlHeader.version == 54 || mdlHeader.version == 1)
-                value += "STUDIOHDR_FLAGS_COMPLEX_WEIGHTS";
+            if(hdr.version == 54 || hdr.version == 1)
+                value += "STUDIOHDR_FLAGS_USES_EXTRA_BONE_WEIGHTS";
             else
                 value += "STUDIOHDR_FLAGS_FLEXES_CONVERTED";
             break;
@@ -1135,13 +1135,13 @@ struct studiohdr_t_v53
 
     // this data block is related to the vphy, if it's not present the data will not be written
     // definitely related to phy, apex phy has this merged into it
-    int unkmemberindex1; // section between vphy and vtx.?
-    int numunkmember1; // only seems to be used when phy has one solid
+    int unkindex; // section between vphy and vtx.?
+    int numunk; // only seems to be used when phy has one solid
 
-    // only seen on '_animated' suffixed models so far
-    // probably added during titanfall 2's life cycle, later models have idx always, early/r2tt models do not
-    int unkcount3;
-    int unkindex3;
+    // mostly seen on '_animated' suffixed models
+	// manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
+	int numbonefollowers; // numBoneFollowers
+	int bonefollowerindex;
 
     int unused1[60];
 
@@ -1974,12 +1974,12 @@ struct mstudiobbox_t_v53
 #define STUDIO_EVENT_CLIENT 0x10000	// Has been updated at runtime to event index on client
 
 // new in respawn models
-#define STUDIO_ANIM_UNK3    0x0040  // used on something that is clearly not a frame anim in v54
+#define STUDIO_ANIM_UNK3        0x0040  // used on something that is clearly not a frame anim in v54
                                     // animseq/humans/class/heavy/mp_pilot_heavy_core/mp_pt_crypto_base_execution_heavy_victim.rseq
-#define STUDIO_ANIM_UNK		0x20000 // actually first in v52, from where??
-                                    // this may actually be something different in apex, as all anims need this or else it does not read values
-#define STUDIO_ANIM_UNK1	0x40000
-#define STUDIO_ANIM_UNK2	0x80000 // cherry blossom v53, levi in v54
+#define STUDIO_ANIM_UNK		    0x20000 // actually first in v52, from where??
+                                        // this may actually be something different in apex, as all anims need this or else it does not read values
+#define STUDIO_FRAMEMOVEMENT    0x40000 // framemovements are only read if this flag is present
+#define STUDIO_ANIM_UNK2	    0x80000 // cherry blossom v53, levi in v54
 
 string ReadAnimDescFlags(int flags)
 {
@@ -2066,8 +2066,8 @@ string ReadAnimDescFlags(int flags)
         case 0x20000:
             value += "STUDIO_ANIM_UNK";
             break;
-        case 0x40000:
-            value += "STUDIO_ANIM_UNK1";
+        case STUDIO_FRAMEMOVEMENT:
+            value += "STUDIO_FRAMEMOVEMENT";
             break;
         case STUDIO_ANIM_UNK2:
             value += "STUDIO_ANIM_UNK2";
@@ -2267,8 +2267,8 @@ struct mstudioanimsections_t_v53
 #define STUDIO_ANIM_ANIMROT	0x08 // mstudioanim_valueptr_t
 #define STUDIO_ANIM_DELTA	0x10
 #define STUDIO_ANIM_RAWROT2	0x20 // Quaternion64
-
-// probably some new flags here for v52 scale stuff
+#define STUDIO_ANIM_RAWSCALE	0x40 // Vector48
+#define STUDIO_ANIM_ANIMSCALE	0x80 // mstudioanim_valueptr_t 
 
 // v53 flags
 #define STUDIO_ANIM_DELTA_53    0x01 // this appears to be delta until proven otherwise
@@ -2277,9 +2277,9 @@ struct mstudioanimsections_t_v53
 #define STUDIO_ANIM_RAWROT_53	0x04 // Quaternion48
 // drone_frag.mdl for scale track usage
 #define STUDIO_ANIM_RAWSCALE_53	0x08 // Vector48
-#define STUDIO_ANIM_UNK_53 0x10 // whar?
+#define STUDIO_ANIM_NOTROT_53   0x10
 
-string ReadAnimFlags(byte flags)
+string ReadAnimFlags(unsigned char flags)
 {
     string value = "";
 
@@ -2287,7 +2287,7 @@ string ReadAnimFlags(byte flags)
         return "NONE";
 
     int i = 0;
-    byte flag = 0;
+    unsigned char flag = 0;
 
     int flagsFound = 0;
 
@@ -2327,6 +2327,12 @@ string ReadAnimFlags(byte flags)
             break;
         case 0x20:
             value += "STUDIO_ANIM_RAWROT2";
+            break;
+        case STUDIO_ANIM_RAWSCALE:
+            value += "STUDIO_ANIM_RAWSCALE";
+            break;
+        case STUDIO_ANIM_ANIMSCALE:
+            value += "STUDIO_ANIM_ANIMSCALE";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -2390,7 +2396,7 @@ string ReadAnimFlagsV53(byte flags)
             value += "STUDIO_ANIM_RAWSCALE_53";
             break;
         case 0x10:
-            value += "STUDIO_ANIM_UNK_53";
+            value += "STUDIO_ANIM_NOTROT_53";
             break;
         default:
             value += Str("UNK_%x", flag);
@@ -2452,11 +2458,86 @@ union mstudioanimvalue_t
 {
 	struct 
 	{
-		byte	valid; // number of valid frames, or how many frames of data this value has
-		byte	total; // total number of frames, aka "values"
+        // unsigned because it is in some places
+		unsigned char	valid; // number of valid frames, or how many frames of data this value has
+		unsigned char	total; // total number of frames, aka "values"
 	} num;
 	short		value; // actual value, value*posscale
 };
+
+mstudioanimvalue_t ReadAnimValue(int pPos)
+{
+    local mstudioanimvalue_t studioanimvalue;
+
+    studioanimvalue.value = ReadShort(pPos);
+    
+    //value.num.valid = ReadUByte(pPos);
+    //value.num.total = ReadUByte(pPos + 1);
+
+    return studioanimvalue;
+}
+
+/*struct animation_value_set(int isApex)
+{
+    mstudioanimvalue_t animvalue <fgcolor=0x99aaff>;
+    short animation_data[animvalue.num.valid ? animvalue.num.valid - (1 * isApex) : animvalue.num.total] <fgcolor=0xf0f0ff>;
+};
+
+void GenerateAnimValues(int pAnimValue, int maxFrames)
+{
+    local int k = maxFrames;
+    local int pCurrentPos = pAnimValue;    
+
+    //Printf("remaining frames %i\n", k);
+
+    while((ReadUByte(pCurrentPos) <= (k + isApex)) && (k > 0))
+    {
+        if(ReadUByte(pCurrentPos + 1) == 0)
+            return;        
+
+        FSeek(pCurrentPos);
+        animation_value_set values(isApex);
+
+        pCurrentPos += (values.animvalue.num.valid + (1 - isApex)) * sizeof(short);
+        k -= values.animvalue.num.total;
+
+        //Printf("remaining frames %i\n", k);
+    }
+}*/
+
+void GenerateAnimValues(int pAnimValue, int maxFrames)
+{
+    local int k = maxFrames;
+    local int pCurrentPos = pAnimValue;    
+
+    //Printf("remaining frames %i\n", k);
+
+    while(ReadUByte(pCurrentPos) <= k)
+    {
+        if(ReadUByte(pCurrentPos + 1) == 0)
+            return;        
+
+        FSeek(pCurrentPos);
+        struct {
+            mstudioanimvalue_t animvalue <fgcolor=0x99aaff>;
+            short animation_data[animvalue.num.valid] <fgcolor=0xf0f0ff>;
+        } values;
+
+        pCurrentPos += (values.animvalue.num.valid + 1) * sizeof(short);
+        k -= values.animvalue.num.total;
+
+        //Printf("remaining frames %i\n", k);
+    }
+}
+
+void ReadValuePtr(mstudioanim_valueptr_t &valueptr, int maxFrames)
+{
+    for(g = 0; g < 3; g++)
+    {
+        if(valueptr.offset[g])
+            GenerateAnimValues(startof(valueptr) + valueptr.offset[g], maxFrames);
+    }
+}
 
 // 'mstudioanim_t' in 48
 struct mstudio_rle_anim_t
@@ -2467,19 +2548,20 @@ struct mstudio_rle_anim_t
     short nextoffset;
 
     if(flags & STUDIO_ANIM_ANIMROT)
-        mstudioanim_valueptr_t animrot; // pRotV
-
+        mstudioanim_valueptr_t pRotV;
 	if(flags & STUDIO_ANIM_ANIMPOS)
-	    mstudioanim_valueptr_t animpos; // pPosV
+	    mstudioanim_valueptr_t pPosV;
+    if(flags & STUDIO_ANIM_ANIMSCALE)
+	    mstudioanim_valueptr_t pScaleV;
 
 	if(flags & STUDIO_ANIM_RAWROT)
-	    Quaternion48 rawrot; // pQuat48
-
+	    Quaternion48 pQuat48;
 	if(flags & STUDIO_ANIM_RAWROT2)
-	    Quaternion64	rawrot2; // pQuat64
-
+	    Quaternion64 pQuat64;
 	if (flags & STUDIO_ANIM_RAWPOS)
-	    Vector48 rawpos; // pPos
+	    Vector48 pPos;
+    if (flags & STUDIO_ANIM_RAWSCALE)
+	    Vector48 pScale;
 };
 
 // same as above but the struct is always the same size
@@ -2574,25 +2656,25 @@ string ReadFrameAnimFlags(byte flags)
             value += "STUDIO_FRAME_RAWROT";
             break;
         case 0x4:
-            if(mdlHeader.version == 52)
+            if(hdr.version == 52)
                 value += "STUDIO_FRAME_RAWSCALE_52";
             else
                 value += "STUDIO_FRAME_ANIMPOS";
             break;
         case 0x8:
-            if(mdlHeader.version == 52)
+            if(hdr.version == 52)
                 value += "STUDIO_FRAME_ANIMPOS_52";
             else
                 value += "STUDIO_FRAME_ANIMROT";
             break;
         case 0x10:
-            if(mdlHeader.version == 52)
+            if(hdr.version == 52)
                 value += "STUDIO_FRAME_ANIMROT_52";
             else
                 value += "STUDIO_FRAME_FULLANIMPOS";
             break;
         case 0x20:
-           if(mdlHeader.version == 52)
+           if(hdr.version == 52)
                 value += "STUDIO_FRAME_ANIMSCALE_52";
             else
                 value += "UNK_0x20";
@@ -2853,9 +2935,11 @@ struct mstudiocompressedikerror_t
 };
 
 // new in v52
+// translation track for origin bone, used in lots of animated scenes, requires STUDIO_FRAMEMOVEMENT
+// pos_x, pos_y, pos_z, yaw
 struct mstudioframemovement_t
 {
-	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
+	float scale[4];
 	short offset[4];
 };
 
@@ -3753,7 +3837,9 @@ struct mstudioaabbleaf_t
 
 struct mstudioaabbvert_t
 {
-    char vertex[6]; // format is unknown
+    short x <read=Str("%f", this * ((float)(aabbheader.bbmax.x - aabbheader.bbmin.x) * 0.000015259022))>; 
+    short y <read=Str("%f", this * ((float)(aabbheader.bbmax.y - aabbheader.bbmin.y) * 0.000015259022))>;
+    short z <read=Str("%f", this * ((float)(aabbheader.bbmax.z - aabbheader.bbmin.z) * 0.000015259022))>;
 };
 
 
@@ -3762,7 +3848,7 @@ struct mstudioaabbvert_t
 
 
 // struct near end of file.
-struct unkphysectionhdr_t
+struct unksectionhdr_t
 {
     int numfaces;
     int numunk1; // quaternion, edges?
@@ -3792,5 +3878,5 @@ struct mstudionodename_t
 
 struct mstudionodedata
 {
-    byte nodedata[mdlHeader.numlocalnodes];
+    byte nodedata[hdr.numlocalnodes];
 };
