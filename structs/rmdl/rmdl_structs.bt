@@ -2365,8 +2365,7 @@ struct mstudioruimesh_t_v54
     int parentindex; // this gets padding out front of it to even off the struct
 
     int vertexindex; // offset into smd style vertex data
-    // not actually fourth vert wtf??
-    int fourthvertmapindex; // they now fully map the vertices for each quad
+    int unkindex;
     int vertmapindex; // offsets into a vertex map for each quad
     int facedataindex; // offset into uv section
 };

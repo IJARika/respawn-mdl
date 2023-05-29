@@ -436,7 +436,7 @@ if(hdr.numlocalanim)
                 if(animdesc.nummovements)
                 {
                     FSeek(startof(animdesc) + animdesc.movementindex);
-                    mstudiomovement_t movement[animdesc.nummovements] <bgcolor=0xaa7722>;
+                    mstudiomovement_t movement[animdesc.nummovements] <fgcolor=0xaa7722>;
                 }
     
                 if(animdesc.zeroframeindex)
@@ -530,6 +530,12 @@ if(hdr.version < 52)
 
 FSeek(hdr.localikautoplaylockindex);
 mstudioiklock_t iklocks[hdr.numlocalikautoplaylocks] <bgcolor=0xe8daef>;
+
+if(hdr.version < 52 && hdr.nummouths > 0)
+{
+    FSeek(startof(hdr) + hdr.mouthindex);
+    mstudiomouth_t mouth[hdr.nummouths] <fgcolor=0x5588cc>;
+}
 
 FSeek(hdr.localposeparamindex);
 mstudioposeparamdesc_t poseparm[hdr.numlocalposeparameters] <bgcolor=cYellow, read=ReadString(startof(this) + this.sznameindex)>;

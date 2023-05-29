@@ -1,13 +1,13 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: vvwhar
-//   Authors: Valve
-//   Version: 1
-//   Purpose: Valve Vertex Files
+//      File: vvw.bt
+//   Authors: Rika
+//   Version: 0.1
+//   Purpose: Respawn Extra Weight Files
 //  Category: Model
-// File Mask: *.vvwhar
-//  ID Bytes: 
+// File Mask: *.vvw
+//  ID Bytes: n/a
 //   History: 
 //------------------------------------------------
 
@@ -16,7 +16,7 @@
 #include "../vv/vv.bt"
 #include "../mdl/mdl_structs.bt"
 
-vertexWeightFileHeader_t vv_header <bgcolor=cYellow>;
+vertexBoneWeightsExtraFileHeader_t hdr <bgcolor=cYellow>;
 
-FSeek(vv_header.weightDataStart);
-mstudioexternalboneweight_t weight[(FileSize() - vv_header.weightDataStart) / 4] <bgcolor=cDkYellow>;
+FSeek(hdr.weightDataStart);
+mstudioboneweightextra_t weight[(FileSize() - hdr.weightDataStart) / 4] <bgcolor=cDkYellow>;

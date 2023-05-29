@@ -1791,6 +1791,15 @@ struct mstudioiklock_t
 	int unused[4];
 };
 
+// mouth
+struct mstudiomouth_t
+{
+	int					bone;
+	Vector				forward;
+	int					flexdesc;
+};
+
+
 // pose parameter desc
 struct mstudioposeparamdesc_t
 {
@@ -3848,22 +3857,20 @@ struct mstudioaabbvert_t
 
 
 // struct near end of file.
-struct unksectionhdr_t
+struct mstudiocollisionhdr_t
 {
-    int numfaces;
-    int numunk1; // quaternion, edges?
-    int numunk2; // // has to do with faces, has array of face index
-    int numverts;
+    int faceCount;
+    int unkCount; // quaternion, edges?
+    int edgeCount; // face edges
+    int vertCount;
 
-    int dataindex; // offset to related data chunk
+    int dataOffset; //
 };
 
-struct unkphysectiondatatype_t
+struct mstudiocollisionedge_t
 {
-    Vector unkvector; // min/max?
-    Vector unkvector1; // min/max?
-    
-    ubyte unk[4]; // flags? four separate bytes?
+    Vector points[2]; // these will be the same as vertices
+    char faceIndices[4]; // faces touching this edge??? not sure on this one
 };
 
 

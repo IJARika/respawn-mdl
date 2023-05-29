@@ -323,7 +323,7 @@ struct DmxElement_t
 
 struct ElementList_t
 {
-    int numElements;
+    int numElements <fgcolor=0x77cc88>;
 
     //i = CreateDMXElement(i, pElement, pAttribute);
 
@@ -334,7 +334,7 @@ struct ElementList_t
             DmxElement_t element;
 
             FSeek(pAttribute);
-            AttributeList_t attributes <fgcolor=0x779922, read=Str("%i attributes", this.numAttributes)>;
+            AttributeList_t attributes <read=Str("%i attributes", this.numAttributes)>;
 
             pAttribute = FTell();
         } element_group<read=Str("Type: %s; Name: %s;", ReadStringDict(this.element.type), ReadStringDict(this.element.name))>;
@@ -403,7 +403,7 @@ FSeek(pBaseAttribute);
 struct {
     for(i = 0; i < elementlist.numElements; i++)
     {
-        AttributeList_t attributelist;
+        AttributeList_t attributelist <fgcolor=0x779922>;
     }
 } attributelist_group;
 

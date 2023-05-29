@@ -1,0 +1,37 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vvd_auto.bt
+//   Authors: Rika + Valve (public structs)
+//   Version: 1.0
+//   Purpose: Valve Vertex Files
+//  Category: Model
+// File Mask: *.vvd
+//  ID Bytes: 49 44 53 56
+//   History: 
+//------------------------------------------------
+
+
+#include "../source_math.bt"
+#include "../vv/vv.bt"
+#include "../mdl/mdl_structs.bt"
+
+vertexFileHeader_t hdr <bgcolor=cYellow>;
+
+if(hdr.fixupTableStart > 0)
+{
+    FSeek(hdr.fixupTableStart);
+    vertexFileFixup_t fixup[hdr.numFixups] <bgcolor=cDkYellow>;
+}
+
+if(hdr.vertexDataStart > 0)
+{
+    FSeek(hdr.vertexDataStart);
+    mstudiovertex_t vert[hdr.numLODVertexes[0]] <bgcolor=cLtYellow>;
+}
+
+if(hdr.tangentDataStart > 0)
+{
+    FSeek(hdr.tangentDataStart);
+    Vector4 tangent[hdr.numLODVertexes[0]] <bgcolor=cYellow>;
+}

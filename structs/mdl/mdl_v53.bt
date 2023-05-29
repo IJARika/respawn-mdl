@@ -292,14 +292,14 @@ void GenerateUnknownSections(int sectionIdx, int sectionCount, studiohdr_t_v53 &
 {
     for(j = 0; j < sectionCount; j++)
     {
-        FSeek(startof(pHdr) + pHdr.unkindex + (sizeof(unksectionhdr_t) * (sectionIdx + j)));
+        FSeek(startof(pHdr) + pHdr.unkindex + (sizeof(mstudiocollisionhdr_t) * (sectionIdx + j)));
         struct {
-            unksectionhdr_t unksechdr <bgcolor=cBlue>;
+            mstudiocollisionhdr_t collisionhdr <bgcolor=cBlue>;
 
-            FSeek(startof(unksechdr) + unksechdr.dataindex);
-            Quaternion unkquat[unksechdr.numunk1] <bgcolor=cLtBlue>;             
-            unkphysectiondatatype_t unktype[unksechdr.numunk2] <bgcolor=cDkBlue>;            
-            Vector vertex[unksechdr.numverts] <bgcolor=cBlue>; // vertices
+            FSeek(startof(collisionhdr) + collisionhdr.dataOffset);
+            Quaternion unkquat[collisionhdr.unkCount] <bgcolor=cLtBlue>;             
+            mstudiocollisionedge_t edge[collisionhdr.edgeCount] <bgcolor=cDkBlue>;            
+            Vector vertex[collisionhdr.vertCount] <bgcolor=cBlue>; // vertices
         } section; // <read=Str("parent: %s", ReadString(startof(bones[boneIdx]) + bones[boneIdx].sznameindex))>
     }
 }

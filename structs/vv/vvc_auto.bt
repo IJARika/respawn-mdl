@@ -1,0 +1,40 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: vvc_auto.bt
+//   Authors: Rika + Valve (public structs)
+//   Version: 1.0
+//   Purpose: Respawn Vertex Color File
+//  Category: Model
+// File Mask: *.vvc
+//  ID Bytes: 49 44 43 56
+//   History: 
+//------------------------------------------------
+
+
+
+#include "../source_math.bt"
+#include "../vv/vv.bt"
+#include "../mdl/mdl_structs.bt"
+
+vertexColorFileHeader_t hdr <bgcolor=cYellow>;
+
+/*===========
+from r1 vmts:
+
+"$vertexcolor" "1"
+"$vertcoloristint" "1"
+"$vertexalpha" "1"
+
+"$cockpitlightmap0" "models\titans\stryder\stryder_cockpit\stryder_cockpit_console_pov_lightmap_01"
+"$cockpitlightmap1" "models\weapons\arms\titan_atlas_screen_lightmap_02"
+"$cockpitscreenlight" "_rt_TinyFB0"
+"$seconduvset" "1"
+===========*/
+
+FSeek(hdr.colorDataStart);
+VertexColor_t m_color[hdr.numLODVertexes[0]] <bgcolor=cLtYellow>;
+
+
+FSeek(hdr.uv2DataStart);
+Vector2 m_vecTexCoord2[hdr.numLODVertexes[0]] <bgcolor=cDkYellow>;
