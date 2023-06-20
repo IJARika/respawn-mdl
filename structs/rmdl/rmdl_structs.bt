@@ -2374,14 +2374,24 @@ struct mstudioruimesh_t_v54
 //========
 // Unknown
 
-struct unkheader_v54
+struct mstudiocollmodel_t
 {
-    int dataindex1;
-    int dataindex2;
-    int dataindex3;
-
-    int numsections;
+    int contentMasksIndex;
+    int surfacePropsIndex;
+    int surfaceNamesIndex;
+    int headerCount;
 };
+
+struct mstudiocollheader_t
+{
+    int unk;
+    int bvhNodeIndex;
+    int vertIndex;
+    int bvhLeafIndex;
+    float unk_10[3];
+    char unk_1C[4];
+};
+
 
 // "tricol headers" but not?
 struct unksectionheader_v54
