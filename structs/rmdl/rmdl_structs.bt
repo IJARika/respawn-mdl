@@ -2458,29 +2458,39 @@ struct unkdata2_t
 // 5 on most models
 // 7 on flyer
 
+// PACKED - uses "packed" vertex values stored in 3 16-bit integers and scaled at runtime to correct value
+// UNPACKED - uses a regular float3 vector for storing vertex position
 string ReadBVHChildType(byte flags)
 {
     string value = "";
 
-    //if(flags == 0)
-    //    return "node";
 
     switch(flags)
     {
     case 0:
-        value += "NODE";
+        value += "NODE (0)";
         break;
     case 1:
-        value += "NO_CHILD";
+        value += "NO_CHILD (1)";
         break;
     case 3:
-        value += "UNK_ON_FLYER_1";
+        value += "UNK_ON_FLYER_1 (3)";
+        break;
+    case 4: 
+        // used for triangles in bsp collision mesh and large models
+        // where verts exceed limits of packed verts
+        value += "TRI (4)"; 
         break;
     case 5:
-        value += "UNK_NO_CHILD_MODEL";
+        value += "PACKED_TRI (5)";
+        break;
+    case 6:
+        // used for quads in bsp collision mesh and large models
+        // where verts exceed limits of packed verts
+        value += "QUAD (6)";
         break;
     case 7:
-        value += "UNK_ON_FLYER_2";
+        value += "PACKED_QUAD (7)";
         break;
     default:
         value += Str("UNK_%x", flag);
@@ -2489,6 +2499,24 @@ string ReadBVHChildType(byte flags)
 
     return value;
 }
+
+struct CollTri_t
+{
+    int vert1offset : 11;
+    int vert2offset : 9;
+    int vert3offset : 9;
+    int edgeMask    : 3;
+};
+
+struct CollPackedTriLeaf_t
+{
+    int unk : 12;
+    int highestTriIndex : 4; // numTris = highestTriIndex + 1;
+
+    // vertex start offset for this leaf's verts: unk_2 << 10
+    // index into vertex buffer
+    int vertStartOffset : 16 <read=Str("%i", this << 10)>;
+};
 
 struct BVH4Axis_t
 {
@@ -2507,23 +2535,23 @@ struct BVH4Axis_t
 
 struct BVH4Node_t
 {
-        BVH4Axis_t x;
-        BVH4Axis_t y;
-        BVH4Axis_t z;
+    BVH4Axis_t x;
+    BVH4Axis_t y;
+    BVH4Axis_t z;
 
-        int pad : 8;
-        int index0 : 24; 
+    int pad : 8;
+    int index0 : 24; 
 
-        int collision_mask : 8;
-        int index1 : 24; 
+    int collision_mask : 8;
+    int index1 : 24; 
 
-        int child0_type : 4 <read=ReadBVHChildType(this)>; 
-        int child1_type : 4 <read=ReadBVHChildType(this)>;
-        int index2 : 24;
+    int child0_type : 4 <read=ReadBVHChildType(this)>; 
+    int child1_type : 4 <read=ReadBVHChildType(this)>;
+    int index2 : 24;
 
-        int child2_type : 4 <read=ReadBVHChildType(this)>; 
-        int child3_type : 4 <read=ReadBVHChildType(this)>;
-        int index3 : 24;
+    int child2_type : 4 <read=ReadBVHChildType(this)>; 
+    int child3_type : 4 <read=ReadBVHChildType(this)>;
+    int index3 : 24;
 };
 
 

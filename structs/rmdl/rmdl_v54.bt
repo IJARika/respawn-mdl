@@ -100,10 +100,21 @@ void ParseNodeType(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex, int no
         break;
     case 1:
         break;
-    //case 2:
-    //    break;
+    case 2:
+        break;
+    case 5:
+    {
+        FSeek(pLeafStart + (nodeIndex * 4));
+        
+        struct {
+            CollPackedTriLeaf_t packedTri<bgcolor=cDkYellow>;
+            CollTri_t tri[packedTri.highestTriIndex+1] <bgcolor=cLtYellow>;
+        } packedTriLeaf;
+
+        break;
+    }
     default:
-        FSeek(pLeafStart + nodeIndex);
+        FSeek(pLeafStart + (nodeIndex * 4));
         char bvh_leaf <fgcolor=0x5fff7c>;
         break;
     }
