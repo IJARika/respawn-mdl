@@ -91,30 +91,41 @@ mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDk
 // global string table setup, only changes for v14
 #include "../rmdl/rmdl_v54_module_stringtable.bt"
 
-
-struct bvh_node_func_t(__int64 pStart, int nodeIndex)
+void ParseNodeType(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex, int nodeType)
 {
-    FSeek(pStart + (sizeof(BVH4Node_t) * nodeIndex));
+    switch(nodeType)
+    {
+    case 0:
+        CreateBVHNodes(pNodeStart, pLeafStart, nodeIndex);
+        break;
+    case 1:
+        break;
+    //case 2:
+    //    break;
+    default:
+        FSeek(pLeafStart + nodeIndex);
+        char bvh_leaf <fgcolor=0x5fff7c>;
+        break;
+    }
+
+}
+
+struct bvh_node_func_t(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex)
+{
+    FSeek(pNodeStart + (sizeof(BVH4Node_t) * nodeIndex));
     BVH4Node_t bvh_node <fgcolor=0xa06397>;
 
-    if(bvh_node.child0_type == 0)
-        CreateBVHNodes(pStart, bvh_node.index0);
-    
-    if(bvh_node.child1_type == 0)
-        CreateBVHNodes(pStart, bvh_node.index1);
-    
-    if(bvh_node.child2_type == 0)
-        CreateBVHNodes(pStart, bvh_node.index2);
-    
-    if(bvh_node.child3_type == 0)
-        CreateBVHNodes(pStart, bvh_node.index3);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index0, bvh_node.child0_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index1, bvh_node.child1_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index2, bvh_node.child2_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index3, bvh_node.child3_type);
 };
 
-void CreateBVHNodes(__int64 pStart, int nodeIndex)
+void CreateBVHNodes(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex)
 {
-    FSeek(pStart); // "Invalid structure. Ending position was in front of starting position."
+    FSeek(pLeafStart); // "Invalid structure. Ending position was in front of starting position."
     //FSeek(pStart + (sizeof(BVH4Node_t) * nodeIndex));
-    bvh_node_func_t node(pStart, nodeIndex);
+    bvh_node_func_t node(pNodeStart, pLeafStart, nodeIndex);
 }
 
 if(hdr.bvh4index > 0)
@@ -129,10 +140,10 @@ if(hdr.bvh4index > 0)
             mstudiocollheader_t collheader <bgcolor=cPurple>;
 
             FSeek(startof(collmodel) + collheader.vertIndex);
-            char vertexData[collheader.bvhLeafIndex - collheader.vertIndex];
+            char vertexData[collheader.bvhLeafIndex - collheader.vertIndex] <fgcolor=0xb083c7>;
 
             FSeek(startof(collmodel) + collheader.bvhNodeIndex);
-            CreateBVHNodes(FTell(), 0);
+            CreateBVHNodes(startof(collmodel) + collheader.bvhNodeIndex, startof(collmodel) + collheader.bvhLeafIndex, 0);
         } collHeaderData;
     };
     
