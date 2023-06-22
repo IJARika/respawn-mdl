@@ -92,6 +92,31 @@ mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDk
 #include "../rmdl/rmdl_v54_module_stringtable.bt"
 
 
+struct bvh_node_func_t(__int64 pStart, int nodeIndex)
+{
+    FSeek(pStart + (sizeof(BVH4Node_t) * nodeIndex));
+    BVH4Node_t bvh_node <fgcolor=0xa06397>;
+
+    if(bvh_node.child0_type == 0)
+        CreateBVHNodes(pStart, bvh_node.index0);
+    
+    if(bvh_node.child1_type == 0)
+        CreateBVHNodes(pStart, bvh_node.index1);
+    
+    if(bvh_node.child2_type == 0)
+        CreateBVHNodes(pStart, bvh_node.index2);
+    
+    if(bvh_node.child3_type == 0)
+        CreateBVHNodes(pStart, bvh_node.index3);
+};
+
+void CreateBVHNodes(__int64 pStart, int nodeIndex)
+{
+    FSeek(pStart); // "Invalid structure. Ending position was in front of starting position."
+    //FSeek(pStart + (sizeof(BVH4Node_t) * nodeIndex));
+    bvh_node_func_t node(pStart, nodeIndex);
+}
+
 if(hdr.bvh4index > 0)
 {
     FSeek(hdr.bvh4index);
@@ -105,6 +130,9 @@ if(hdr.bvh4index > 0)
 
             FSeek(startof(collmodel) + collheader.vertIndex);
             char vertexData[collheader.bvhLeafIndex - collheader.vertIndex];
+
+            FSeek(startof(collmodel) + collheader.bvhNodeIndex);
+            CreateBVHNodes(FTell(), 0);
         } collHeaderData;
     };
     
