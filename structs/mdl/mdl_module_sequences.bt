@@ -24,6 +24,9 @@ if(hdr.numlocalseq)
             struct {
                 switch(hdr.version)
                 {
+                    case 63:
+                        mstudioseqdesc_t_v52 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
+                        break;
                     case 53:
                         mstudioseqdesc_t_v53 seqdesc <bgcolor=0xf0b27a, read=Str("%s : %s", ReadString(startof(this) + this.szlabelindex), ReadString(startof(this) + this.szactivitynameindex))>;
                         break;

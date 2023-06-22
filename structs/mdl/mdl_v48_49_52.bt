@@ -30,7 +30,7 @@ local int pre_version = ReadInt(4);
 
 
 // headers
-if (pre_version == 52)
+if (pre_version >= 52)
 { 
     studiohdr_t_v52 hdr <bgcolor=cLtBlue, read=ReadString(startof(mdlSubHeader) + mdlSubHeader.sznameindex)>;
     FSeek(hdr.studiohdr2index);
@@ -58,7 +58,7 @@ else
 
 // bones
 FSeek(hdr.boneindex);
-if (hdr.version == 52)
+if (hdr.version >= 52)
     mstudiobone_t_v52 bones[hdr.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;
 else if (hdr.version == 49)
     mstudiobone_t_v49 bones[hdr.numbones] <bgcolor=cLtGreen, read=ReadString(startof(this) + this.sznameindex)>;

@@ -1,16 +1,17 @@
 //------------------------------------------------
 //--- 010 Editor v12.0.1 Binary Template
 //
-//      File: 
-//   Authors: 
-//   Version: 
-//   Purpose: 
-//  Category: 
-// File Mask: 
-//  ID Bytes: 
+//      File: bparc.bt
+//   Authors: rika + rexx
+//   Version: 0.1
+//   Purpose: Bluepoint Archive Files
+//  Category: Archive
+// File Mask: *.bpk,*.xbarc
+//  ID Bytes: 58 42 41 52
 //   History: 
 //------------------------------------------------
 
+local int idx = 0;
 
 struct bpkhdr_t
 {
@@ -21,49 +22,81 @@ struct bpkhdr_t
     if (version == 6)
         int unk;
 
-    int chunkSize;
+    int chunkSize; // max size a chunk can be
     int chunkCount;
 
     if (version == 6)
     {
         int dataOffset;
         int dataSize;
-        int unk1;
+        int patchCount; // number of pak files that have been patched
     }
 };
 
-struct bpkfileentry_t_v0
+struct bpkfile_v0_t
 {
     int NAME_CRC;
     char HASH[16];
     int chunkIndex; // chunk idx?
     int fileSize; // decompressed size
     int unk[2];
-    int OFFSET;
+    int dataStart;
 };
 
-struct bpkfileentry_t
+struct bpkfile_t
 {
-    int unk; // crc/part of hash?
-    int unk1; // hash of the filename?
+    int hash[2] <read=Str("%LX", this)>; // first 8 bytes of the sha1 hash of the filename
     int unk2; // flags?
-    int chunkIndex; // chunk idx?
-    int fileSize; // decompressed size
-    int dataStart; // start of compressed data
-    int dataEnd; // end of compressed data
+    int chunkStart;
+	int uncompressedSize;
+	int dataStartOffset;
+	int dataEndOffset;
+};
+
+struct bpkpatch_t
+{
+    char pakName[64];
+    int unk;
+    int unk1;
+	int unk2;
+	int unk3;
 };
 
 BigEndian();
 bpkhdr_t pakhdr <fgcolor=0x5533AA>;
 
-bpkfileentry_t file_entry[pakhdr.fileCount] <fgcolor=0x5588DD>;
+if (pakhdr.version == 6)
+    bpkfile_t fileEntry[pakhdr.fileCount] <fgcolor=0x5588DD>;
+else
+    bpkfile_v0_t fileEntry[pakhdr.fileCount] <fgcolor=0x5588DD>;
 
-int unkidx[pakhdr.fileCount + pakhdr.chunkCount] <fgcolor=0x6DDFF>;
 
-//21472
+if (pakhdr.version == 6)
+    int unkFile[pakhdr.fileCount] <fgcolor=0x6DDFF>;
+
+int chunkSizes[pakhdr.chunkCount] <fgcolor=0x66DDFF>;
 
 if (pakhdr.version == 6)
 {
+    bpkpatch_t patches[pakhdr.patchCount] <fgcolor=0x66AACC>;
+
+    // seek here if we can
     FSeek(pakhdr.dataOffset);
-    char data[pakhdr.dataSize] <fgcolor=0x5555DD, hidden=true>;
-}
+}    
+
+// cycle through chunks
+struct {
+    local int i = 0;
+    for (i = 0; i < pakhdr.chunkCount; i++)
+    {
+        struct {
+            char data[chunkSizes[i]] <fgcolor=0x5555DD>;
+        } bpkChunk;
+    }
+} bpkChunks;
+
+/*for (idx = 0; idx < pakhdr.fileCount; idx++)
+{
+    if (fileEntry[idx].unk2 > 0)
+        Printf("%i has the funny: %i\n", idx, fileEntry[idx].unk2);
+}*/

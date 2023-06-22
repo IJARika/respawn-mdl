@@ -8,3 +8,5 @@ structs/rmdl/animheadertest.bt
 structs/bsp/bsp.bt
 structs/bsp/bspstructs.bt
 structs/vg/packed vert test.bt
+structs/dmx/test.bt
+structs/Template1.bt

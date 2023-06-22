@@ -15,7 +15,7 @@
 /*IK CHAIN MODULE*/
 
 
-local int ikChainSize = hdr.version > 52 ? sizeof(mstudioikchain_t_v53) : sizeof(mstudioikchain_t);
+local int ikChainSize = hdr.version == 53 ? sizeof(mstudioikchain_t_v53) : sizeof(mstudioikchain_t);
 
 if(hdr.numikchains)
 {
