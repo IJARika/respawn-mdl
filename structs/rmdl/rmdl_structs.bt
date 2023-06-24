@@ -46,179 +46,179 @@ int GetRMDLOffset(unsigned short offset)
 // note: surfaceproplookup seems to be written in later versions?
 struct studiohdr_t_v54
 {
-	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
  
-	Vector eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
  
-	int flags <read=ReadHeaderFlags(this)>;
+    int flags <read=ReadHeaderFlags(this)>;
   
-	int numbones; // bones
-	int boneindex;
+    int numbones; // bones
+    int boneindex;
  
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
+    int numbonecontrollers; // bone controllers
+    int bonecontrollerindex;
  
-	int numhitboxsets;
-	int hitboxsetindex;
+    int numhitboxsets;
+    int hitboxsetindex;
  
     // unused now
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
+    int numlocalanim; // animations/poses
+    int localanimindex; // animation descriptions
  
-	int numlocalseq; // sequences
-	int	localseqindex;
+    int numlocalseq; // sequences
+    int	localseqindex;
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+    int activitylistversion; // initialization flag - have the sequences been indexed?
  
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
+    // mstudiotexture_t
+    // short rpak path
+    // raw textures
     int materialtypesindex; // index into an array of byte sized material type enums for each material used by the model
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
+    int numtextures; // the material limit exceeds 128, probably 256.
+    int textureindex;
  
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
+    // this should always only be one, unless using vmts.
+    // raw textures search paths
+    int numcdtextures;
+    int cdtextureindex;
  
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
+    // replaceable textures tables
+    int numskinref;
+    int numskinfamilies;
+    int skinindex;
  
-	int numbodyparts;		
-	int bodypartindex;
+    int numbodyparts;		
+    int bodypartindex;
  
-	int numlocalattachments;
-	int localattachmentindex;
+    int numlocalattachments;
+    int localattachmentindex;
  
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
+    int numlocalnodes;
+    int localnodeindex;
+    int localnodenameindex;
  
-	int numunknodes; // ???
-	int nodedataindexindex; // index into an array of int sized offsets that read into the data for each node
+    int numunknodes; // ???
+    int nodedataindexindex; // index into an array of int sized offsets that read into the data for each node
  
-	int meshindex; // offset to model meshes
+    int meshindex; // offset to model meshes
 
     // all flex related model vars and structs are stripped in respawn source
-	int deprecated_numflexcontrollers;
-	int deprecated_flexcontrollerindex;
+    int deprecated_numflexcontrollers;
+    int deprecated_flexcontrollerindex;
  
-	int deprecated_numflexrules;
-	int deprecated_flexruleindex;
+    int deprecated_numflexrules;
+    int deprecated_flexruleindex;
  
-	int numikchains;
-	int ikchainindex;
+    int numikchains;
+    int ikchainindex;
 
-	// mesh panels for using rui on models, primarily for weapons
-	int numruimeshes;
-	int ruimeshindex;
+    // mesh panels for using rui on models, primarily for weapons
+    int numruimeshes;
+    int ruimeshindex;
  
-	int numlocalposeparameters;
-	int localposeparamindex;
+    int numlocalposeparameters;
+    int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(this)>;
+    int surfacepropindex <read=ReadString(this)>;
  
-	int keyvalueindex;
-	int keyvaluesize;
+    int keyvalueindex;
+    int keyvaluesize;
  
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
+    int numlocalikautoplaylocks;
+    int localikautoplaylockindex;
  
-	float mass;
-	int contents <read=ReadContents(this)>;
-	
-	// unused for packed models
+    float mass;
+    int contents <read=ReadContents(this)>;
+    
+    // unused for packed models
     // technically still functional though I am unsure why you'd want to use it
-	int numincludemodels;
-	int includemodelindex;
-	
-	int virtualModel; // size placeholder
+    int numincludemodels;
+    int includemodelindex;
+    
+    int virtualModel; // size placeholder
 
-	int bonetablebynameindex;
-	
-	// if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
-	// this value is used to calculate directional components of lighting 
-	// on static props
-	byte constdirectionallightdot;
+    int bonetablebynameindex;
+    
+    // if STUDIOHDR_FLAGS_CONSTANT_DIRECTIONAL_LIGHT_DOT is set,
+    // this value is used to calculate directional components of lighting 
+    // on static props
+    byte constdirectionallightdot;
 
-	// set during load of mdl data to track *desired* lod configuration (not actual)
-	// the *actual* clamped root lod is found in studiohwdata
-	// this is stored here as a global store to ensure the staged loading matches the rendering
-	byte rootLOD;
-	
-	// set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
-	// to be set as root LOD:
-	//	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
-	//	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
-	byte numAllowedRootLODs;
+    // set during load of mdl data to track *desired* lod configuration (not actual)
+    // the *actual* clamped root lod is found in studiohwdata
+    // this is stored here as a global store to ensure the staged loading matches the rendering
+    byte rootLOD;
+    
+    // set in the mdl data to specify that lod configuration should only allow first numAllowRootLODs
+    // to be set as root LOD:
+    //	numAllowedRootLODs = 0	means no restriction, any lod can be set as root lod.
+    //	numAllowedRootLODs = N	means that lod0 - lod(N-1) can be set as root lod, but not lodN or lower.
+    byte numAllowedRootLODs;
 
-	byte unused;
+    byte unused;
 
-	float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
+    float fadeDistance;
+    
+    float gathersize; // what. from r5r struct
 
     int deprecated_numflexcontrollerui;
-	int deprecated_flexcontrolleruiindex;
+    int deprecated_flexcontrolleruiindex;
 
-	float flVertAnimFixedPointScale; // to be verified
+    float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
-	int sourceFilenameOffset; // doesn't actually need to be written pretty sure, only four bytes when not present.
+    int sourceFilenameOffset; // doesn't actually need to be written pretty sure, only four bytes when not present.
 
-	int numsrcbonetransform;
-	int srcbonetransformindex;
+    int numsrcbonetransform;
+    int srcbonetransformindex;
 
-	int	illumpositionattachmentindex;
-	
-	int linearboneindex;
+    int	illumpositionattachmentindex;
+    
+    int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbones;
+    int numprocbones;
     int procbonetableindex;
     int linearprocboneindex;
 
     // depreciated as they are removed in 12.1
     int m_nBoneFlexDriverCount;
-	int m_nBoneFlexDriverIndex;
+    int m_nBoneFlexDriverIndex;
     
     int m_nPerTriAABBIndex;
     int m_nPerTriAABBNodeCount;
     int m_nPerTriAABBLeafCount;
     int m_nPerTriAABBVertCount;
 
-	// always "" or "Titan"
+    // always "" or "Titan"
     int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
-	// this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
+    // this is now used for combined files in rpak, vtx, vvd, and vvc are all combined while vphy is separate.
+    // the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
+    int vtxindex; // VTX
+    int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize; // still used in models using vg
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize; // still used in models using vg
 
     // unused in apex, gets cut in 12.1
     int unkmemberindex1;
@@ -235,117 +235,117 @@ struct studiohdr_t_v54
 
     int unk3_v54[3];
 
-	int bvh4index; // bvh4 tree
+    int bvh4index; // bvh4 tree
 
-	short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
+    short unk4_v54[2]; // same as unk3_v54_v121, 2nd might be base for other offsets?
 
     // new in apex vertex weight file for verts that have more than three weights
-	int vvwindex; // index will come last after other vertex files
-	int vvwsize;
+    int vvwindex; // index will come last after other vertex files
+    int vvwsize;
 };
 
 struct studiohdr_t_v54_v121
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
  
-	Vector eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
  
-	int flags <read=ReadHeaderFlags(this)>;
+    int flags <read=ReadHeaderFlags(this)>;
   
-	int numbones; // bones
-	int boneindex;
+    int numbones; // bones
+    int boneindex;
  
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
+    int numbonecontrollers; // bone controllers
+    int bonecontrollerindex;
  
-	int numhitboxsets;
-	int hitboxsetindex;
+    int numhitboxsets;
+    int hitboxsetindex;
  
-	// unused now
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
+    // unused now
+    int numlocalanim; // animations/poses
+    int localanimindex; // animation descriptions
  
-	int numlocalseq; // sequences
-	int	localseqindex;
+    int numlocalseq; // sequences
+    int	localseqindex;
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+    int activitylistversion; // initialization flag - have the sequences been indexed?
  
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
+    // mstudiotexture_t
+    // short rpak path
+    // raw textures
     int materialtypesindex;
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
+    int numtextures; // the material limit exceeds 128, probably 256.
+    int textureindex;
  
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
+    // this should always only be one, unless using vmts.
+    // raw textures search paths
+    int numcdtextures;
+    int cdtextureindex;
  
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
+    // replaceable textures tables
+    int numskinref;
+    int numskinfamilies;
+    int skinindex;
  
-	int numbodyparts;		
-	int bodypartindex;
+    int numbodyparts;		
+    int bodypartindex;
  
-	int numlocalattachments;
-	int localattachmentindex;
+    int numlocalattachments;
+    int localattachmentindex;
  
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
+    int numlocalnodes;
+    int localnodeindex;
+    int localnodenameindex;
  
-	int numunknodes;
-	int nodedataindexindex;
+    int numunknodes;
+    int nodedataindexindex;
 
-	int numikchains;
-	int ikchainindex;
+    int numikchains;
+    int ikchainindex;
  
-	// this is rui meshes
-	int numruimeshes;
-	int ruimeshindex;
+    // this is rui meshes
+    int numruimeshes;
+    int ruimeshindex;
  
-	int numlocalposeparameters;
-	int localposeparamindex;
+    int numlocalposeparameters;
+    int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(this)>;
+    int surfacepropindex <read=ReadString(this)>;
  
-	int keyvalueindex;
-	int keyvaluesize;
+    int keyvalueindex;
+    int keyvaluesize;
  
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
+    int numlocalikautoplaylocks;
+    int localikautoplaylockindex;
  
-	float mass;
-	int contents <read=ReadContents(this)>;
-	
-	// unused for packed models
-	int numincludemodels;
-	int includemodelindex;
-	
-	uint32 virtualModel;
+    float mass;
+    int contents <read=ReadContents(this)>;
+    
+    // unused for packed models
+    int numincludemodels;
+    int includemodelindex;
+    
+    uint32 virtualModel;
 
-	int bonetablebynameindex;
+    int bonetablebynameindex;
 
     // stuff moved from vg in v12.1
-	int numVGMeshes; // total number of meshes, not including LODs
-	int vgMeshIndex;
+    int numVGMeshes; // total number of meshes, not including LODs
+    int vgMeshIndex;
 
     int boneStateIndex;
     int numBoneStates;
@@ -362,46 +362,46 @@ struct studiohdr_t_v54_v121
     int vgHeaderIndex;
     int numVGHeaders;
 
-	int vgLODIndex;
+    int vgLODIndex;
     int numVGLODs;
 
     float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
-	
-	float flVertAnimFixedPointScale; // to be verified
+    
+    float gathersize; // what. from r5r struct
+    
+    float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
     // asset bakery strings if it has any
-	int sourceFilenameOffset;
+    int sourceFilenameOffset;
 
     int numsrcbonetransform;
-	int srcbonetransformindex;
+    int srcbonetransformindex;
 
-	int	illumpositionattachmentindex;
+    int	illumpositionattachmentindex;
 
-	int linearboneindex;
+    int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbonesunk;
-	int procbonearrayindex;	
+    int numprocbonesunk;
+    int procbonearrayindex;	
     int procbonemaskindex;
 
-	// always "" or "Titan"
+    // always "" or "Titan"
     int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
+    // the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
     // something different about these now
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
+    int vtxindex; // VTX
+    int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize;
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize;
 
     // mostly seen on '_animated' suffixed models
     // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
@@ -423,105 +423,105 @@ struct studiohdr_t_v54_v121
 struct studiohdr_t_v54_v122
 {
     int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
  
-	Vector eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
  
-	int flags <read=ReadHeaderFlags(this)>;
+    int flags <read=ReadHeaderFlags(this)>;
   
-	int numbones; // bones
-	int boneindex;
+    int numbones; // bones
+    int boneindex;
  
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
+    int numbonecontrollers; // bone controllers
+    int bonecontrollerindex;
  
-	int numhitboxsets;
-	int hitboxsetindex;
+    int numhitboxsets;
+    int hitboxsetindex;
  
-	// unused now
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
+    // unused now
+    int numlocalanim; // animations/poses
+    int localanimindex; // animation descriptions
  
-	int numlocalseq; // sequences
-	int	localseqindex;
+    int numlocalseq; // sequences
+    int	localseqindex;
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+    int activitylistversion; // initialization flag - have the sequences been indexed?
  
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
+    // mstudiotexture_t
+    // short rpak path
+    // raw textures
     int materialtypesindex;
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
+    int numtextures; // the material limit exceeds 128, probably 256.
+    int textureindex;
  
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
+    // this should always only be one, unless using vmts.
+    // raw textures search paths
+    int numcdtextures;
+    int cdtextureindex;
  
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
+    // replaceable textures tables
+    int numskinref;
+    int numskinfamilies;
+    int skinindex;
  
-	int numbodyparts;		
-	int bodypartindex;
+    int numbodyparts;		
+    int bodypartindex;
  
-	int numlocalattachments;
-	int localattachmentindex;
+    int numlocalattachments;
+    int localattachmentindex;
  
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
+    int numlocalnodes;
+    int localnodeindex;
+    int localnodenameindex;
  
-	int numunknodes;
-	int nodedataindexindex;
+    int numunknodes;
+    int nodedataindexindex;
 
-	int numikchains;
-	int ikchainindex;
+    int numikchains;
+    int ikchainindex;
  
-	// this is rui meshes
-	int numruimeshes;
-	int ruimeshindex;
+    // this is rui meshes
+    int numruimeshes;
+    int ruimeshindex;
  
-	int numlocalposeparameters;
-	int localposeparamindex;
+    int numlocalposeparameters;
+    int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(this)>;
+    int surfacepropindex <read=ReadString(this)>;
  
-	int keyvalueindex;
-	int keyvaluesize;
+    int keyvalueindex;
+    int keyvaluesize;
  
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
+    int numlocalikautoplaylocks;
+    int localikautoplaylockindex;
  
-	float mass;
-	int contents <read=ReadContents(this)>;
-	
-	// unused for packed models
-	int numincludemodels;
-	int includemodelindex;
-	
-	uint32 virtualModel;
+    float mass;
+    int contents <read=ReadContents(this)>;
+    
+    // unused for packed models
+    int numincludemodels;
+    int includemodelindex;
+    
+    uint32 virtualModel;
 
-	int bonetablebynameindex;
+    int bonetablebynameindex;
 
-	// stuff moved from vg in v12.1
-	int numVGMeshes; // total number of meshes, not including LODs
-	int vgMeshIndex;
+    // stuff moved from vg in v12.1
+    int numVGMeshes; // total number of meshes, not including LODs
+    int vgMeshIndex;
 
     int boneStateIndex;
     int numBoneStates;
@@ -538,48 +538,48 @@ struct studiohdr_t_v54_v122
     int vgHeaderIndex;
     int numVGHeaders;
 
-	int vgLODIndex;
+    int vgLODIndex;
     int numVGLODs;
 
     float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
-	
-	float flVertAnimFixedPointScale; // to be verified
+    
+    float gathersize; // what. from r5r struct
+    
+    float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int sourceFilenameOffset;
+    int sourceFilenameOffset;
 
     int numsrcbonetransform;
-	int srcbonetransformindex;
+    int srcbonetransformindex;
 
-	int	illumpositionattachmentindex;
+    int	illumpositionattachmentindex;
 
-	int linearboneindex;
+    int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbonesunk;
-	int procbonearrayindex;	
+    int numprocbonesunk;
+    int procbonearrayindex;	
     int procbonemaskindex;
 
-	// always "" or "Titan"
+    // always "" or "Titan"
     int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
+    // the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
     // something different about these now
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
+    int vtxindex; // VTX
+    int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize;
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize;
 
     // mostly seen on '_animated' suffixed models
     // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
@@ -600,106 +600,106 @@ struct studiohdr_t_v54_v122
 
 struct studiohdr_t_v54_v13
 {
-	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    int sznameindex <read=ReadString(this)>; // This has been moved from studiohdr2 to the front of the main header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
  
-	Vector eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
  
-	int flags <read=ReadHeaderFlags(this)>;
+    int flags <read=ReadHeaderFlags(this)>;
   
-	int numbones; // bones
-	int boneindex;
+    int numbones; // bones
+    int boneindex;
  
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
+    int numbonecontrollers; // bone controllers
+    int bonecontrollerindex;
  
-	int numhitboxsets;
-	int hitboxsetindex;
+    int numhitboxsets;
+    int hitboxsetindex;
  
-	// unused now
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
+    // unused now
+    int numlocalanim; // animations/poses
+    int localanimindex; // animation descriptions
  
-	int numlocalseq; // sequences
-	int	localseqindex;
+    int numlocalseq; // sequences
+    int	localseqindex;
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+    int activitylistversion; // initialization flag - have the sequences been indexed?
  
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
+    // mstudiotexture_t
+    // short rpak path
+    // raw textures
     int materialtypesindex;
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
+    int numtextures; // the material limit exceeds 128, probably 256.
+    int textureindex;
  
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
+    // this should always only be one, unless using vmts.
+    // raw textures search paths
+    int numcdtextures;
+    int cdtextureindex;
  
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
+    // replaceable textures tables
+    int numskinref;
+    int numskinfamilies;
+    int skinindex;
  
-	int numbodyparts;		
-	int bodypartindex;
+    int numbodyparts;		
+    int bodypartindex;
  
-	int numlocalattachments;
-	int localattachmentindex;
+    int numlocalattachments;
+    int localattachmentindex;
  
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
+    int numlocalnodes;
+    int localnodeindex;
+    int localnodenameindex;
  
-	int numunknodes;
-	int nodedataindexindex;
+    int numunknodes;
+    int nodedataindexindex;
 
-	int numikchains;
-	int ikchainindex;
+    int numikchains;
+    int ikchainindex;
  
-	// this is rui meshes
-	int numruimeshes;
-	int ruimeshindex;
+    // this is rui meshes
+    int numruimeshes;
+    int ruimeshindex;
  
-	int numlocalposeparameters;
-	int localposeparamindex;
+    int numlocalposeparameters;
+    int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(this)>;
+    int surfacepropindex <read=ReadString(this)>;
  
-	int keyvalueindex;
-	int keyvaluesize;
+    int keyvalueindex;
+    int keyvaluesize;
  
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
+    int numlocalikautoplaylocks;
+    int localikautoplaylockindex;
  
-	float mass;
-	int contents <read=ReadContents(this)>;
-	
-	// unused for packed models
-	int numincludemodels;
-	int includemodelindex;
-	
-	uint32 virtualModel;
+    float mass;
+    int contents <read=ReadContents(this)>;
+    
+    // unused for packed models
+    int numincludemodels;
+    int includemodelindex;
+    
+    uint32 virtualModel;
 
-	int bonetablebynameindex;
+    int bonetablebynameindex;
 
-	// stuff moved from vg in v12.1
-	int numVGMeshes; // total number of meshes, not including LODs
-	int vgMeshIndex;
+    // stuff moved from vg in v12.1
+    int numVGMeshes; // total number of meshes, not including LODs
+    int vgMeshIndex;
 
     int boneStateIndex;
     int numBoneStates;
@@ -716,48 +716,48 @@ struct studiohdr_t_v54_v13
     int vgHeaderIndex;
     int numVGHeaders;
 
-	int vgLODIndex;
+    int vgLODIndex;
     int numVGLODs;
 
     float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
-	
-	float flVertAnimFixedPointScale; // to be verified
+    
+    float gathersize; // what. from r5r struct
+    
+    float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int sourceFilenameOffset;
+    int sourceFilenameOffset;
 
     int numsrcbonetransform;
-	int srcbonetransformindex;
+    int srcbonetransformindex;
 
-	int	illumpositionattachmentindex;
+    int	illumpositionattachmentindex;
 
-	int linearboneindex;
+    int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbonesunk;
-	int procbonearrayindex;	
+    int numprocbonesunk;
+    int procbonearrayindex;	
     int procbonemaskindex;
 
-	// always "" or "Titan"
+    // always "" or "Titan"
     int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
+    // the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
     // something different about these now
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
+    int vtxindex; // VTX
+    int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize;
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize;
 
     // mostly seen on '_animated' suffixed models
     // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
@@ -780,108 +780,108 @@ struct studiohdr_t_v54_v13
 
 struct studiohdr_t_v54_v14
 {
-	int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
-	int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
-	int checksum; // This has to be the same in the phy and vtx files to load!
-	int sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
-	char name[64]; // The internal name of the model, padding with null bytes.
-	                // Typically "my_model.mdl" will have an internal name of "my_model"
-	int length; // Data size of MDL file in bytes.
+    int id; // Model format ID, such as "IDST" (0x49 0x44 0x53 0x54)
+    int version; // Format version number, such as 48 (0x30,0x00,0x00,0x00)
+    int checksum; // This has to be the same in the phy and vtx files to load!
+    int sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
+    char name[64]; // The internal name of the model, padding with null bytes.
+                    // Typically "my_model.mdl" will have an internal name of "my_model"
+    int length; // Data size of MDL file in bytes.
  
-	Vector eyeposition;	// ideal eye position
+    Vector eyeposition;	// ideal eye position
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
  
-	int flags <read=ReadHeaderFlags(this)>;
+    int flags <read=ReadHeaderFlags(this)>;
   
-	int numbones; // bones
-	int boneindex;
+    int numbones; // bones
+    int boneindex;
  
-	int numbonecontrollers; // bone controllers
-	int bonecontrollerindex;
+    int numbonecontrollers; // bone controllers
+    int bonecontrollerindex;
  
-	int numhitboxsets;
-	int hitboxsetindex;
+    int numhitboxsets;
+    int hitboxsetindex;
  
-	// unused now
-	int numlocalanim; // animations/poses
-	int localanimindex; // animation descriptions
+    // unused now
+    int numlocalanim; // animations/poses
+    int localanimindex; // animation descriptions
  
-	int numlocalseq; // sequences
-	int	localseqindex;
+    int numlocalseq; // sequences
+    int	localseqindex;
 
     int unk_v54_v14[2]; // added in v13 -> v14
  
-	int activitylistversion; // initialization flag - have the sequences been indexed?
+    int activitylistversion; // initialization flag - have the sequences been indexed?
  
-	// mstudiotexture_t
-	// short rpak path
-	// raw textures
+    // mstudiotexture_t
+    // short rpak path
+    // raw textures
     int materialtypesindex;
-	int numtextures; // the material limit exceeds 128, probably 256.
-	int textureindex;
+    int numtextures; // the material limit exceeds 128, probably 256.
+    int textureindex;
  
-	// this should always only be one, unless using vmts.
-	// raw textures search paths
-	int numcdtextures;
-	int cdtextureindex;
+    // this should always only be one, unless using vmts.
+    // raw textures search paths
+    int numcdtextures;
+    int cdtextureindex;
  
-	// replaceable textures tables
-	int numskinref;
-	int numskinfamilies;
-	int skinindex;
+    // replaceable textures tables
+    int numskinref;
+    int numskinfamilies;
+    int skinindex;
  
-	int numbodyparts;		
-	int bodypartindex;
+    int numbodyparts;		
+    int bodypartindex;
  
-	int numlocalattachments;
-	int localattachmentindex;
+    int numlocalattachments;
+    int localattachmentindex;
  
-	int numlocalnodes;
-	int localnodeindex;
-	int localnodenameindex;
+    int numlocalnodes;
+    int localnodeindex;
+    int localnodenameindex;
  
-	int numunknodes;
-	int nodedataindexindex;
+    int numunknodes;
+    int nodedataindexindex;
 
-	int numikchains;
-	int ikchainindex;
+    int numikchains;
+    int ikchainindex;
  
-	// this is rui meshes
-	int numruimeshes;
-	int ruimeshindex;
+    // this is rui meshes
+    int numruimeshes;
+    int ruimeshindex;
  
-	int numlocalposeparameters;
-	int localposeparamindex;
+    int numlocalposeparameters;
+    int localposeparamindex;
  
-	int surfacepropindex <read=ReadString(this)>;
+    int surfacepropindex <read=ReadString(this)>;
  
-	int keyvalueindex;
-	int keyvaluesize;
+    int keyvalueindex;
+    int keyvaluesize;
  
-	int numlocalikautoplaylocks;
-	int localikautoplaylockindex;
+    int numlocalikautoplaylocks;
+    int localikautoplaylockindex;
  
-	float mass;
-	int contents <read=ReadContents(this)>;
-	
-	// unused for packed models
-	int numincludemodels;
-	int includemodelindex;
-	
-	uint32 virtualModel;
+    float mass;
+    int contents <read=ReadContents(this)>;
+    
+    // unused for packed models
+    int numincludemodels;
+    int includemodelindex;
+    
+    uint32 virtualModel;
 
-	int bonetablebynameindex;
+    int bonetablebynameindex;
 
     // stuff moved from vg in v12.1
-	int numVGMeshes; // total number of meshes, not including LODs
-	int vgMeshIndex;
+    int numVGMeshes; // total number of meshes, not including LODs
+    int vgMeshIndex;
 
     int boneStateIndex;
     int numBoneStates;
@@ -898,48 +898,48 @@ struct studiohdr_t_v54_v14
     int vgHeaderIndex;
     int numVGHeaders;
 
-	int vgLODIndex;
+    int vgLODIndex;
     int numVGLODs;
 
     float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
-	
-	float flVertAnimFixedPointScale; // to be verified
+    
+    float gathersize; // what. from r5r struct
+    
+    float flVertAnimFixedPointScale; // to be verified
     int surfacepropLookup; // saved in the file
 
     int unk_v54_v122; // added in transition version
 
     // asset bakery strings if it has any
-	int sourceFilenameOffset;
+    int sourceFilenameOffset;
 
     int numsrcbonetransform;
-	int srcbonetransformindex;
+    int srcbonetransformindex;
 
-	int	illumpositionattachmentindex;
+    int	illumpositionattachmentindex;
 
-	int linearboneindex;
+    int linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	int numprocbonesunk;
-	int procbonearrayindex;	
+    int numprocbonesunk;
+    int procbonearrayindex;	
     int procbonemaskindex;
 
-	// always "" or "Titan"
+    // always "" or "Titan"
     int unkstringindex <read=ReadString(hdr.unkstringindex)>;
 
-	// the indexes are added to the offset in the rpak mdl_ header.
-	// vphy isn't vphy, looks like a heavily modified vphy.
+    // the indexes are added to the offset in the rpak mdl_ header.
+    // vphy isn't vphy, looks like a heavily modified vphy.
     // something different about these now
-	int vtxindex; // VTX
-	int vvdindex; // VVD / IDSV
-	int vvcindex; // VVC / IDCV 
-	int vphyindex; // VPHY / IVPS
+    int vtxindex; // VTX
+    int vvdindex; // VVD / IDSV
+    int vvcindex; // VVC / IDCV 
+    int vphyindex; // VPHY / IVPS
 
-	int vtxsize;
-	int vvdsize;
-	int vvcsize;
-	int vphysize;
+    int vtxsize;
+    int vvdsize;
+    int vvcsize;
+    int vphysize;
 
     // mostly seen on '_animated' suffixed models
     // manually declared bone followers are no longer stored in kvs under 'bone_followers', they are now stored in an array of ints with the bone index.
@@ -963,11 +963,11 @@ struct studiohdr_t_v54_v14
 struct studiohdr_t_v16
 {
     int flags <read=ReadHeaderFlags(this)>;
-	int checksum; // unsure if this is still checksum, there isn't any other files that have it still
-	short sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
-	char name[32]; // The internal name of the model, padding with null bytes.
+    int checksum; // unsure if this is still checksum, there isn't any other files that have it still
+    short sznameindex <read=ReadString(this)>; // No longer stored in string block, uses string in header.
+    char name[32]; // The internal name of the model, padding with null bytes.
                    // Typically "my_model.mdl" will have an internal name of "my_model"
-	byte unk_v16;
+    byte unk_v16;
 
     byte surfacepropLookup; // saved in the file
  
@@ -975,25 +975,25 @@ struct studiohdr_t_v16
 
     int version; // time will tell
 
-	unsigned short hitboxsetindex;
+    unsigned short hitboxsetindex;
     byte numhitboxsets;
 
     byte illumpositionattachmentindex;
 
-	Vector illumposition;	// illumination center
-	
-	Vector hull_min;		// ideal movement hull size
-	Vector hull_max;			
+    Vector illumposition;	// illumination center
+    
+    Vector hull_min;		// ideal movement hull size
+    Vector hull_max;			
 
-	Vector view_bbmin;		// clipping bounding box
-	Vector view_bbmax;		
+    Vector view_bbmin;		// clipping bounding box
+    Vector view_bbmax;		
   
-	short numbones; // bones
-	unsigned short boneindex;
+    short numbones; // bones
+    unsigned short boneindex;
     unsigned short bonedataindex;
 
     short numlocalseq; // sequences
-	unsigned short localseqindex;
+    unsigned short localseqindex;
 
     //byte unkfill[5];
 
@@ -1001,43 +1001,43 @@ struct studiohdr_t_v16
     short unk_v54_v14[2]; // added in v13 -> v14
  
     // needs to be confirmed
-	byte activitylistversion; // initialization flag - have the sequences been indexed?
+    byte activitylistversion; // initialization flag - have the sequences been indexed?
 
     byte numlocalattachments;
-	unsigned short localattachmentindex;
+    unsigned short localattachmentindex;
 
     short numlocalnodes;
-	unsigned short localnodenameindex;
+    unsigned short localnodenameindex;
     unsigned short nodedataindexindex;
 
-	short numikchains;
-	unsigned short ikchainindex;
+    short numikchains;
+    unsigned short ikchainindex;
 
     short numtextures; // the material limit exceeds 128, probably 256.
-	unsigned short textureindex;
+    unsigned short textureindex;
 
     // replaceable textures tables
-	short numskinref;
-	short numskinfamilies;
-	unsigned short skinindex;
+    short numskinref;
+    short numskinfamilies;
+    unsigned short skinindex;
 
     short numbodyparts;		
-	unsigned short bodypartindex;
+    unsigned short bodypartindex;
 
     // this is rui meshes
-	short numruimeshes;
-	unsigned short ruimeshindex;
+    short numruimeshes;
+    unsigned short ruimeshindex;
 
     short numlocalposeparameters;
-	unsigned short localposeparamindex;
+    unsigned short localposeparamindex;
 
     unsigned short surfacepropindex <read=ReadString(this)>;
 
     unsigned short keyvalueindex;
 
     // vg stuff 1
-	unsigned short numVGMeshes; // total number of meshes, not including LODs
-	short vgMeshIndex;
+    unsigned short numVGMeshes; // total number of meshes, not including LODs
+    short vgMeshIndex;
 
     short bonetablebynameindex;
 
@@ -1048,23 +1048,23 @@ struct studiohdr_t_v16
     unsigned short vgHeaderIndex;
     short numVGHeaders;
 
-	unsigned short vgLODIndex;
+    unsigned short vgLODIndex;
     short numVGLODs;
 
     float fadeDistance;
-	
-	float gathersize; // what. from r5r struct
+    
+    float gathersize; // what. from r5r struct
 
     short numsrcbonetransform;
     unsigned short srcbonetransformindex;
 
     // asset bakery strings if it has any
-	short sourceFilenameOffset;
+    short sourceFilenameOffset;
 
     unsigned short linearboneindex;
 
     // unsure what this is for but it exists for jigglbones
-	unsigned short numprocbones;
+    unsigned short numprocbones;
     unsigned short procbonetableindex;
     unsigned short linearprocboneindex;
 
@@ -1092,62 +1092,62 @@ struct studiohdr_t_v16
 // v54 is a heavily gutted v53 bone
 struct mstudiobone_t_v54
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
+    int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
+    int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
+    int bonecontroller[6]; // bone controller index, -1 == none
 
-	// default values
-	Vector pos;
-	Quaternion quat;
-	RadianEuler rot;
-	Vector scale; // bone scale(?)
+    // default values
+    Vector pos;
+    Quaternion quat;
+    RadianEuler rot;
+    Vector scale; // bone scale(?)
 
-	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+    matrix3x4_t poseToBone;
+    Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	int proctype;
+    int proctype;
     int procindex; // procedural rule
-	int physicsbone; // index into physically simulated bone
-	
+    int physicsbone; // index into physically simulated bone
+    
     int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
-	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
-	
-	int surfacepropLookup; // written on compile in v54
+    int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
+    
+    int surfacepropLookup; // written on compile in v54
 
     int unk;
-	
-	int unkid; // physics index (?)
+    
+    int unkid; // physics index (?)
 };
 
 struct mstudiobone_t_v54_v121
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
+    int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
-	int bonecontroller[6]; // bone controller index, -1 == none
+    int parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone
+    int bonecontroller[6]; // bone controller index, -1 == none
 
-	// default values
-	Vector pos;
-	Quaternion quat;
-	RadianEuler rot;	
-	Vector scale; // bone scale(?)
+    // default values
+    Vector pos;
+    Quaternion quat;
+    RadianEuler rot;	
+    Vector scale; // bone scale(?)
 
-	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+    matrix3x4_t poseToBone;
+    Quaternion qAlignment;
 
     int flags <read=ReadBoneFlags(this)>;
-	int proctype <read=ReadProcFlags(this)>;
+    int proctype <read=ReadProcFlags(this)>;
     int procindex; // procedural rule
-	int physicsbone; // index into physically simulated bone
-	
+    int physicsbone; // index into physically simulated bone
+    
     int surfacepropidx <read=ReadString(startof(this) + this - 164)>; // index into string tablefor property name
 
-	int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
-	
-	int surfacepropLookup; // written on compile in v54
+    int contents <read=ReadContents(this)>; // See BSPFlags.h for the contents flags
+    
+    int surfacepropLookup; // written on compile in v54
 
     byte unkid; // this is separate because it's set to 0xFF when unused (-1)
 
@@ -1166,18 +1166,18 @@ struct mstudiobone_t_v16
 
     short physicsbone; // index into physically simulated bone
 
-	short sznameindex <read=ReadString(startof(this) + this - 10)>;
+    short sznameindex <read=ReadString(startof(this) + this - 10)>;
 };
 
 struct mstudiobonedata_t_v16
 {
-	matrix3x4_t poseToBone;
-	Quaternion qAlignment;
+    matrix3x4_t poseToBone;
+    Quaternion qAlignment;
 
     // default values
-	Vector pos;
-	Quaternion quat;
-	RadianEuler rot;
+    Vector pos;
+    Quaternion quat;
+    RadianEuler rot;
     Vector scale; // bone scale(?)
 
     short parent <read=ReadString(startof(bones[ReadParentBone(this)]) + bones[ReadParentBone(this)].sznameindex)>; // parent bone;
@@ -1188,7 +1188,7 @@ struct mstudiobonedata_t_v16
 
     byte unkid;
 
-	byte proctype <read=ReadProcFlags(this)>;
+    byte proctype <read=ReadProcFlags(this)>;
     unsigned short procindex; // procedural rule
 };
 
@@ -1201,79 +1201,79 @@ struct mstudiojigglebone_t_v54
 
     short pad; // possibly unused
 
-	// general params
-	float length; // how far from bone base, along bone, is tip
-	float tipMass;
+    // general params
+    float length; // how far from bone base, along bone, is tip
+    float tipMass;
 
     float unkfloat; // v54 adds an extra value here but otherwise the same
                     // observed values are between 0-1
 
-	// flexible params
-	float yawStiffness;
-	float yawDamping;	
-	float pitchStiffness;
-	float pitchDamping;	
-	float alongStiffness;
-	float alongDamping;	
+    // flexible params
+    float yawStiffness;
+    float yawDamping;	
+    float pitchStiffness;
+    float pitchDamping;	
+    float alongStiffness;
+    float alongDamping;	
 
-	// angle constraint
-	float angleLimit; // maximum deflection of tip in radians
-	
-	// yaw constraint
-	float minYaw; // in radians
-	float maxYaw; // in radians
-	float yawFriction;
-	float yawBounce;
-	
-	// pitch constraint
-	float minPitch; // in radians
-	float maxPitch; // in radians
-	float pitchFriction;
-	float pitchBounce;
+    // angle constraint
+    float angleLimit; // maximum deflection of tip in radians
+    
+    // yaw constraint
+    float minYaw; // in radians
+    float maxYaw; // in radians
+    float yawFriction;
+    float yawBounce;
+    
+    // pitch constraint
+    float minPitch; // in radians
+    float maxPitch; // in radians
+    float pitchFriction;
+    float pitchBounce;
 
-	// base spring
-	float baseMass;
-	float baseStiffness;
-	float baseDamping;	
-	float baseMinLeft;
-	float baseMaxLeft;
-	float baseLeftFriction;
-	float baseMinUp;
-	float baseMaxUp;
-	float baseUpFriction;
-	float baseMinForward;
-	float baseMaxForward;
-	float baseForwardFriction;
+    // base spring
+    float baseMass;
+    float baseStiffness;
+    float baseDamping;	
+    float baseMinLeft;
+    float baseMaxLeft;
+    float baseLeftFriction;
+    float baseMinUp;
+    float baseMaxUp;
+    float baseUpFriction;
+    float baseMinForward;
+    float baseMaxForward;
+    float baseForwardFriction;
 };
 
 // attachment
 struct mstudioattachment_t_v54
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
-	int flags;
+    int sznameindex <read=ReadString(startof(this) + this)>;
+    int flags;
 
-	int localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
+    int localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
 
-	matrix3x4_t			localmatrix; // attachment point
+    matrix3x4_t			localmatrix; // attachment point
 };
 
 struct mstudioattachment_t_v16
 {
-	short sznameindex <read=ReadString(startof(this) + this)>;
+    short sznameindex <read=ReadString(startof(this) + this)>;
     short localbone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>; // parent bone
-	int flags;
+    int flags;
 
-	matrix3x4_t			localmatrix; // attachment point
+    matrix3x4_t			localmatrix; // attachment point
 };
 
 // ikchain
 struct mstudioikchain_t_v54
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
+    int sznameindex <read=ReadString(startof(this) + this)>;
 
-	int linktype;
-	int numlinks;
-	int linkindex;
+    int linktype;
+    int numlinks;
+    int linkindex;
     
     float unk; // no clue what this does tbh, tweaking it does nothing
                // default value: 0.707f
@@ -1281,11 +1281,11 @@ struct mstudioikchain_t_v54
 
 struct mstudioikchain_t_v16
 {
-	unsigned short sznameindex <read=ReadString(startof(this) + this)>;
+    unsigned short sznameindex <read=ReadString(startof(this) + this)>;
 
-	short linktype;
-	short numlinks;
-	unsigned short linkindex;
+    short linktype;
+    short numlinks;
+    unsigned short linkindex;
     
     float unk; // no clue what this does tbh, tweaking it does nothing
                // default value: 0.707f
@@ -1294,8 +1294,8 @@ struct mstudioikchain_t_v16
 // ikinfo
 struct mstudioiklink_t_v54
 {
-	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	Vector	kneeDir; // no kneeDir in apex I think
+    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+    Vector	kneeDir; // no kneeDir in apex I think
 };
 
 // linear bone
@@ -1303,37 +1303,37 @@ struct mstudioiklink_t_v54
 struct mstudiolinearbone_t_v54
 {
     // they cut pos and rot scale, understandable since posscale was never used it tf|2 and they do anims different in apex
-	int numbones;
+    int numbones;
 
-	int flagsindex;
+    int flagsindex;
 
-	int	parentindex;
-	
-	int	posindex;
-	
-	int quatindex;
-	
-	int rotindex;
-	
-	int posetoboneindex;
+    int	parentindex;
+    
+    int	posindex;
+    
+    int quatindex;
+    
+    int rotindex;
+    
+    int posetoboneindex;
 };
 
 struct mstudiolinearbone_t_v16
 {
     // they cut pos and rot scale, understandable since posscale was never used it tf|2 and they do anims different in apex
-	short numbones;
+    short numbones;
 
-	short flagsindex;
+    short flagsindex;
 
-	short	parentindex;
-	
-	short	posindex;
-	
-	short quatindex;
-	
-	short rotindex;
-	
-	short posetoboneindex;
+    short	parentindex;
+    
+    short	posindex;
+    
+    short quatindex;
+    
+    short rotindex;
+    
+    short posetoboneindex;
 };
 
 // bone remaps
@@ -1365,22 +1365,22 @@ enum <short> hboxgroup_v16
 // hitbox sets
 struct mstudiohitboxset_t_v16
 {
-	short sznameindex <read=ReadString(startof(this) + this)>;
+    short sznameindex <read=ReadString(startof(this) + this)>;
 
-	short numhitboxes;
-	short hitboxindex;
+    short numhitboxes;
+    short hitboxindex;
 };
 
 // hit box boxes
 struct mstudiobbox_t_v54
 {
-	int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	hboxgroup group; // intersection group
+    int bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+    hboxgroup group; // intersection group
 
-	Vector bbmin; // bounding box
-	Vector bbmax;	
+    Vector bbmin; // bounding box
+    Vector bbmax;	
 
-	int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
+    int szhitboxnameindex <read=ReadString(startof(this) + this - 32)>; // offset to the name of the hitbox.
     
     int critoverride; // overrides the group to be a crit, 0 or 1. might be group override since group 1 is head.
 
@@ -1389,13 +1389,13 @@ struct mstudiobbox_t_v54
 
 struct mstudiobbox_t_v16
 {
-	short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
-	hboxgroup_v16 group; // intersection group
+    short bone <read=ReadString(startof(bones[this]) + bones[this].sznameindex)>;
+    hboxgroup_v16 group; // intersection group
 
-	Vector bbmin; // bounding box
-	Vector bbmax;	
+    Vector bbmin; // bounding box
+    Vector bbmax;	
 
-	unsigned short szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
+    unsigned short szhitboxnameindex <read=ReadString(startof(this) + this - 28)>; // offset to the name of the hitbox.
 
     unsigned short keyvalueindex <read=ReadString(startof(this) + this - 30)>; // used for keyvalues, most for titans.
 };
@@ -1408,54 +1408,54 @@ struct mstudiobbox_t_v16
 // anim descriptions
 struct mstudioanimdesc_t_v54
 {
-	int baseptr;
+    int baseptr;
 
-	int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
+    int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
 
-	float fps; // frames per second	
-	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+    float fps; // frames per second	
+    int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-	int numframes;
+    int numframes;
 
-	// piecewise movement
-	int nummovements;
-	int movementindex;
+    // piecewise movement
+    int nummovements;
+    int movementindex;
 
-	int framemovementindex; // new in v52
+    int framemovementindex; // new in v52
 
-	int animindex; // non-zero when anim data isn't in sections
+    int animindex; // non-zero when anim data isn't in sections
 
-	int numikrules;
-	int ikruleindex; // non-zero when IK data is stored in the mdl
+    int numikrules;
+    int ikruleindex; // non-zero when IK data is stored in the mdl
 
-	int sectionindex;
-	int sectionframes; // number of frames used in each fast lookup section, zero if not used
+    int sectionindex;
+    int sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
 // rseq v7.1
 struct mstudioanimdesc_t_v54_v121
 {
-	int baseptr;
+    int baseptr;
 
-	int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
+    int sznameindex <read=ReadString(startof(parentof(this)) + this)>;
 
-	float fps; // frames per second	
-	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+    float fps; // frames per second	
+    int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-	int numframes;
+    int numframes;
 
-	// piecewise movement
-	int nummovements;
-	int movementindex;
+    // piecewise movement
+    int nummovements;
+    int movementindex;
 
-	int framemovementindex; // new in v52
+    int framemovementindex; // new in v52
 
-	int animindex; // non-zero when anim data isn't in sections
+    int animindex; // non-zero when anim data isn't in sections
 
-	int numikrules;
-	int ikruleindex; // non-zero when IK data is stored in the mdl
+    int numikrules;
+    int ikruleindex; // non-zero when IK data is stored in the mdl
 
-	int sectionindex;
+    int sectionindex;
     int sectionstaticframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
     int sectionframes; // number of frames used in each fast lookup section, zero if not used
 
@@ -1471,14 +1471,14 @@ struct mstudioanimdesc_t_v54_v121
 
 struct mstudioanimdesc_t_v16
 {
-	float fps; // frames per second	
-	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+    float fps; // frames per second	
+    int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-	short numframes;
+    short numframes;
 
-	// piecewise movement
-	//short nummovements;
-	//short movementindex;
+    // piecewise movement
+    //short nummovements;
+    //short movementindex;
 
     short unk_v16;
 
@@ -1486,21 +1486,21 @@ struct mstudioanimdesc_t_v16
 
     unsigned short framemovementindex; // new in v52
 
-	int animindex; // non-zero when anim data isn't in sections
+    int animindex; // non-zero when anim data isn't in sections
 
-	short numikrules;
-	unsigned short ikruleindex; // non-zero when IK data is stored in the mdl
+    short numikrules;
+    unsigned short ikruleindex; // non-zero when IK data is stored in the mdl
 
     short unk1[5];
 
-	short sectionindex;
+    short sectionindex;
     short sectionstaticframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
     short sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
 struct mstudioanimsections_t_v54_v121
 {
-	int animindex;
+    int animindex;
     int isExternal; // 0 or 1, if 1 section is not in rseq (I think)
 };
 
@@ -1519,7 +1519,7 @@ int ReadSectionIndex(int index)
 
 struct mstudioanimsections_t_v16
 {
-	int animindex;  // negative number if external
+    int animindex;  // negative number if external
 };
 
 struct sectionindexes_t_v54_v121
@@ -1709,7 +1709,7 @@ string ReadAnimFlagsV54(byte flags)
 struct mstudio_rle_anim_t_v54
 {
 
-	short size : 13; // total size of all animation data, not next offset because even the last one has it
+    short size : 13; // total size of all animation data, not next offset because even the last one has it
 
     short flags : 3 <read=ReadAnimFlagsV54(this)>;
     
@@ -1744,21 +1744,21 @@ struct mstudio_rle_anim_t_v54
 // apex ikerrors do the same thing as apex framemovements
 struct mstudiocompressedikerror_t_v54
 {
-	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
-	int sectionframes; // frames per section, may not match animdesc
+    float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+    int sectionframes; // frames per section, may not match animdesc
 };
 
 struct mstudiocompressedikerror_t_v16
 {
     short sectionframes; // frames per section, may not match animdesc
-	float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
+    float scale[6]; // these values are the same as what posscale (if it was used) and rotscale are.
 };
 
 // basically compressedikerrors and frame movements will have an array of offsets that leads into the traditional 'short offset' array, allowing it to have per section (if the anim uses sections) data
 struct mstudioframemovement_t_v54
 {
-	float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
-	int sectionframes; // frames per section, may not match animdesc
+    float scale[4]; // first three values are the same as what posscale (if it was used) is, fourth is similar to unkvector1.
+    int sectionframes; // frames per section, may not match animdesc
                        // may have more than one, even when not section anim
 };
 
@@ -1843,72 +1843,72 @@ struct mstudioikrule_t_v16
 // seq descriptions
 struct mstudioseqdesc_t_v54
 {
-	int baseptr;
+    int baseptr;
 
-	int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
+    int	szlabelindex <read=ReadString(startof(this) + this - 4)>;
 
-	int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
+    int szactivitynameindex <read=ReadString(startof(this) + this - 8)>;
 
-	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+    int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-	int activity; // initialized at loadtime to game DLL values
-	int actweight;
+    int activity; // initialized at loadtime to game DLL values
+    int actweight;
 
-	int numevents;
-	int eventindex;
-	
-	Vector bbmin; // per sequence bounding box
-	Vector bbmax;		
+    int numevents;
+    int eventindex;
+    
+    Vector bbmin; // per sequence bounding box
+    Vector bbmax;		
 
-	int numblends;
+    int numblends;
 
-	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
-	int animindexindex;
+    // Index into array of shorts which is groupsize[0] x groupsize[1] in length
+    int animindexindex;
 
-	int movementindex; // [blend] float array for blended movement
-	int groupsize[2];
-	int paramindex[2]; // X, Y, Z, XR, YR, ZR
-	float paramstart[2]; // local (0..1) starting value
-	float paramend[2]; // local (0..1) ending value
-	int paramparent;
+    int movementindex; // [blend] float array for blended movement
+    int groupsize[2];
+    int paramindex[2]; // X, Y, Z, XR, YR, ZR
+    float paramstart[2]; // local (0..1) starting value
+    float paramend[2]; // local (0..1) ending value
+    int paramparent;
 
-	float fadeintime; // ideal cross fate in time (0.2 default)
-	float fadeouttime; // ideal cross fade out time (0.2 default)
+    float fadeintime; // ideal cross fate in time (0.2 default)
+    float fadeouttime; // ideal cross fade out time (0.2 default)
 
-	int localentrynode; // transition node at entry
-	int localexitnode; // transition node at exit
-	int nodeflags; // transition rules
+    int localentrynode; // transition node at entry
+    int localexitnode; // transition node at exit
+    int nodeflags; // transition rules
 
-	float entryphase; // used to match entry gait
-	float exitphase; // used to match exit gait
-	
-	float lastframe; // frame that should generation EndOfSequence
+    float entryphase; // used to match entry gait
+    float exitphase; // used to match exit gait
+    
+    float lastframe; // frame that should generation EndOfSequence
 
-	int nextseq; // auto advancing sequences
-	int pose; // index of delta animation between end and nextseq
+    int nextseq; // auto advancing sequences
+    int pose; // index of delta animation between end and nextseq
 
-	int numikrules;
+    int numikrules;
 
-	int numautolayers;
-	int autolayerindex;
+    int numautolayers;
+    int autolayerindex;
 
-	int weightlistindex;
+    int weightlistindex;
 
-	int posekeyindex;
+    int posekeyindex;
 
-	int numiklocks;
-	int iklockindex;
+    int numiklocks;
+    int iklockindex;
 
-	// Key values
-	int keyvalueindex;
-	int keyvaluesize;
+    // Key values
+    int keyvalueindex;
+    int keyvaluesize;
 
-	int cycleposeindex; // index of pose parameter to use as cycle index
+    int cycleposeindex; // index of pose parameter to use as cycle index
 
     int activitymodifierindex;
-	int numactivitymodifiers;
+    int numactivitymodifiers;
 
-	int ikResetMask; // new in v52
+    int ikResetMask; // new in v52
     int unk1;
 
     int unkindex;
@@ -1917,75 +1917,75 @@ struct mstudioseqdesc_t_v54
 
 struct mstudioseqdesc_t_v16
 {
-	short szlabelindex <read=ReadString(startof(this) + this)>;
+    short szlabelindex <read=ReadString(startof(this) + this)>;
 
-	short szactivitynameindex <read=ReadString(startof(this) + this - 2)>;
+    short szactivitynameindex <read=ReadString(startof(this) + this - 2)>;
 
-	int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
+    int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-	short activity; // initialized at loadtime to game DLL values
-	short actweight;
+    short activity; // initialized at loadtime to game DLL values
+    short actweight;
 
-	short numevents;
-	short eventindex;
-	
-	Vector bbmin; // per sequence bounding box
-	Vector bbmax;		
+    short numevents;
+    short eventindex;
+    
+    Vector bbmin; // per sequence bounding box
+    Vector bbmax;		
 
-	short numblends;
+    short numblends;
 
-	// Index into array of shorts which is groupsize[0] x groupsize[1] in length
-	short animindexindex;
+    // Index into array of shorts which is groupsize[0] x groupsize[1] in length
+    short animindexindex;
 
-	//short movementindex; // [blend] float array for blended movement
-	short paramindex[2]; // X, Y, Z, XR, YR, ZR
-	float paramstart[2]; // local (0..1) starting value
-	float paramend[2]; // local (0..1) ending value
-	//short paramparent;
+    //short movementindex; // [blend] float array for blended movement
+    short paramindex[2]; // X, Y, Z, XR, YR, ZR
+    float paramstart[2]; // local (0..1) starting value
+    float paramend[2]; // local (0..1) ending value
+    //short paramparent;
 
-	float fadeintime; // ideal cross fate in time (0.2 default)
-	float fadeouttime; // ideal cross fade out time (0.2 default)
+    float fadeintime; // ideal cross fate in time (0.2 default)
+    float fadeouttime; // ideal cross fade out time (0.2 default)
 
     byte fill[4];
 
     // stuff is different after this
     /*
-	short localentrynode; // transition node at entry
-	short localexitnode; // transition node at exit
-	short nodeflags; // transition rules
+    short localentrynode; // transition node at entry
+    short localexitnode; // transition node at exit
+    short nodeflags; // transition rules
 
-	float entryphase; // used to match entry gait
-	float exitphase; // used to match exit gait
-	
-	float lastframe; // frame that should generation EndOfSequence
+    float entryphase; // used to match entry gait
+    float exitphase; // used to match exit gait
+    
+    float lastframe; // frame that should generation EndOfSequence
 
-	short nextseq; // auto advancing sequences
-	short pose; // index of delta animation between end and nextseq*/
+    short nextseq; // auto advancing sequences
+    short pose; // index of delta animation between end and nextseq*/
 
-	short numikrules;
+    short numikrules;
 
-	short numautolayers;
-	unsigned short autolayerindex;
+    short numautolayers;
+    unsigned short autolayerindex;
 
-	unsigned short weightlistindex;
+    unsigned short weightlistindex;
 
     byte groupsize[2];
 
     unsigned short posekeyindex;
 
-	short numiklocks;
-	short iklockindex;
+    short numiklocks;
+    short iklockindex;
 
-	// Key values
-	unsigned short keyvalueindex;
-	short keyvaluesize;
+    // Key values
+    unsigned short keyvalueindex;
+    short keyvaluesize;
 
-	//short cycleposeindex; // index of pose parameter to use as cycle index
+    //short cycleposeindex; // index of pose parameter to use as cycle index
 
     short activitymodifierindex;
-	short numactivitymodifiers;
+    short numactivitymodifiers;
 
-	int ikResetMask; // new in v52
+    int ikResetMask; // new in v52
     int unk1;
 
     unsigned short unkindex;
@@ -1997,56 +1997,56 @@ struct mstudioautolayer_t_v54
     // this needs to have a guid descriptor in rpak
     __int64 guidSequence <read=Str("%s - %LX", "aseq", this)>; // hashed aseq guid asset
 
-	short iSequence; // only used within an rmdl I would imagine
-	short iPose;
+    short iSequence; // only used within an rmdl I would imagine
+    short iPose;
 
-	int flags <read=ReadAutoLayerFlags(this)>;
-	float start;	// beginning of influence
-	float peak;	// start of full influence
-	float tail;	// end of full influence
-	float end;	// end of all influence
+    int flags <read=ReadAutoLayerFlags(this)>;
+    float start;	// beginning of influence
+    float peak;	// start of full influence
+    float tail;	// end of full influence
+    float end;	// end of all influence
 };
 
 struct mstudioevent_t_v54
 {
-	float cycle;
-	int	event;
-	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
-	char options[256];
+    float cycle;
+    int	event;
+    int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
+    char options[256];
 
-	int szeventindex <read=ReadString(startof(this) + this - 268)>;
+    int szeventindex <read=ReadString(startof(this) + this - 268)>;
 };
 
 // rseq v10
 struct mstudioevent_t_v54_v122
 {
-	float cycle;
-	int	event;
-	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
+    float cycle;
+    int	event;
+    int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 
     int unk; // 2, 4, animseq/weapons/crypto_heirloom/ptpov_sword_crypto/draw.rseq
 
-	char options[256]; // this is the only difference compared to normal v54
+    char options[256]; // this is the only difference compared to normal v54
 
-	int szeventindex <read=ReadString(startof(this) + this - 272)>;
+    int szeventindex <read=ReadString(startof(this) + this - 272)>;
 };
 
 struct mstudioevent_t_v16
 {
-	float cycle;
-	int	event;
-	int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
+    float cycle;
+    int	event;
+    int type <read=ReadEventFlags(this)>; // this will be 0 if old style I'd imagine
 
     int unk;
 
-	short szoptionsindex <read=ReadString(startof(this) + this - 16)>;
+    short szoptionsindex <read=ReadString(startof(this) + this - 16)>;
 
     short szeventindex <read=ReadString(startof(this) + this - 18)>;
 };
 
 struct mstudioactivitymodifier_t_v16
 {	
-	short sznameindex <read=ReadString(startof(this) + this)>;
+    short sznameindex <read=ReadString(startof(this) + this)>;
 
     bool negate; // 0 or 1 observed.
 };
@@ -2071,12 +2071,12 @@ struct unkseqdata_t
 // pose parameter desc
 struct mstudioposeparamdesc_t_v16
 {
-	unsigned short sznameindex <read=ReadString(startof(this) + this)>;
+    unsigned short sznameindex <read=ReadString(startof(this) + this)>;
 
-	short flags; // ????
-	float start; // starting value
-	float end; // ending value
-	float loop;	// looping range, 0 for no looping, 360 for rotations, etc.
+    short flags; // ????
+    float start; // starting value
+    float end; // ending value
+    float loop;	// looping range, 0 for no looping, 360 for rotations, etc.
 };
 
 //===================
@@ -2086,10 +2086,10 @@ struct mstudioposeparamdesc_t_v16
 // bodyparts
 struct mstudiobodyparts_t_v54_v15
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
-	int nummodels;
-	int base;
-	int modelindex; // index into models array
+    int sznameindex <read=ReadString(startof(this) + this)>;
+    int nummodels;
+    int base;
+    int modelindex; // index into models array
 
     int unk;
     int meshindex; // start of meshes?
@@ -2097,39 +2097,39 @@ struct mstudiobodyparts_t_v54_v15
 
 struct mstudiobodyparts_t_v16
 {
-	short sznameindex <read=ReadString(startof(this) + this)>;
+    short sznameindex <read=ReadString(startof(this) + this)>;
     short modelindex;
     int base;
-	int nummodels;
-	int meshindex; // might be short
+    int nummodels;
+    int meshindex; // might be short
 };
 
 // studio models
 struct mstudiomodel_t_v54
 {
-	char name[64];
+    char name[64];
 
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes, string index
+    int unkindex2 <read=ReadString(startof(this) + this - 64)>; // goes to bones sometimes, string index
 
     int type;
 
-	float boundingradius;
+    float boundingradius;
 
-	int nummeshes;	
-	int meshindex;
+    int nummeshes;	
+    int meshindex;
 
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
+    // cache purposes
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexindex; // vertex Vector
+    int tangentsindex; // tangents Vector
 
-	int numattachments;
-	int attachmentindex;
+    int numattachments;
+    int attachmentindex;
 
     int deprecated_numeyeballs;
-	int deprecated_eyeballindex;
+    int deprecated_eyeballindex;
 
-	int pad[4];
+    int pad[4];
 
     int colorindex; // vertex color
                     // offset by colorindex number of bytes into vvc vertex colors
@@ -2139,27 +2139,27 @@ struct mstudiomodel_t_v54
 
 struct mstudiomodel_t_v54_v121
 {
-	char name[64];
+    char name[64];
 
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
+    int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
     // it looks like they write the entire name
     // then write over it with other values where needed
     // why.
     int type;
 
-	float boundingradius;
+    float boundingradius;
 
-	int nummeshes;	
-	int meshindex;
+    int nummeshes;	
+    int meshindex;
 
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
+    // cache purposes
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexindex; // vertex Vector
+    int tangentsindex; // tangents Vector
 
-	int numattachments;
-	int attachmentindex;
+    int numattachments;
+    int attachmentindex;
 
     int colorindex; // vertex color
                     // offset by colorindex number of bytes into vvc vertex colors
@@ -2169,50 +2169,50 @@ struct mstudiomodel_t_v54_v121
 
 struct mstudiomodel_t_v54_v13
 {
-	char name[64];
+    char name[64];
 
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
+    int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
     // it looks like they write the entire name
     // then write over it with other values where needed
     // why.
     int type;
 
-	float boundingradius;
+    float boundingradius;
 
-	int nummeshes;	
-	int meshindex;
+    int nummeshes;	
+    int meshindex;
 
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
+    // cache purposes
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexindex; // vertex Vector
+    int tangentsindex; // tangents Vector
 
-	int numattachments;
-	int attachmentindex;
+    int numattachments;
+    int attachmentindex;
 
     int colorindex; // vertex color
                     // offset by colorindex number of bytes into vvc vertex colors
     int uv2index; // vertex second uv map
                   // offset by uv2index number of bytes into vvc secondary uv map
 
-	int unk; // same as uv2index, did they add something to vvc/0tVG?
+    int unk; // same as uv2index, did they add something to vvc/0tVG?
 };
 
 struct mstudiomodel_t_v54_v14
 {
-	char name[64];
+    char name[64];
 
-	int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
+    int unkindex2 <read=ReadString(startof(this) + this - 64)>; // byte before string block
 
     // they write over these two when it's the default
     int type;
 
-	float boundingradius;
+    float boundingradius;
 
-	int nummeshes;	
+    int nummeshes;	
 
-	// first is the same as nummeshes?
+    // first is the same as nummeshes?
     int unk_v14;
     int unk1_v14;
 
@@ -2220,17 +2220,17 @@ struct mstudiomodel_t_v54_v14
 
     // most of these vtx, vvd, vvc, and vg indexes are depreciated after v14.1 (s14)
 
-	// cache purposes
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexindex; // vertex Vector
-	int tangentsindex; // tangents Vector
+    // cache purposes
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexindex; // vertex Vector
+    int tangentsindex; // tangents Vector
 
-	int numattachments;
-	int attachmentindex;
+    int numattachments;
+    int attachmentindex;
 
     int colorindex; // vertex color
     int uv2index; // vertex second uv map
-	int unk;
+    int unk;
 };
 
 struct mstudiomodel_t_v16
@@ -2238,9 +2238,9 @@ struct mstudiomodel_t_v16
 
     short unkindex2 <read=ReadString(startof(this) + this)>;
 
-	short nummeshes;	
+    short nummeshes;	
 
-	// first is the same as nummeshes?
+    // first is the same as nummeshes?
     short unk_v14;
     short unk1_v14;
 
@@ -2250,58 +2250,58 @@ struct mstudiomodel_t_v16
 // meshes
 struct mstudiomesh_t_v54
 {
-	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 
-	int modelindex;
+    int modelindex;
 
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexoffset; // vertex mstudiovertex_t
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexoffset; // vertex mstudiovertex_t
 
-	// Access thin/fat mesh vertex data (only one will return a non-NULL result)
-	
-	int deprecated_numflexes; // vertex animation
-	int deprecated_flexindex;
-
-	// special codes for material operations
-	int deprecated_materialtype;
-	int deprecated_materialparam;
-
-	// a unique ordinal for this mesh
-	int meshid;
-
-	Vector center;
-
-	mstudio_meshvertexloddata_t vertexloddata;
+    // Access thin/fat mesh vertex data (only one will return a non-NULL result)
     
-	char unk[8]; // these are suposed to be filled on load, however this isn't true??
+    int deprecated_numflexes; // vertex animation
+    int deprecated_flexindex;
+
+    // special codes for material operations
+    int deprecated_materialtype;
+    int deprecated_materialparam;
+
+    // a unique ordinal for this mesh
+    int meshid;
+
+    Vector center;
+
+    mstudio_meshvertexloddata_t vertexloddata;
+    
+    char unk[8]; // these are suposed to be filled on load, however this isn't true??
 };
 
 struct mstudiomesh_t_v54_v121
 {
-	int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
+    int material <read=ReadString(startof(textures[this]) + textures[this].sznameindex)>;
 
-	int modelindex;
+    int modelindex;
 
-	int numvertices; // number of unique vertices/normals/texcoords
-	int vertexoffset; // vertex mstudiovertex_t
-	
-	// a unique ordinal for this mesh
-	int meshid;
+    int numvertices; // number of unique vertices/normals/texcoords
+    int vertexoffset; // vertex mstudiovertex_t
+    
+    // a unique ordinal for this mesh
+    int meshid;
 
     Vector center;
 
     // depreciated in later versions?
-	mstudio_meshvertexloddata_t vertexloddata;
+    mstudio_meshvertexloddata_t vertexloddata;
     
-	char unk[8]; // these are suposed to be filled on load, however this isn't true??
+    char unk[8]; // these are suposed to be filled on load, however this isn't true??
 };
 
 struct mstudiomesh_t_v16
 {
-	short material;
+    short material;
 
     // a unique ordinal for this mesh
-	short meshid;
+    short meshid;
 
     byte unk[4];
 
@@ -2316,14 +2316,14 @@ struct mstudiomesh_t_v16
 // skin info
 struct mstudiotexture_t_v54
 {
-	int sznameindex <read=ReadString(startof(this) + this)>;
+    int sznameindex <read=ReadString(startof(this) + this)>;
 
-	__int64 guid <read=Str("%s - %LX", "matl", this)>; // guid of the material it references
+    __int64 guid <read=Str("%s - %LX", "matl", this)>; // guid of the material it references
 };
 
 struct mstudiotexture_t_v16
 {
-	__int64 guid <read=Str("%s - %LX", "matl", this)>;
+    __int64 guid <read=Str("%s - %LX", "matl", this)>;
 };
 
 // texture types, new in v54
@@ -2388,6 +2388,19 @@ struct mstudiocollheader_t
     int bvhNodeIndex;
     int vertIndex;
     int bvhLeafIndex;
+    float unk_10[3];
+    char unk_1C[4];
+};
+
+struct mstudiocollheader_t_v12
+{
+    int unk;
+    int bvhNodeIndex;
+    int vertIndex;
+    int bvhLeafIndex;
+    int unkIndex;
+    int unkNew;
+
     float unk_10[3];
     char unk_1C[4];
 };
@@ -2569,9 +2582,9 @@ struct ModelLODHeader_RMDL_t
 
     //Mesh array
     short meshOffset;
-	short numMeshes;
+    short numMeshes;
 
-	float switchPoint;
+    float switchPoint;
 
     int pad; // not actually part of this struct, needs to be fixed
 };

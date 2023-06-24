@@ -13,30 +13,82 @@
 //------------------------------------------------
 
 
+void ParseNodeType(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex, int nodeType)
+{
+    switch(nodeType)
+    {
+    case 0:
+        CreateBVHNodes(pNodeStart, pLeafStart, nodeIndex);
+        break;
+    case 1:
+        break;
+    case 2:
+        break;
+    case 5:
+    {
+        FSeek(pLeafStart + (nodeIndex * 4));
+        
+        struct {
+            CollPackedTriLeaf_t packedTri<bgcolor=cDkYellow>;
+            CollTri_t tri[packedTri.highestTriIndex+1] <bgcolor=cLtYellow>;
+        } packedTriLeaf;
 
-// unkdata
+        break;
+    }
+    //case 7:
+    //{
+        
+
+    //    break;
+    //}
+    default:
+        FSeek(pLeafStart + (nodeIndex * 4));
+        char bvh_leaf <fgcolor=0x5fff7c>;
+        break;
+    }
+
+}
+
+struct bvh_node_func_t(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex)
+{
+    FSeek(pNodeStart + (sizeof(BVH4Node_t) * nodeIndex));
+    BVH4Node_t bvh_node <fgcolor=0xa06397>;
+
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index0, bvh_node.child0_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index1, bvh_node.child1_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index2, bvh_node.child2_type);
+    ParseNodeType(pNodeStart, pLeafStart, bvh_node.index3, bvh_node.child3_type);
+};
+
+void CreateBVHNodes(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex)
+{
+    FSeek(pLeafStart); // "Invalid structure. Ending position was in front of starting position."
+    //FSeek(pStart + (sizeof(BVH4Node_t) * nodeIndex));
+    bvh_node_func_t node(pNodeStart, pLeafStart, nodeIndex);
+}
+
 if(hdr.bvh4index > 0)
 {
     FSeek(hdr.bvh4index);
-    unkheader_v54 unkhdr <bgcolor=cDkBlue>;
-    unksectionheader_v54_v12 unksecthdr[unkhdr.numsections] <bgcolor=cBlue>;
-    //unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;
+    mstudiocollmodel_t collmodel <bgcolor=cDkBlue>;
 
-    FSeek(startof(unkhdr) + unkhdr.dataindex2);
-    unkheaderdata_v54 unkhdrdata <bgcolor=cDkBlue>;
-
-    for(i = 0; i < unkhdr.numsections; i++)
+    for(i = 0; i < collmodel.headerCount; ++i)
     {
-        FSeek(startof(unkhdr) + unksecthdr[i].dataindex2);
-        unkdata2_t guh2 <bgcolor=0xFF9600>;
-    }
+        FSeek(startof(collmodel) + sizeof(collmodel) + (i * sizeof(mstudiocollheader_t_v12)));
+        struct {
+            mstudiocollheader_t_v12 collheader <bgcolor=cPurple>;
 
-    for(i = 0; i < unkhdr.numsections; i++)
-    {
-        FSeek(startof(unkhdr) + unksecthdr[i].nodeindex);
-        BVH4Node_t parent_node <bgcolor=0xAA9600>;
+            FSeek(startof(collmodel) + collheader.vertIndex);
+            char vertexData[collheader.bvhLeafIndex - collheader.vertIndex] <fgcolor=0xb083c7>;
 
+            FSeek(startof(collmodel) + collheader.bvhNodeIndex);
+            CreateBVHNodes(startof(collmodel) + collheader.bvhNodeIndex, startof(collmodel) + collheader.bvhLeafIndex, 0);
+        } collHeaderData;
+    };
+    
+    FSeek(startof(collmodel) + collmodel.surfacePropsIndex);
+    char surfaceProperties[collmodel.contentMasksIndex - collmodel.surfacePropsIndex] <bgcolor=cLtYellow>;
 
-        // todo read types and add children
-    }
+    FSeek(startof(collmodel) + collmodel.contentMasksIndex);
+    char contentMasks[collmodel.surfaceNamesIndex - collmodel.contentMasksIndex] <bgcolor=cLtRed>;
 }
