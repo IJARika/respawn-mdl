@@ -2405,65 +2405,6 @@ struct mstudiocollheader_t_v12
     char unk_1C[4];
 };
 
-
-// "tricol headers" but not?
-struct unksectionheader_v54
-{
-    int unk; // num of nodes?
-
-    int nodeindex;
-    int dataindex2; // tri
-    int dataindex3; // vert
-
-    float unkfloat[3]; // unsure if this is a vector
-
-    ubyte unk1[4];
-};
-
-// v12
-struct unksectionheader_v54_v12
-{
-    int unk;
-
-    int nodeindex;
-    int dataindex2;
-    int dataindex3;
-
-    int dataindex4; // new
-
-    int unkNew;
-
-    float unkfloat[3]; // unsure if this is a vector
-
-    hfloat unk1[2]; // sus
-};
-
-struct unkheaderdata_v54
-{
-    byte unk[unkhdr.dataindex1 - unkhdr.dataindex2];
-    int unk1;
-    int unk2;
-};
-
-struct unkdata_t
-{
-    short unk[4]; // min?
-    short unk1[4]; // max?
-
-    short unk2[4]; // min
-    short unk3[4]; // max
-
-    short unk4[4]; // min
-    short unk5[4]; // max
-
-    int unk6[4];
-};
-
-struct unkdata2_t
-{
-    short unk[24];
-};
-
 // for bvh4 types:
 // 0 bvh4 node
 // 1 no children
