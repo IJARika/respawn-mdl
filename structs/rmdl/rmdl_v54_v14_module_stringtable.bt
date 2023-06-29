@@ -43,7 +43,7 @@ else
     FSeek(hdr.surfacepropindex);
     
     // check if either of these is null
-    if(hdr.unkindex3 > 0 || hdr.bvh4index > 0)
+    if(hdr.bonefollowerindex > 0 || hdr.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
         if(hdr.bvh4index > 0)

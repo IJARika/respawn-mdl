@@ -69,6 +69,9 @@ if(hdr.numlocalseq)
                     FSeek(startof(seqdesc[si]) + blendgroup[k]);
                     mstudioanimdesc_t_v16 animdesc <bgcolor=0xdc7633, read=ReadString(startof(this) + this.sznameindex)>;
                 
+                    if (!(animdesc[k].flags & 0x20000))
+                        continue;
+
                     struct {
                         if(animdesc[k].flags & STUDIO_ALLZEROS)
                         {

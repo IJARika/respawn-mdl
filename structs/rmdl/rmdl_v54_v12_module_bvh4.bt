@@ -69,7 +69,7 @@ void CreateBVHNodes(__int64 pNodeStart, __int64 pLeafStart, int nodeIndex)
 
 if(hdr.bvh4index > 0)
 {
-    FSeek(hdr.bvh4index);
+    FSeek(GetRMDLOffset(hdr.bvh4index)); // aligned so we can just do this
     mstudiocollmodel_t collmodel <bgcolor=cDkBlue>;
 
     for(i = 0; i < collmodel.headerCount; ++i)

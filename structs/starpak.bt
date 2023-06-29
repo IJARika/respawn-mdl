@@ -1,0 +1,47 @@
+//------------------------------------------------
+//--- 010 Editor v12.0.1 Binary Template
+//
+//      File: starpak.bt
+//   Authors: rika
+//   Version: 0.1
+//   Purpose: Respawn Starpak Files
+//  Category: Archive
+// File Mask: *.starpak
+//  ID Bytes: 53 52 50 6B
+//   History:
+//------------------------------------------------
+
+struct starpakhdr_t
+{
+    int id <fgcolor=cGreen>;
+    int version <fgcolor=cLtRed>;
+};
+
+struct starpakentry_t
+{
+    __int64 entryOffset;
+    __int64 entrySize;
+};
+
+starpakhdr_t hdr;
+
+FSeek(4096); // chunks aligned to 4096
+local __int64 pPos = FileSize();
+local __int64 entryIndex;
+
+pPos -= sizeof(__int64);
+FSeek(pPos);
+__int64 entryCount <fgcolor=0xffaacc>;
+
+pPos -= (sizeof(starpakentry_t) * entryCount);
+FSeek(pPos);
+starpakentry_t entries[entryCount] <fgcolor=0x66aaaa, read=Str("offset: %Ld size: %Ld", this.entryOffset, this.entrySize)>;
+
+for (entryIndex = 0; entryIndex < entryCount; entryIndex++)
+{
+    FSeek(entries[entryIndex].entryOffset);
+    struct {
+        local __int64 localIndex  = entryIndex;
+        char data[entries[entryIndex].entrySize];
+    } entryData <fgcolor=cLtBlue, read=Str("size: %LX", entries[localIndex].entrySize)>;
+}
