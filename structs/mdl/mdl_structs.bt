@@ -3806,51 +3806,57 @@ struct mstudioruimesh_t
 //=======================
 // Per Triangle Collision
 
-
-// struct names are assumptions
-struct mstudioaabbheader_t
+struct mstudiopertrihdr_t
 {
-    int version; // unsure if this is an actual version or type
-                 // set to '2' for static prop.
-    
-    // aabb sizes, same as hulls
-    Vector bbmin;
-	Vector bbmax;		
+	short version; // game requires this to be 2 or else it errors
 
-    int unused[8]; // hopefully, checks out with other mdl structs 
+	short unk; // may or may not exist, version gets casted as short in ida
+
+	Vector bbmin;
+	Vector bbmax;
+
+	int unused[8];
 };
 
-struct mstudioaabbnode_t
+struct mstudiopertrinode_t
 {
-    short unk[3];
-    short unk1[3];
+    // bounds? probably calculated the same as vert pos. needs to be checked
+    short min[3];
+    short max[3];
     
     // sometimes negative
-    int unk2[2];
+    // node / leaf indices, zero or greater is node, neg one or less is leaf
+    // real leaf index is (index * -1) - 1
+    int child0Index;
+    int child1Index;
 };
 
-struct aabbtype
+struct mstudiopertrileaftri_t
 {
-    short unk[3];
-    short unk1;
+    short vertIndices[3];
+    short compAlign <hidden=true>;
 };
 
-struct mstudioaabbleaf_t
+struct mstudiopertrileaf_t
 {
-    short unk[6];
+    // bounds? probably calculated the same as vert pos. needs to be checked
+    short min[3];
+    short max[3];
 
-    int unk1;
+    int unk1; // padding for 16 byte alignment?
     
-    aabbtype unk2[12];
+    mstudiopertrileaftri_t triangles[12];
 };
 
-struct mstudioaabbvert_t
+struct mstudiopertrivertex_t
 {
-    short x <read=Str("%f", this * ((float)(aabbheader.bbmax.x - aabbheader.bbmin.x) * 0.000015259022))>; 
-    short y <read=Str("%f", this * ((float)(aabbheader.bbmax.y - aabbheader.bbmin.y) * 0.000015259022))>;
-    short z <read=Str("%f", this * ((float)(aabbheader.bbmax.z - aabbheader.bbmin.z) * 0.000015259022))>;
+	// to get float value:
+	// axisValue * ((float)(bbmax.axis - bbmin.axis) * 0.000015259022)
+	// where axis is x, y, or z. bbmax and bbmin are from the pertri header.
+	short x <read=Str("%f", this * ((float)(pertrihdr.bbmax.x - pertrihdr.bbmin.x) * 0.000015259022))>; 
+    short y <read=Str("%f", this * ((float)(pertrihdr.bbmax.y - pertrihdr.bbmin.y) * 0.000015259022))>;
+    short z <read=Str("%f", this * ((float)(pertrihdr.bbmax.z - pertrihdr.bbmin.z) * 0.000015259022))>;
 };
-
 
 //========
 // Unknown
@@ -3869,8 +3875,9 @@ struct mstudiocollisionhdr_t
 
 struct mstudiocollisionedge_t
 {
-    Vector points[2]; // these will be the same as vertices
-    char faceIndices[4]; // faces touching this edge??? not sure on this one
+    Vector vertPos[2];
+    unsigned char vertIndices[2];
+    unsigned char faceIndices[2];
 };
 
 

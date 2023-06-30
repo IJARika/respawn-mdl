@@ -231,15 +231,58 @@ mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDk
 #include "../mdl/mdl_module_linearbone.bt"
 
 
+struct pertrinode_t(int pNodeStart, int pLeafStart, int nodeIndex)
+{
+        FSeek(pNodeStart + (sizeof(mstudiopertrinode_t) * nodeIndex));
+        mstudiopertrinode_t node <fgcolor=0x6644dd>;
+
+        if (node.child0Index >= 0)
+        {
+           BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child0Index);
+        }
+        else
+        {
+            FSeek(pLeafStart + (((node.child0Index * -1) - 1) * sizeof(mstudiopertrileaf_t)));
+            mstudiopertrileaf_t leaf0 <fgcolor=0xffaaaa>;
+        }
+
+        if (node.child1Index >= 0)
+        {
+           BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child1Index);
+        }
+        else
+        {
+            FSeek(pLeafStart + (((node.child1Index * -1) - 1) * sizeof(mstudiopertrileaf_t)));
+            mstudiopertrileaf_t leaf1 <fgcolor=0xffaaaa>;
+        }
+};
+
+void BuildNodeTreeForBVH2(int pNodeStart, int pLeafStart, int nodeIndex)
+{
+    FSeek(pNodeStart);
+    pertrinode_t node_group(pNodeStart, pLeafStart, nodeIndex);
+}
+
 // per tri aabb data
 FSeek(hdr.m_nPerTriAABBIndex);
-mstudioaabbheader_t aabbheader <fgcolor=cDkRed>; // header completely nulled out if unused.
+mstudiopertrihdr_t pertrihdr <fgcolor=cDkRed>; // header completely nulled out if unused.
 
 if (hdr.m_nPerTriAABBNodeCount || hdr.m_nPerTriAABBLeafCount || hdr.m_nPerTriAABBVertCount)
-{
-    mstudioaabbnode_t aabb_nodes[hdr.m_nPerTriAABBNodeCount] <fgcolor=cRed>;
-    mstudioaabbleaf_t aabb_leafs[hdr.m_nPerTriAABBLeafCount] <fgcolor=cRed>;
-    mstudioaabbvert_t aabb_verts[hdr.m_nPerTriAABBVertCount] <fgcolor=cRed>;
+{  
+    local int pNode = hdr.m_nPerTriAABBIndex + sizeof(mstudiopertrihdr_t);
+    local int pLeaf = pNode + (sizeof(mstudiopertrinode_t) * hdr.m_nPerTriAABBNodeCount);
+
+    if (hdr.m_nPerTriAABBNodeCount)
+    {
+        struct {
+            BuildNodeTreeForBVH2(pNode, pLeaf, 0);
+        } node_tree;
+    }
+
+    FSeek(pNode);
+    mstudiopertrinode_t pertrinodes[hdr.m_nPerTriAABBNodeCount];
+    mstudiopertrileaf_t pertrileaves[hdr.m_nPerTriAABBLeafCount];                         
+    mstudiopertrivertex_t pertriverts[hdr.m_nPerTriAABBVertCount] <fgcolor=cRed>;
 };
 
 
