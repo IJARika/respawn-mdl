@@ -136,6 +136,23 @@ struct VTFFileHeaderV7_3_t
     int padding[2];
 };
 
+// Special section for stock resources types
+enum ResourceEntryType
+{
+	// Legacy stock resources, readin/writing are handled differently (i.e. they do not have the length tag word!)
+	VTF_LEGACY_RSRC_LOW_RES_IMAGE	= 0x01,	// Low-res image data
+	VTF_LEGACY_RSRC_IMAGE			= 0x30,	// Image data
+
+	// New extended resource
+	VTF_RSRC_SHEET = 0x10,			// Sheet data
+};
+
+enum ResourceEntryTypeFlag
+{
+	RSRCF_HAS_NO_DATA_CHUNK	= 0x02,	// Resource doesn't have a corresponding data chunk
+	RSRCF_MASK				= 0xFF	// Mask for all the flags
+};
+
 struct ResourceEntryInfo
 {
 	union
@@ -146,11 +163,49 @@ struct ResourceEntryInfo
 	uint32		resData;	// Resource data or offset from the beginning of the file
 };
 
+//-----------------------------------------------------------------------------
+// Cubemap face indices
+//-----------------------------------------------------------------------------
+enum CubeMapFaceIndex_t
+{
+	CUBEMAP_FACE_RIGHT = 0,
+	CUBEMAP_FACE_LEFT,
+	CUBEMAP_FACE_BACK,	// NOTE: This face is in the +y direction?!?!?
+	CUBEMAP_FACE_FRONT,	// NOTE: This face is in the -y direction!?!?
+	CUBEMAP_FACE_UP,
+	CUBEMAP_FACE_DOWN,
+
+	CUBEMAP_FACE_COUNT,
+
+	// This is the fallback for low-end (obsolete, here for backward compat!)
+	CUBEMAP_FACE_SPHEREMAP = CUBEMAP_FACE_COUNT,
+
+};
+
+
+//-----------------------------------------------------------------------------
+// Enumeration used for spheremap generation
+//-----------------------------------------------------------------------------
+enum LookDir_t
+{
+	LOOK_DOWN_X = 0,
+	LOOK_DOWN_NEGX,
+	LOOK_DOWN_Y,
+	LOOK_DOWN_NEGY,
+	LOOK_DOWN_Z,
+	LOOK_DOWN_NEGZ,
+};
+
 local int magic = ReadInt(0);
 
 // check for ps4 vtf
 if(magic != 0x465456)
-    FSeek(FileSize() - 236);
+{
+    FSeek(FileSize() - 4);
+    int ps4HeaderOffset;
+
+    FSeek(ps4HeaderOffset);
+}
 
 VTFFileBaseHeader_t header <bgcolor=0x53DD22>;
 
@@ -163,7 +218,7 @@ if(header.version[1] >= 2)
 if(header.version[1] >= 3)
 {
     VTFFileHeaderV7_3_t header73 <bgcolor=0x5399AA>;
-
-    for(i = 0; i < header73.numResources; i++)
-        ResourceEntryInfo resourceentryinfo <fgcolor=0x5399AA>;
+    ResourceEntryInfo resourceentryinfo[header73.numResources] <fgcolor=0x5399AA>;
 }
+
+// some respawn cubemaps seem to have some data after the resource entries, only on pc

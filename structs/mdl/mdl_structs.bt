@@ -3834,7 +3834,7 @@ struct mstudiopertrinode_t
 struct mstudiopertrileaftri_t
 {
     short vertIndices[3];
-    short compAlign <hidden=true>;
+    short unk;
 };
 
 struct mstudiopertrileaf_t
