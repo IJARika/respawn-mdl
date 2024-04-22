@@ -233,28 +233,28 @@ mstudiosrcbonetransform_t srcbonetransform[hdr.numsrcbonetransform] <bgcolor=cDk
 
 struct pertrinode_t(int pNodeStart, int pLeafStart, int nodeIndex)
 {
-        FSeek(pNodeStart + (sizeof(mstudiopertrinode_t) * nodeIndex));
-        mstudiopertrinode_t node <fgcolor=0x6644dd>;
-
-        if (node.child0Index >= 0)
-        {
-           BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child0Index);
-        }
-        else
-        {
-            FSeek(pLeafStart + (((node.child0Index * -1) - 1) * sizeof(mstudiopertrileaf_t)));
-            mstudiopertrileaf_t leaf0 <fgcolor=0xffaaaa>;
-        }
-
-        if (node.child1Index >= 0)
-        {
-           BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child1Index);
-        }
-        else
-        {
-            FSeek(pLeafStart + (((node.child1Index * -1) - 1) * sizeof(mstudiopertrileaf_t)));
-            mstudiopertrileaf_t leaf1 <fgcolor=0xffaaaa>;
-        }
+    FSeek(pNodeStart + (sizeof(mstudiopertrinode_t) * nodeIndex));
+    mstudiopertrinode_t node <fgcolor=0x6644dd>;
+    
+    if (node.child0Index < 0)
+    {
+        FSeek(pLeafStart + (~node.child0Index * sizeof(mstudiopertrileaf_t)));
+        mstudiopertrileaf_t leaf0 <fgcolor=0xffaaaa>;
+    }
+    else
+    {
+        BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child0Index);
+    }
+    
+    if (node.child1Index < 0)
+    {
+        FSeek(pLeafStart + (~node.child1Index * sizeof(mstudiopertrileaf_t)));
+        mstudiopertrileaf_t leaf1 <fgcolor=0xffaaaa>;
+    }
+    else
+    {
+        BuildNodeTreeForBVH2(pNodeStart, pLeafStart, node.child1Index);
+    }
 };
 
 void BuildNodeTreeForBVH2(int pNodeStart, int pLeafStart, int nodeIndex)

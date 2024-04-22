@@ -56,7 +56,7 @@ for (i = 0; i < vtx_header.numBodyParts; ++i)
                 
                                 for(m = 0; m < vtx_meshheader.numStripGroups; m++)
                                 {
-                                    FSeek(startof(vtx_meshheader) + vtx_meshheader.stripGroupHeaderOffset);
+                                    FSeek(startof(vtx_meshheader) + vtx_meshheader.stripGroupHeaderOffset + (sizeof(StripGroupHeader_t) * m));
                                     StripGroupHeader_t vtx_stripgrphdr <bgcolor=cDkPurple>;
                     
                                     for(n = 0; n < vtx_stripgrphdr.numStrips; n++)

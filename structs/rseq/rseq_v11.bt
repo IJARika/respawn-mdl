@@ -152,12 +152,12 @@ for(k = 0; k < numanims; k++)
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_X)
                                                     mstudioanimvalue_t x <fgcolor=cLtYellow>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animscale.idx1 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animscale.axisIdx1 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_Y)
                                                     mstudioanimvalue_t y <fgcolor=cLtYellow>;
 
-                                                FSeek(valueOffset + (sectionanimheader.animscale.idx2 * sizeof(mstudioanimvalue_t)));
+                                                FSeek(valueOffset + (sectionanimheader.animscale.axisIdx2 * sizeof(mstudioanimvalue_t)));
 
                                                 if(sectionanimheader.animscale.flags & STUDIO_ANIMPTR_Z)
                                                     mstudioanimvalue_t z <fgcolor=cLtYellow>;
@@ -352,25 +352,6 @@ if(seqdesc.unkcount)
     FSeek(startof(seqdesc) + seqdesc.unkindex);
     unkseqdata_t unkseqdata[seqdesc.unkcount] <bgcolor=0x9900BB>;
 }
-
-
-// if this throws let me know, I have yet to find anything here
-if(numanims)
-{
-    for(i = 0; i < numanims; i++)
-    {
-        for(j = 0; j < 4; j++)
-            Assert(!animdesc[i].unk1[j], "unknown animdesc value used");
-    }
-}
-
-
-/*if(seqdesc.numevents)
-{
-    for(i = 0; i < seqdesc.numevents; i++)
-        Assert(!seqevent.unk, "unknown event value used");
-}*/
-
 
 // create nice looking strings you can view
 #include "../rseq/rseq_v11_module_strings.bt"

@@ -320,7 +320,7 @@ for(k = 0; k < numanims; k++)
             // it's impossible to tell if these are actual structs or just values, however
             // they are offset from the start of their parent
             struct {
-                numsections = Ceil((float)animdesc.numframes / (float)framemovement.sectionframes);
+                numsections = (float)(animdesc.numframes - 1) / (float)framemovement.sectionframes + 1;
 
                 int sectionindexes[numsections] <bgcolor=0x99ffcc>; // sometimes only one
 

@@ -24,7 +24,7 @@ if(hdr.sznameindex > 16)
     FSeek(hdr.sznameindex);
     
     // check if either of these is null
-    if(hdr.unkindex3 > 0 || hdr.bvh4index > 0)
+    if(hdr.bonefollowerindex > 0 || hdr.bvh4index > 0)
     {
         // unkindex4 is sometimes nulled, check if it is
         if(hdr.bvh4index > 0)
@@ -49,7 +49,7 @@ else
         if(hdr.bvh4index > 0)
             stringtable_size = hdr.bvh4index - hdr.surfacepropindex;
         else
-            stringtable_size = hdr.unkindex3 - hdr.surfacepropindex;
+            stringtable_size = hdr.bonefollowerindex - hdr.surfacepropindex;
     }
     // if null use length, this normally only gets used in rrigs and potentially viewmodels
     else

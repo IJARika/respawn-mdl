@@ -3799,7 +3799,7 @@ struct mstudioruimesh_t
     int vertmapindex; // offsets into a vertex map for each quad
     int facedataindex; // offset into uv section
 
-    byte unk[4]; // zero sometimes, others not. has to do with face clipping.
+    DWORD unk; // zero sometimes, others not. has to do with face clipping.
 };
 
 

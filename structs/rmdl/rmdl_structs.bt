@@ -1474,13 +1474,7 @@ struct mstudioanimdesc_t_v16
     float fps; // frames per second	
     int flags <read=ReadAnimDescFlags(this)>; // looping/non-looping flags
 
-    short numframes;
-
-    // piecewise movement
-    //short nummovements;
-    //short movementindex;
-
-    short unk_v16;
+    int numframes;
 
     short sznameindex <read=ReadString(startof(parentof(this)) + this)>;    
 
@@ -1491,10 +1485,11 @@ struct mstudioanimdesc_t_v16
     short numikrules;
     unsigned short ikruleindex; // non-zero when IK data is stored in the mdl
 
-    short unk1[5];
+    int64 unk2;
+	uint16 unk1;
 
     short sectionindex;
-    short sectionstaticframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
+    short sectionstallframes; // number of static frames inside the animation, the reset excluding the final frame are stored externally. when external data is not loaded(?)/found(?) it falls back on the last frame of this as a stall
     short sectionframes; // number of frames used in each fast lookup section, zero if not used
 };
 
@@ -1946,21 +1941,8 @@ struct mstudioseqdesc_t_v16
     float fadeintime; // ideal cross fate in time (0.2 default)
     float fadeouttime; // ideal cross fade out time (0.2 default)
 
-    byte fill[4];
-
-    // stuff is different after this
-    /*
     short localentrynode; // transition node at entry
     short localexitnode; // transition node at exit
-    short nodeflags; // transition rules
-
-    float entryphase; // used to match entry gait
-    float exitphase; // used to match exit gait
-    
-    float lastframe; // frame that should generation EndOfSequence
-
-    short nextseq; // auto advancing sequences
-    short pose; // index of delta animation between end and nextseq*/
 
     short numikrules;
 
@@ -1977,10 +1959,9 @@ struct mstudioseqdesc_t_v16
     short iklockindex;
 
     // Key values
-    unsigned short keyvalueindex;
-    short keyvaluesize;
+    unsigned short unk_5C;
 
-    //short cycleposeindex; // index of pose parameter to use as cycle index
+    short cycleposeindex; // index of pose parameter to use as cycle index
 
     short activitymodifierindex;
     short numactivitymodifiers;
